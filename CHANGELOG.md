@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-06-04
+
+### Fixed
+- **`RoomMap.add()` crashed on numpy 0-d arrays** with `TypeError: only 0-dimensional arrays can be converted to Python scalars`. Triggered when clicking in the 3D / Room tab (matplotlib's `proj3d.inv_transform` returns 0-d numpy arrays). Coerced via `np.asarray(x).item()`.
+- **`refresh_selection_overlay()` and `flash_overlay()` crashed** with `_tkinter.TclError: unknown color name "00FF00"` when `focus_highlight_color` was set to a bare hex string (e.g. from the Tk color picker in the GUI). Now auto-prepends `#` to bare hex while leaving named colors (e.g. `"red"`) untouched.
+
+### Added
+- New regression test: `tests/test_v100_hotfix.py` covers both bugs above.
+
 ## [1.0.0] - 2026-06-04
 
 ### Added

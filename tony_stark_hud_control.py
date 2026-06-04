@@ -132,10 +132,17 @@ class RoomMap:
             atype = 'custom'
         if label is None or not str(label).strip():
             label = f"{atype}_{self.next_id}"
+        # Coerce numpy 0-d arrays to Python floats (e.g. when called
+        # from _pick_3d_at which gets 0-d ndarray from matplotlib's
+        # proj3d.inv_transform). Without this, float(np.float64) on
+        # Python 3.13+ raises TypeError: only 0-dimensional arrays
+        # can be converted to Python scalars.
         self.anchors.append({
             'id': self.next_id,
             'name': label,
-            'x': float(x), 'y': float(y), 'z': float(z),
+            'x': float(np.asarray(x).item()),
+            'y': float(np.asarray(y).item()),
+            'z': float(np.asarray(z).item()),
             'type': atype,
         })
         self.next_id += 1
@@ -2835,16 +2842,20 @@ class HandControlApp:
                 pass
             self._overlay_after_id = None
         sw, sh = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
-        # Convert hex color to rgb tuple
-        c = self.focus_highlight_color
-        if c.startswith('#'):
-            c = c[1:]
-            if len(c) == 6:
-                rgb = (int(c[0:2], 16), int(c[2:4], 16), int(c[4:6], 16))
-            else:
-                rgb = (0, 255, 0)
+        # Validate the highlight color string. tk.Canvas.create_rectangle
+        # accepts "#RRGGBB" or named colors like "green", but NOT bare
+        # hex like "00FF00" (TclError: unknown color name). Prepend '#'
+        # only when the string is bare hex (6 hex chars, no '#').
+        c = self.focus_highlight_color or "#00FF00"
+        if not c.startswith('#') and len(c) == 6 and all(
+                ch in '0123456789abcdefABCDEF' for ch in c):
+            c = '#' + c
+        # (rgb is kept for any future use; tk accepts the '#XXXXXX' form directly)
+        if len(c) == 7:
+            rgb = (int(c[1:3], 16), int(c[3:5], 16), int(c[5:7], 16))
         else:
             rgb = (0, 255, 0)
+            c = "#00FF00"
         thickness = max(1, int(self.focus_highlight_thickness))
         self.overlay.geometry(f"{sw}x{sh}+0+0")
         self.overlay_canvas.config(width=sw, height=sh)
@@ -2981,7 +2992,15 @@ class HandControlApp:
             # Use a slightly different colour so the user can tell the
             # persistent "selection" overlay apart from the brief
             # "swipe direction" flash overlay.
-            c = self.focus_highlight_color
+            # Validate the color string for tk. tk accepts:
+            #   - "#RRGGBB" (hex with #)         - valid
+            #   - "RRGGBB"  (bare hex)           - INVALID -> TclError
+            #   - "red", "green" (named colors)  - valid
+            # So: only prepend '#' if it's bare hex (6 hex chars, no '#').
+            c = self.focus_highlight_color or "#00FF00"
+            if not c.startswith('#') and len(c) == 6 and all(
+                    ch in '0123456789abcdefABCDEF' for ch in c):
+                c = '#' + c
             t = max(2, int(self.focus_highlight_thickness))
             # Draw a chunky ring around the focused element
             self.selection_canvas.create_rectangle(
