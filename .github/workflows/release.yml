@@ -80,14 +80,17 @@ jobs:
           exec "$SCRIPT_DIR/tony_stark_hud_control" "$@"
           EOF
           chmod +x release-staging/tony_stark_hud_control release-staging/tony_stark_hud_control.sh
-          tar -czf release-staging/tony_stark_hud_control-linux-x86_64.tar.gz \
+          # Build the tarball OUTSIDE the source dir to avoid the
+          # "file changed as we read it" tar error (which would happen
+          # if we tried to include the tarball in itself).
+          tar -czf "$GITHUB_WORKSPACE/tony_stark_hud_control-linux-x86_64.tar.gz" \
               -C release-staging .
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
           name: tony_stark_hud_control-linux
-          path: release-staging/tony_stark_hud_control-linux-x86_64.tar.gz
+          path: tony_stark_hud_control-linux-x86_64.tar.gz
 
   build-source:
     name: Build source tarball
@@ -100,15 +103,18 @@ jobs:
 
       - name: Create source tarball (with .git for provenance)
         run: |
-          mkdir -p release-staging
+          # Write OUTSIDE the source dir to avoid the "file changed as
+          # we read it" tar error in case the prefix matches the
+          # destination. tar -C paths are the source, $GITHUB_WORKSPACE
+          # is the dest, so they're always distinct.
           git archive --format=tar.gz --prefix="tony_stark_hand_control-${GITHUB_REF_NAME}/" \
-              -o release-staging/tony_stark_hand_control-src.tar.gz HEAD
+              -o "$GITHUB_WORKSPACE/tony_stark_hand_control-src.tar.gz" HEAD
 
       - name: Upload source artifact
         uses: actions/upload-artifact@v4
         with:
           name: tony_stark_hud_control-source
-          path: release-staging/tony_stark_hand_control-src.tar.gz
+          path: tony_stark_hand_control-src.tar.gz
 
   release:
     name: Create GitHub release
