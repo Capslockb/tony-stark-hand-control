@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build Windows .exe
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --noconfirm --onefile --windowed --name tony_stark_hud_control tony_stark_hud_control.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tony_stark_hud_control-windows
+          path: dist/tony_stark_hud_control.exe
+
+  release:
+    name: Create GitHub release
+    needs: build-windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tony_stark_hud_control-windows
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            tony_stark_hud_control.exe
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

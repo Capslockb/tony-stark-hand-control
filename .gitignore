@@ -1,0 +1,88 @@
+# ---- OS ----
+Thumbs.db
+.DS_Store
+desktop.ini
+$RECYCLE.BIN/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.venv/
+venv/
+env/
+
+# ---- Tk / GUI ----
+*.swp
+*.bak
+*.tmp
+.~*
+
+# ---- MediaPipe / model files (large; do not commit) ----
+# The hand_landmarker.task is auto-downloaded on first run.
+# Keep the file local; let the install wizard fetch it.
+hand_landmarker.task
+*.task
+
+# ---- Camera / calibration state (user-private) ----
+# These are per-machine and may contain camera fingerprints.
+calibration.npz
+room_map.json
+tony_stark_*.lock
+
+# ---- Test artifacts ----
+test_frame.jpg
+*.tmp.png
+*.tmp.jpg
+
+# ---- Logs ----
+logs/
+*.log
+tony_stark_*.log
+
+# ---- IDE / editor ----
+.vscode/
+.idea/
+*.code-workspace
+*.iml
+
+# ---- Pre-existing experimental folders (NOT part of this upload) ----
+# These were explorations from earlier work; we leave them on disk
+# but exclude them from the public-facing repo to keep the project
+# focused on the canonical tony_stark_hud_control.py + tests.
+Control-Computer-With-Hand/
+HandTracker/
+tony-stark-hands/
+qwen-vl-chat/
+combined_tony_stark*.py
+qwen_gesture.py
+find_camera.py
+test_camera*.py
+test_camera_backend.py
+test_camera_dshow.py
+verify_camera.py
+test_frame.jpg
+
+# ---- Windows-specific junk ----
+*.lnk
+*.lnk.meta
+*.Manifest
+
+# ---- Large model + asset files (do NOT commit; the installer fetches them) ----
+SimSun.ttf
+llama_cuda/
+llama.cpp/
+models/
+
+# ---- Pre-existing qwen model test dir (not part of this project) ----
+qwen25_template.jinja
+qwen_vl_results.json
