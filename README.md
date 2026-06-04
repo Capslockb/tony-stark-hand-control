@@ -22,11 +22,24 @@ A local-first, GPU-accelerated hand-tracking system that uses one or more camera
 
 ## Quick start (Windows)
 
+**Option A — install from source**:
 ```cmd
 git clone https://github.com/Capslockb/tony-stark-hand-control.git
 cd tony-stark-hand-control
 python install_wizard.py
 start_windows.bat
+```
+
+**Option B — download the prebuilt .exe** (easiest, no Python needed):
+1. Go to https://github.com/Capslockb/tony-stark-hand-control/releases/latest
+2. Download `tony_stark_hud_control.exe`
+3. Double-click to run. The app will download the MediaPipe model on first launch.
+
+**Option C — Linux prebuilt** (x86_64):
+```bash
+# Download from releases page
+tar -xzf tony_stark_hud_control-linux-x86_64.tar.gz
+./tony_stark_hud_control.sh
 ```
 
 The install wizard will:
@@ -104,7 +117,7 @@ See `docs/performance.md` for the full benchmark.
 python -m unittest discover tests
 ```
 
-The test suite covers: RoomMap, HandProcessor, CameraManager, StereoCalibrator, triangulate_point_rays, OllamaGestureRecognizer circuit breaker, and full HandControlApp construction. Current status: **77/77 passing**.
+The test suite covers: RoomMap, HandProcessor, CameraManager, StereoCalibrator, triangulate_point_rays, OllamaGestureRecognizer circuit breaker, and full HandControlApp construction. Current status: **81/81 passing** (77 main + 4 v1.0.1 hotfix).
 
 ## Contributing
 
