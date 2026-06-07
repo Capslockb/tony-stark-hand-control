@@ -18,31 +18,33 @@
   <meta name="twitter:description" content="Multi-camera hand tracking + 3D room mapping for PC control. Local-only. Open source.">
   <link rel="preload" as="image" href="assets/grain.png">
   <style>
-    /* -------- Background grain (procedural PNG, ~11 KB) -------- */
+    :root {
+      --bg: #0b0d10; --bg-2: #11151a; --fg: #e6e8eb; --muted: #8b95a3;
+      --accent: #ff5a1f; --accent-2: #ffb000; --green: #2ecc71;
+      --border: #1f262e; --code: #0f1318; --muted-2: #5a6673;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; padding: 0;
+      background: var(--bg); color: var(--fg);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
     body::before {
-      content: "";
-      position: fixed; inset: 0;
-      z-index: 0;
-      pointer-events: none;
+      content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background-image: url("assets/grain.png");
-      background-repeat: repeat;
-      background-size: 120px 120px;
-      opacity: 0.18;
+      background-repeat: repeat; background-size: 120px 120px; opacity: 0.18;
     }
-    body { position: relative; z-index: 1; }
 
-    /* -------- Scroll-driven reveal -------- */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: opacity, transform;
-    }
-    .reveal.in {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    /* Stagger children when the parent reveals */
+    .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .muted { color: var(--muted); }
+
+    /* -------- Scroll reveal -------- */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); will-change: opacity, transform; }
+    .reveal.in { opacity: 1; transform: translateY(0); }
     .reveal.in .stagger { opacity: 0; transform: translateY(14px); transition: opacity 0.5s ease, transform 0.5s ease; }
     .reveal.in .stagger:nth-child(1) { transition-delay: 0.05s; }
     .reveal.in .stagger:nth-child(2) { transition-delay: 0.12s; }
@@ -51,346 +53,14 @@
     .reveal.in .stagger:nth-child(5) { transition-delay: 0.33s; }
     .reveal.in .stagger:nth-child(6) { transition-delay: 0.40s; }
     .reveal.in .stagger { opacity: 1; transform: translateY(0); }
-
-    /* -------- Parallax (hero) -------- */
-    .hero { position: relative; }
-    .hero-bg {
-      position: absolute; inset: 0; z-index: -1;
-      will-change: transform;
-      /* The radial gradients already live in .hero's background; this is an extra
-         decorative SVG layer that parallaxes. */
-      background:
-        radial-gradient(800px 400px at 20% 0%, rgba(255,90,31,0.10), transparent 60%),
-        radial-gradient(600px 300px at 100% 30%, rgba(255,176,0,0.07), transparent 60%);
-      transform: translateY(var(--parallax, 0));
-    }
+    .hl { background: linear-gradient(180deg, transparent 60%, rgba(255,90,31,0.25) 60%); padding: 0 2px; }
     @media (prefers-reduced-motion: reduce) {
       .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
-      .hero-bg { transform: none; }
     }
 
-    /* -------- Press kit / share images -------- */
-    .press-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 18px;
-      margin-top: 20px;
-    }
-    .press-grid > .press-card:nth-child(3) { grid-column: 1 / -1; }
-    @media (max-width: 720px) {
-      .press-grid { grid-template-columns: 1fr; }
-      .press-grid > .press-card:nth-child(3) { grid-column: auto; }
-    }
-    .press-card {
-      margin: 0;
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      display: flex; flex-direction: column;
-    }
-    .press-frame {
-      display: block;
-      aspect-ratio: 1200 / 630;
-      background: #0b0d10;
-      overflow: hidden;
-      position: relative;
-    }
-    .press-frame img {
-      display: block;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-    .press-frame:hover img { transform: scale(1.02); }
-    .press-frame-square { aspect-ratio: 1 / 1; }
-    .press-frame-square img { object-fit: contain; padding: 12%; }
-    figcaption {
-      padding: 14px 16px 16px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .press-meta { display: flex; flex-direction: column; gap: 2px; }
-    .press-meta strong { font-size: 15px; }
-    .press-dim { font-size: 12px; color: var(--muted); }
-    .press-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .press-btn {
-      flex: 1;
-      min-height: 40px;
-      padding: 9px 12px;
-      background: var(--bg-3);
-      color: var(--fg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px; font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    }
-    .press-btn:active { background: var(--border); }
-    .press-btn.copied { background: rgba(46, 204, 113, 0.15); border-color: var(--green); color: var(--green); }
-
-    /* -------- Release notes / changelog -------- */
-    .changelog-list {
-      display: flex; flex-direction: column; gap: 14px;
-      margin-top: 20px;
-    }
-    .cl-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 20px;
-      position: relative;
-    }
-    .cl-card.cl-current {
-      border-color: rgba(255, 90, 31, 0.4);
-      box-shadow: 0 0 0 1px rgba(255, 90, 31, 0.15);
-    }
-    .cl-head {
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-      margin-bottom: 6px;
-    }
-    .cl-version {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 16px; font-weight: 700; color: var(--fg);
-    }
-    .cl-current .cl-version { color: var(--accent); }
-    .cl-date { font-size: 13px; color: var(--muted); }
-    .cl-tag {
-      font-size: 11px; padding: 3px 9px; border-radius: 999px;
-      letter-spacing: 0.4px; text-transform: uppercase; font-weight: 600;
-    }
-    .cl-tag-fix { background: rgba(255, 90, 31, 0.12); color: var(--accent); }
-    .cl-tag-new { background: rgba(46, 204, 113, 0.12); color: var(--green); }
-    .cl-blurb { color: var(--muted); margin: 4px 0 12px; font-size: 15px; }
-    .cl-card h4 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-    .cl-list { margin: 0 0 0 18px; padding: 0; color: var(--fg); font-size: 15px; }
-    .cl-list li { margin: 4px 0; }
-    .cl-list code { font-size: 13px; background: var(--bg-3); padding: 1px 5px; border-radius: 4px; }
-    .cl-list kbd {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12px; background: var(--bg-3); color: var(--accent-2);
-      padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border);
-    }
-    .cl-test {
-      margin: 12px 0 0; padding: 8px 12px;
-      background: var(--bg-3); border-radius: 8px;
-      font-size: 13px; color: var(--muted);
-    }
-    .cl-test strong { color: var(--green); }
-    .cl-test code { font-size: 12px; }
-
-    /* -------- Live in-browser hand-tracking demo -------- */
-    .demo-shell {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr;
-      gap: 18px;
-      margin-top: 20px;
-    }
-    @media (max-width: 820px) {
-      .demo-shell { grid-template-columns: 1fr; }
-      .demo-frame { min-height: 260px; }
-      .demo-empty { padding: 16px; }
-      .demo-empty h3 { font-size: 16px; }
-      .demo-empty p { max-width: 100%; font-size: 13px; }
-      .demo-cta { font-size: 14px; padding: 10px 16px; }
-      .demo-side .demo-card { padding: 12px 14px; }
-      .demo-side .demo-card p { font-size: 13px; }
-      .demo-overlay { font-size: 11px; padding: 4px 8px; top: 8px; left: 8px; }
-    }
-    @media (max-width: 420px) {
-      .demo-frame { min-height: 200px; }
-    }
-    .demo-frame {
-      position: relative;
-      background: #0b0d10;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      aspect-ratio: 4 / 3;
-      overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .demo-frame video, .demo-frame canvas {
-      position: absolute; inset: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1);  /* mirror so it feels like a mirror */
-    }
-    .demo-overlay {
-      position: absolute;
-      top: 12px; left: 12px;
-      display: flex; align-items: center; gap: 8px;
-      padding: 6px 10px;
-      background: rgba(11, 13, 16, 0.7);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 12px; color: var(--muted);
-      z-index: 2;
-    }
-    .demo-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 8px var(--green);
-      animation: pulse 1.4s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .demo-status { display: flex; align-items: center; gap: 6px; }
-    .demo-status .num { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
-
-    .demo-empty {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 12px;
-      text-align: center;
-      padding: 24px;
-      z-index: 1;
-    }
-    .demo-empty-icon {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      background: var(--bg-2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px;
-      border: 1px solid var(--border);
-    }
-    .demo-empty h3 { margin: 0; font-size: 18px; font-weight: 700; }
-    .demo-empty p { margin: 0; font-size: 14px; color: var(--muted); max-width: 320px; }
-    .demo-cta {
-      margin-top: 4px;
-      padding: 12px 20px;
-      background: var(--accent);
-      color: #0b0d10;
-      border: 0;
-      border-radius: 10px;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer;
-      min-height: 48px;
-    }
-    .demo-cta:active { background: #e64a0f; }
-    .demo-cta[disabled] { background: var(--bg-3); color: var(--muted); cursor: not-allowed; }
-    .demo-cta-secondary {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      margin-top: 4px;
-      padding: 10px 16px;
-      font-size: 13px;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-
-    .demo-side {
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .demo-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 18px;
-    }
-    .demo-card h4 { margin: 0 0 6px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-    .demo-card p { margin: 0; font-size: 14px; color: var(--fg); }
-    .demo-card .demo-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 6px 0;
-      font-size: 14px;
-    }
-    .demo-card .demo-row + .demo-row { border-top: 1px solid var(--border); }
-    .demo-card .demo-row span:first-child { color: var(--muted); }
-    .demo-card .demo-row .val { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
-    .demo-error {
-      background: rgba(231, 76, 60, 0.08);
-      border-color: rgba(231, 76, 60, 0.3);
-      color: #ff8a7a;
-    }
-    .demo-error h4 { color: #ff8a7a; }
-    .demo-privacy {
-      background: rgba(46, 204, 113, 0.06);
-      border-color: rgba(46, 204, 113, 0.25);
-    }
-    .demo-privacy h4 { color: var(--green); }
-
-    /* -------- Demo: gesture engine (engaged state) -------- */
-    .demo-engage-pill {
-      position: absolute;
-      bottom: 12px; right: 12px;
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 14px;
-      background: rgba(11, 13, 16, 0.78);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      font-size: 13px; font-weight: 600;
-      z-index: 2;
-      transition: border-color 0.25s, color 0.25s, background 0.25s;
-    }
-    .demo-engage-pill.engaged {
-      border-color: rgba(46, 204, 113, 0.6);
-      color: var(--green);
-      background: rgba(46, 204, 113, 0.12);
-      box-shadow: 0 0 12px rgba(46, 204, 113, 0.25);
-    }
-    .demo-engage-pill .pulse {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 8px currentColor;
-    }
-    .demo-engage-pill:not(.engaged) .pulse {
-      animation: pulse 1.4s ease-in-out infinite;
-    }
-    .demo-engage-pill.engaged .pulse {
-      animation: none;
-    }
-
-    /* Live event log of dispatched keyboard events */
-    .demo-log {
-      margin-top: 4px;
-      max-height: 200px;
-      overflow-y: auto;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12px;
-      line-height: 1.4;
-    }
-    .demo-log-line {
-      display: flex; gap: 8px;
-      padding: 3px 0;
-      color: var(--muted);
-    }
-    .demo-log-line .ts { color: var(--muted-2); flex-shrink: 0; }
-    .demo-log-line .key { color: var(--accent-2); font-weight: 600; }
-    .demo-log-line .lbl { color: var(--fg); }
-    .demo-log:empty::before {
-      content: "Hold an open palm for 0.6 s → fullscreen. Then curl index → Tab, middle → Enter, etc. Lower hand → exit fullscreen.";
-      color: var(--muted-2);
-      font-family: inherit;
-      font-size: 12px;
-    }
-    :root {
-      --bg: #0b0d10;
-      --bg-2: #11151a;
-      --fg: #e6e8eb;
-      --muted: #8b95a3;
-      --accent: #ff5a1f;
-      --accent-2: #ffb000;
-      --green: #2ecc71;
-      --border: #1f262e;
-      --code: #0f1318;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
     nav {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 0; border-bottom: 1px solid var(--border);
+      padding: 20px 0; border-bottom: 1px solid var(--border); position: relative; z-index: 1;
     }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.2px; }
     .brand-mark { width: 28px; height: 28px; }
@@ -398,30 +68,32 @@
     .nav-links a:hover { color: var(--fg); text-decoration: none; }
 
     .hero {
-      padding: 96px 0 64px;
+      padding: 96px 0 48px;
       background:
         radial-gradient(800px 400px at 20% 0%, rgba(255,90,31,0.10), transparent 60%),
         radial-gradient(600px 300px at 100% 30%, rgba(255,176,0,0.07), transparent 60%);
+      position: relative;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: -1; will-change: transform;
+      background:
+        radial-gradient(800px 400px at 20% 0%, rgba(255,90,31,0.10), transparent 60%),
+        radial-gradient(600px 300px at 100% 30%, rgba(255,176,0,0.07), transparent 60%);
+      transform: translateY(var(--parallax, 0));
     }
     .eyebrow {
       display: inline-block; padding: 4px 10px; border-radius: 999px;
       border: 1px solid var(--border); color: var(--muted);
       font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase;
     }
-    h1 {
-      font-size: 56px; line-height: 1.05; letter-spacing: -1.5px;
-      margin: 18px 0 14px; font-weight: 800;
-    }
-    h1 .glow {
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
+    h1 { font-size: 56px; line-height: 1.05; letter-spacing: -1.5px; margin: 18px 0 14px; font-weight: 800; }
+    h1 .glow { background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .lede { font-size: 19px; color: var(--muted); max-width: 720px; margin: 0 0 32px; }
     .cta { display: flex; gap: 12px; flex-wrap: wrap; }
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 15px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border); cursor: pointer; text-decoration: none;
     }
     .btn-primary { background: var(--accent); color: #0b0d10; border-color: var(--accent); }
     .btn-primary:hover { text-decoration: none; filter: brightness(1.05); }
@@ -436,13 +108,9 @@
     .badge.green { color: var(--green); border-color: rgba(46,204,113,0.3); }
 
     section { padding: 72px 0; border-top: 1px solid var(--border); }
-    h2 {
-      font-size: 32px; line-height: 1.2; letter-spacing: -0.5px;
-      margin: 0 0 14px; font-weight: 700;
-    }
+    h2 { font-size: 32px; line-height: 1.2; letter-spacing: -0.5px; margin: 0 0 14px; font-weight: 700; }
     h3 { font-size: 18px; margin: 24px 0 8px; font-weight: 600; }
     p { color: var(--fg); }
-    .muted { color: var(--muted); }
 
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
     .grid-2 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: center; }
@@ -452,18 +120,14 @@
       h1 { font-size: 40px; }
     }
 
-    .card {
-      background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px;
-      padding: 20px;
-    }
+    .card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
     .card h3 { margin-top: 0; color: var(--fg); }
     .card p { color: var(--muted); margin: 0; }
 
     .demo {
       background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px;
       padding: 18px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 13px; line-height: 1.55; color: var(--fg);
-      overflow-x: auto;
+      font-size: 13px; line-height: 1.55; color: var(--fg); overflow-x: auto;
     }
     .demo .prompt { color: var(--accent); }
     .demo .ok { color: var(--green); }
@@ -509,10 +173,214 @@
     footer { padding: 48px 0 64px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
     .footer-grid { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 
-    .hl { background: linear-gradient(180deg, transparent 60%, rgba(255,90,31,0.25) 60%); padding: 0 2px; }
+    /* ---------- Press kit ---------- */
+    .press-grid {
+      display: grid; grid-template-columns: 2fr 1fr; gap: 18px; margin-top: 20px;
+    }
+    .press-grid > .press-card:nth-child(3) { grid-column: 1 / -1; }
+    @media (max-width: 720px) {
+      .press-grid { grid-template-columns: 1fr; }
+      .press-grid > .press-card:nth-child(3) { grid-column: auto; }
+    }
+    .press-card {
+      margin: 0; background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;
+    }
+    .press-frame {
+      display: block; aspect-ratio: 1200 / 630;
+      background: #0b0d10; overflow: hidden; position: relative;
+    }
+    .press-frame img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+    .press-frame:hover img { transform: scale(1.02); }
+    .press-frame-square { aspect-ratio: 1 / 1; }
+    .press-frame-square img { object-fit: contain; padding: 12%; }
+    .press-card figcaption { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .press-meta { display: flex; flex-direction: column; gap: 2px; }
+    .press-meta strong { font-size: 15px; }
+    .press-dim { font-size: 12px; color: var(--muted); }
+    .press-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .press-btn {
+      flex: 1; min-height: 40px; padding: 9px 12px;
+      background: var(--bg-3); color: var(--fg);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      text-align: center; text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .press-btn:active { background: var(--border); }
+    .press-btn.copied { background: rgba(46,204,113,0.15); border-color: var(--green); color: var(--green); }
+
+    /* -------- Changelog -------- */
+    .changelog-list { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
+    .cl-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; position: relative; }
+    .cl-card.cl-current { border-color: rgba(255,90,31,0.4); box-shadow: 0 0 0 1px rgba(255,90,31,0.15); }
+    .cl-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+    .cl-version { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 16px; font-weight: 700; color: var(--fg); }
+    .cl-current .cl-version { color: var(--accent); }
+    .cl-date { font-size: 13px; color: var(--muted); }
+    .cl-tag { font-size: 11px; padding: 3px 9px; border-radius: 999px; letter-spacing: 0.4px; text-transform: uppercase; font-weight: 600; }
+    .cl-tag-fix { background: rgba(255,90,31,0.12); color: var(--accent); }
+    .cl-tag-new { background: rgba(46,204,113,0.12); color: var(--green); }
+    .cl-blurb { color: var(--muted); margin: 4px 0 12px; font-size: 15px; }
+    .cl-card h4 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .cl-list { margin: 0 0 0 18px; padding: 0; color: var(--fg); font-size: 15px; }
+    .cl-list li { margin: 4px 0; }
+    .cl-list code { font-size: 13px; background: var(--bg-3); padding: 1px 5px; border-radius: 4px; }
+    .cl-list kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; background: var(--bg-3); color: var(--accent-2); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border); }
+    .cl-test { margin: 12px 0 0; padding: 8px 12px; background: var(--bg-3); border-radius: 8px; font-size: 13px; color: var(--muted); }
+    .cl-test strong { color: var(--green); }
+    .cl-test code { font-size: 12px; }
+
+    /* ====== LIVE DEMO PREVIEW (replaces old demo-shell) ====== */
+    .preview-shell {
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; margin-top: 20px;
+    }
+    @media (max-width: 820px) { .preview-shell { grid-template-columns: 1fr; } }
+    .preview-frame {
+      position: relative; background: #0b0d10; border: 1px solid var(--border);
+      border-radius: 14px; aspect-ratio: 4 / 3; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      transition: width 0.9s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  border-radius 0.9s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.9s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  margin 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+      will-change: width, border-radius;
+    }
+    .preview-frame.zoomed {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      border-radius: 0; box-shadow: none; border-color: transparent;
+      z-index: 100; aspect-ratio: auto; margin: 0;
+    }
+    .preview-frame video, .preview-frame canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; transform: scaleX(-1);
+    }
+    .preview-frame .placeholder {
+      position: absolute; inset: 0; z-index: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; text-align: center; padding: 24px;
+    }
+    .preview-frame .placeholder .icon { width: 56px; height: 56px; border-radius: 50%; background: var(--bg-2); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid var(--border); }
+    .preview-frame .placeholder h3 { margin: 0; font-size: 18px; font-weight: 700; }
+    .preview-frame .placeholder p { margin: 0; font-size: 14px; color: var(--muted); max-width: 320px; }
+    .preview-dot {
+      position: absolute; top: 10px; left: 10px; z-index: 2;
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 10px; background: rgba(11,13,16,0.7); backdrop-filter: blur(8px);
+      border: 1px solid var(--border); border-radius: 999px;
+      font-size: 11px; color: var(--muted); transition: opacity 0.4s;
+    }
+    .preview-dot.hidden { opacity: 0; }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 8px var(--green);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .preview-side { display: flex; flex-direction: column; gap: 12px; }
+    .preview-card {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px;
+    }
+    .preview-card h4 { margin: 0 0 6px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .preview-card p { margin: 0; font-size: 14px; color: var(--fg); }
+    .preview-card .gesture-tag {
+      display: inline-block; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; padding: 3px 10px; font-size: 13px; margin: 2px;
+    }
+
+    /* ====== FULLSCREEN CONTROL OVERLAY ====== */
+    #fs-control {
+      position: fixed; inset: 0; z-index: 200;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+    #fs-control.visible { opacity: 1; pointer-events: auto; }
+    .fs-video-layer { position: absolute; inset: 0; z-index: 1; }
+    .fs-video-layer video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
+    #fs-overlay { position: absolute; inset: 0; z-index: 2; transform: scaleX(-1); pointer-events: none; }
+    .fs-hud { position: absolute; inset: 0; z-index: 12; pointer-events: none; }
+    .fs-hud > * { position: absolute; }
+    #fs-status {
+      top: 18px; left: 50%; transform: translateX(-50%);
+      color: var(--fg); background: rgba(11,13,16,0.7);
+      backdrop-filter: blur(8px); padding: 6px 16px; border-radius: 999px;
+      font-size: 13px; border: 1px solid var(--border);
+      opacity: 0; transition: opacity 0.5s ease 0.6s; white-space: nowrap;
+    }
+    #fs-status.show { opacity: 1; }
+    #fs-hud-right {
+      bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 5px;
+      opacity: 0; transition: opacity 0.5s ease 0.7s;
+    }
+    #fs-hud-right.show { opacity: 1; }
+    .fs-badge {
+      background: rgba(11,13,16,0.7); backdrop-filter: blur(8px);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 5px 12px; font-size: 12px; display: flex; align-items: center; gap: 6px; color: var(--fg);
+    }
+    .fs-badge .lbl { opacity: 0.5; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .fs-badge .val { font-weight: 600; }
+
+    #fs-onboarding {
+      position: absolute; inset: 0; z-index: 20;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(11,13,16,0.7); backdrop-filter: blur(6px);
+      opacity: 0; transition: opacity 0.5s ease; pointer-events: none; text-align: center; padding: 24px;
+    }
+    #fs-onboarding.show { opacity: 1; pointer-events: auto; }
+    #fs-onboarding h2 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+    #fs-onboarding p { font-size: 14px; color: var(--muted); max-width: 380px; line-height: 1.5; }
+    #fs-onboarding .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 18px 0; max-width: 360px; }
+    #fs-onboarding .cell { background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-size: 13px; display: flex; align-items: center; gap: 8px; justify-content: center; }
+    #fs-onboarding .cell .g { font-size: 16px; }
+    #fs-onboarding .close-hint { font-size: 11px; color: var(--muted); opacity: 0.4; margin-top: 10px; }
+
+    .fs-btn {
+      position: absolute; right: 16px; pointer-events: auto; z-index: 25;
+      background: rgba(11,13,16,0.7); backdrop-filter: blur(8px);
+      border: 1px solid var(--border); border-radius: 10px;
+      color: var(--fg); width: 40px; height: 40px; font-size: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, opacity 0.5s; opacity: 0;
+    }
+    .fs-btn.show { opacity: 1; }
+    .fs-btn:hover { background: var(--bg-2); }
+    #fs-toggle-btn { top: 16px; }
+    #fs-help-btn { top: 64px; }
+    #fs-bridge-btn { top: 112px; }
+
+    #fs-cursor {
+      position: absolute; width: 16px; height: 16px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #fff, var(--accent-2));
+      box-shadow: 0 0 20px rgba(255,176,0,0.4);
+      transform: translate(-50%, -50%); pointer-events: none; z-index: 8;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    #fs-cursor.active { opacity: 1; }
+    #fs-cursor.clicking { animation: click-pop 0.2s ease; }
+    @keyframes click-pop {
+      0% { transform: translate(-50%,-50%) scale(1); }
+      50% { transform: translate(-50%,-50%) scale(1.6); opacity: 0.8; }
+      100% { transform: translate(-50%,-50%) scale(1); }
+    }
+    #fs-toast {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      color: var(--fg); font-size: 26px; font-weight: 700;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+      opacity: 0; transition: opacity 0.15s, transform 0.2s;
+      pointer-events: none; z-index: 18; text-align: center;
+    }
+    #fs-toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    #fs-toast .sub { font-size: 15px; font-weight: 400; opacity: 0.7; margin-top: 4px; }
+    body.zoomed { overflow: hidden; }
+    .doc-link { font-size: 13px; color: var(--accent-2); }
   </style>
 </head>
 <body>
+
+<!-- ==================== SCROLLABLE PROMO SITE ==================== -->
+<div id="promo-site">
 
 <nav class="wrap">
   <div class="brand">
@@ -527,10 +395,9 @@
     <a href="#try">Try it</a>
     <a href="#features">Features</a>
     <a href="#install">Install</a>
-    <a href="#privacy">Privacy</a>
+    <a href="#docs">Docs</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#changelog">Changelog</a>
-    <a href="#press">Press</a>
     <a href="mobile/">Mobile</a>
     <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub →</a>
   </div>
@@ -544,16 +411,12 @@
     <p class="lede">
       Multi-camera hand tracking + 3D room mapping for PC control. Swipes drive keyboard navigation.
       Thumb-to-finger taps become clicks. Your hand is reconstructed in 3D, live. No cloud, no telemetry,
-      no API keys — just a webcam and a Python interpreter.
+      no API keys — just a webcam and a browser.
     </p>
     <div class="cta">
-      <a class="btn btn-primary" href="https://github.com/Capslockb/tony-stark-hand-control#quick-start">
-        ⬇ Get the installer
-      </a>
-      <a class="btn btn-ghost" href="https://github.com/Capslockb/tony-stark-hand-control">
-        ★ Star on GitHub
-      </a>
-      <a class="btn btn-ghost" href="mobile/">📱 Mobile install</a>
+      <a class="btn btn-primary" href="#try">▶ Try it now</a>
+      <a class="btn btn-ghost" href="https://github.com/Capslockb/tony-stark-hand-control">★ Star on GitHub</a>
+      <a class="btn btn-ghost" href="mobile/">📱 Mobile</a>
     </div>
     <div class="badges">
       <span class="badge">Python 3.10+</span>
@@ -564,58 +427,45 @@
   </div>
 </section>
 
-<!-- LIVE IN-BROWSER DEMO -->
+<!-- ===== LIVE BROWSER DEMO ===== -->
 <section id="try" style="background: linear-gradient(180deg, transparent, rgba(255,90,31,0.02));">
   <div class="wrap reveal" data-reveal>
     <h2>Try it — right here, in your browser</h2>
     <p class="muted" style="max-width: 720px;">
-      The full hand-tracking pipeline running on this page, in your browser, with your webcam.
-      Same MediaPipe model the desktop app uses. <strong>No frames leave your device.</strong>
-      No upload, no signup, no analytics. Click below, allow the camera, hold an open palm to
-      engage, then curl your fingers to drive real keyboard events.
+      The full hand-tracking pipeline running on this page. Same MediaPipe model the desktop app uses.
+      <strong>No frames leave your device.</strong> Grant camera access, then click "Go Fullscreen" to
+      control your computer with hand gestures from your browser.
     </p>
 
-    <div class="demo-shell">
-      <div class="demo-frame" id="demo-frame">
+    <div class="preview-shell">
+      <div class="preview-frame" id="preview-frame">
         <video id="demo-video" autoplay playsinline muted></video>
-        <canvas id="demo-canvas"></canvas>
-        <div class="demo-overlay" id="demo-overlay" hidden>
-          <span class="demo-dot"></span>
-          <span class="demo-status">
-            <span class="num" id="demo-fps">0</span> fps ·
-            <span class="num" id="demo-hands">0</span> hands
-          </span>
+        <div class="placeholder" id="placeholder">
+          <div class="icon">✋</div>
+          <h3>Camera preview</h3>
+          <p>Grant camera access and your live feed appears here.</p>
+          <button class="btn btn-primary" id="btn-start" style="margin-top: 8px;">▶ Start Camera</button>
         </div>
-        <div class="demo-engage-pill" id="demo-engage" hidden>
-          <span class="pulse"></span>
-          <span id="demo-engage-label">Disengaged</span>
-        </div>
-        <div class="demo-empty" id="demo-empty">
-          <div class="demo-empty-icon">📷</div>
-          <h3>Run the demo</h3>
-          <p>Uses your webcam. All processing happens on your CPU/GPU in this tab.</p>
-          <button class="demo-cta" id="demo-start" type="button">Enable camera &amp; start</button>
-          <button class="demo-cta-secondary" id="demo-learn" type="button">How is this private?</button>
+        <div class="preview-dot" id="preview-dot" hidden>
+          <span class="pulse-dot"></span>
+          <span id="preview-label">Live</span>
         </div>
       </div>
-
-      <div class="demo-side">
-        <div class="demo-card demo-privacy" id="demo-privacy-card">
-          <h4>● Local-only</h4>
-          <p>The MediaPipe model runs entirely in your browser via WebAssembly. Your camera stream is processed by JavaScript on this page and never sent to a server. When you close this tab, everything is gone.</p>
+      <div class="preview-side">
+        <div class="preview-card" style="flex:1;">
+          <h4>🎮 Gestures</h4>
+          <div style="margin-top:8px;">
+            <span class="gesture-tag">👆 Move cursor</span>
+            <span class="gesture-tag">🤏 Pinch = Click</span>
+            <span class="gesture-tag">🖐️ Palm = Engage</span>
+            <span class="gesture-tag">✊ Fist = Disengage</span>
+            <span class="gesture-tag">👈👉 Swipe = Navigate</span>
+          </div>
+          <button class="btn btn-primary" id="btn-fullscreen" style="margin-top:12px; width:100%;" disabled>Go Fullscreen  ⛶</button>
         </div>
-        <div class="demo-card">
-          <h4>Live event log</h4>
-          <p style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">Keyboard events dispatched from your hand to the page:</p>
-          <div class="demo-log" id="demo-log"></div>
-        </div>
-        <div class="demo-card">
-          <h4>How it works</h4>
-          <p>Loads <code>@mediapipe/tasks-vision</code> from a CDN, opens your webcam with <code>getUserMedia()</code>, runs <code>HandLandmarker</code> in VIDEO mode on every frame, draws the 21-landmark skeleton over the video, and dispatches real <code>KeyboardEvent</code>s to the page. Hold an open palm for 0.6 s to engage (page enters fullscreen), then curl your index finger → <kbd>Tab</kbd>, middle → <kbd>Enter</kbd>, ring → <kbd>↑</kbd>, pinky → <kbd>↓</kbd>. Lower your hand to disengage and exit fullscreen. The desktop app does the same thing, plus One-Euro smoothing and per-gesture hooks.</p>
-        </div>
-        <div class="demo-card demo-error" id="demo-error-card" hidden>
-          <h4>⚠ Couldn't start</h4>
-          <p id="demo-error-msg">Unknown error.</p>
+        <div class="preview-card" style="border-color: rgba(46,204,113,0.25); background: rgba(46,204,113,0.04);">
+          <h4 style="color:var(--green);">🔒 Privacy</h4>
+          <p style="font-size:13px; color:var(--muted);">All video processing happens in-browser. Nothing is uploaded, recorded, or sent anywhere. The camera feed never leaves this page.</p>
         </div>
       </div>
     </div>
@@ -625,12 +475,8 @@
 <!-- DEMO → INSTALL BRIDGE -->
 <section style="background: linear-gradient(180deg, rgba(255,90,31,0.02), transparent);">
   <div class="wrap" style="text-align: center; padding: 8px 0 0;">
-    <a href="#install" class="btn btn-primary" style="display: inline-flex;">
-      ⬇ Loved it? Install on your PC
-    </a>
-    <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">
-      Free · MIT licensed · 100% local · Windows / macOS / Linux
-    </p>
+    <a href="#install" class="btn btn-primary" style="display: inline-flex;">⬇ Loved it? Install on your PC</a>
+    <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">Free · MIT licensed · 100% local · Windows / macOS / Linux</p>
   </div>
 </section>
 
@@ -640,61 +486,33 @@
     <h2>Built for the way you actually use a computer</h2>
     <p class="muted" style="max-width: 720px;">
       Most webcam hand trackers ship a virtual mouse and call it done. This one doesn't —
-      because clicking the wrong thing is one pixel of slop away, and a "smart" cursor that
-      keeps fighting the system focus is worse than no cursor. We do <span class="hl">accessibility navigation</span>:
+      because clicking the wrong thing is one pixel of slop away. We do <span class="hl">accessibility navigation</span>:
       the same keyboard-navigation paradigm every OS already has, driven by your hand.
     </p>
-
     <div class="grid-3">
-      <div class="card">
-        <div class="feature-icon">✋</div>
-        <h3>1:1 hand tracking</h3>
-        <p>Async MediaPipe worker + One-Euro filter + velocity predictor. Sub-frame latency, no GUI stutter, no inference on the main thread.</p>
-      </div>
-      <div class="card">
-        <div class="feature-icon">⌨</div>
-        <h3>Accessibility-first input</h3>
-        <p>Swipes send Tab / Shift+Tab / arrow keys. Thumb-to-index fires Enter. Thumb-to-middle fires the context-menu key. <strong>No mouse required.</strong></p>
-      </div>
-      <div class="card">
-        <div class="feature-icon">🟢</div>
-        <h3>Persistent focus overlay</h3>
-        <p>Green border tracks the currently-focused UI element at 10 Hz. You always know exactly what your next gesture will activate.</p>
-      </div>
-      <div class="card">
-        <div class="feature-icon">📷</div>
-        <h3>Up to 4 cameras</h3>
-        <p>Auto-detects DSHOW / MSMF / ANY. Each runs MediaPipe in parallel. Per-cam enable/disable. Live-feed check auto-blacklists frozen cameras.</p>
-      </div>
-      <div class="card">
-        <div class="feature-icon">🧊</div>
-        <h3>3D room mapping</h3>
-        <p>Click-to-place anchors (walls, zones, hotspots, furniture). Triangulated live hand position. Save/load <code>room_map.json</code>. See your space.</p>
-      </div>
-      <div class="card">
-        <div class="feature-icon">🔒</div>
-        <h3>Local-only by default</h3>
-        <p>No telemetry. No analytics. The optional Ollama tab is off until you enable it. Everything else runs in-process, on your CPU, on your disk.</p>
-      </div>
+      <div class="card"><div class="feature-icon">✋</div><h3>1:1 hand tracking</h3><p>Async MediaPipe worker + One-Euro filter + velocity predictor. Sub-frame latency, no GUI stutter.</p></div>
+      <div class="card"><div class="feature-icon">⌨</div><h3>Accessibility-first input</h3><p>Swipes send Tab / Shift+Tab / arrow keys. Thumb-to-index fires Enter. No mouse required.</p></div>
+      <div class="card"><div class="feature-icon">🟢</div><h3>Persistent focus overlay</h3><p>Green border tracks the focused UI element at 10 Hz. You always know what your next gesture activates.</p></div>
+      <div class="card"><div class="feature-icon">📷</div><h3>Up to 4 cameras</h3><p>Auto-detects DSHOW / MSMF. Each runs MediaPipe in parallel. Per-cam enable/disable.</p></div>
+      <div class="card"><div class="feature-icon">🧊</div><h3>3D room mapping</h3><p>Click-to-place anchors (walls, zones, hotspots). Triangulated live hand position. Save/load room_map.json.</p></div>
+      <div class="card"><div class="feature-icon">🔒</div><h3>Local-only by default</h3><p>No telemetry. No analytics. Everything runs in-process, on your CPU, on your disk.</p></div>
     </div>
   </div>
 </section>
 
+<!-- INSTALL -->
 <section id="install" style="background: linear-gradient(180deg, transparent, rgba(255,90,31,0.02));">
   <div class="wrap reveal" data-reveal>
     <h2>Up and running in 60 seconds</h2>
     <p class="muted" style="max-width: 720px;">
-      Clone, run the install wizard, launch. The wizard handles Python version checks, pip installs,
-      and downloads the MediaPipe model. No admin rights required. Prebuilt binaries available for
-      Windows (.exe) and Linux x86_64 (.tar.gz) if you'd rather skip the build.
+      Clone, run the install wizard, launch. The wizard handles Python, pip, and the MediaPipe model.
+      No admin rights required. Prebuilt binaries for Windows (.exe) and Linux x86_64 (.tar.gz).
     </p>
-
     <div class="install-tabs">
       <button class="active" data-os="src">Source</button>
       <button data-os="win">Windows .exe</button>
       <button data-os="lin">Linux prebuilt</button>
     </div>
-
     <pre class="code" id="install-code">git clone https://github.com/Capslockb/tony-stark-hand-control.git
 cd tony-stark-hand-control
 python install_wizard.py
@@ -702,11 +520,7 @@ python install_wizard.py
 start_windows.bat
 # Linux / macOS:
 python3 tony_stark_hud_control.py</pre>
-
-    <p class="muted" style="margin-top: 14px;">
-      First launch is ~30 seconds (model download). After that: cold start is under 2 seconds.
-    </p>
-
+    <p class="muted" style="margin-top: 14px;">First launch ~30s (model download). After that: cold start under 2s.</p>
     <div class="stats">
       <div class="stat"><div class="v">~30s</div><div class="l">First install</div></div>
       <div class="stat"><div class="v">&lt;2s</div><div class="l">Subsequent launches</div></div>
@@ -716,21 +530,33 @@ python3 tony_stark_hud_control.py</pre>
   </div>
 </section>
 
+<!-- DOCS -->
+<section id="docs">
+  <div class="wrap reveal" data-reveal>
+    <h2>Documentation</h2>
+    <p class="muted">Full guides for setup, calibration, gestures, architecture, and troubleshooting.</p>
+    <div class="grid-3 stagger-group" style="margin-top:20px;">
+      <a href="docs/?file=installation" class="card stagger" style="text-decoration:none; display:block;"><h3>📦 Installation</h3><p>Step-by-step install for Windows, Linux, macOS.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=architecture" class="card stagger" style="text-decoration:none; display:block;"><h3>🏗️ Architecture</h3><p>How the four layers of the app work.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=calibration" class="card stagger" style="text-decoration:none; display:block;"><h3>📐 Calibration</h3><p>Stereo camera calibration with checkerboard.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=gestures" class="card stagger" style="text-decoration:none; display:block;"><h3>✋ Gestures</h3><p>All gestures and keyboard mappings.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=3d_room_mapping" class="card stagger" style="text-decoration:none; display:block;"><h3>🗺️ 3D Room Mapping</h3><p>Triangulation and room mapping.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=performance" class="card stagger" style="text-decoration:none; display:block;"><h3>⚡ Performance</h3><p>Benchmarks, FPS targets, optimization.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=ollama_integration" class="card stagger" style="text-decoration:none; display:block;"><h3>🤖 Ollama Integration</h3><p>AI gesture recognition via local LLMs.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=troubleshooting" class="card stagger" style="text-decoration:none; display:block;"><h3>🔧 Troubleshooting</h3><p>Common issues and solutions.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=test_results" class="card stagger" style="text-decoration:none; display:block;"><h3>📊 Test Results</h3><p>Validation across different hardware.</p><span class="doc-link">Read →</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY -->
 <section id="privacy">
   <div class="wrap reveal" data-reveal>
     <div class="grid-2">
       <div>
         <h2>Privacy isn't a feature, it's the default.</h2>
-        <p>
-          The hand-tracking pipeline never touches the network. Camera frames live in process memory
-          and on your local disk. Calibration data and room maps are <code>gitignored</code> because
-          they may be fingerprintable. No usage data, no error reports, no "phone home" check on launch.
-        </p>
-        <p>
-          The only optional network path is the Ollama tab — and it's <strong>off by default</strong>.
-          It only sends frames to a cloud endpoint (or local server) <em>after</em> you explicitly
-          enable it, configure the endpoint, paste an API key, and click Save.
-        </p>
+        <p>The hand-tracking pipeline never touches the network. Camera frames live in process memory. No usage data, no error reports, no "phone home" check on launch.</p>
+        <p>The only optional network path is the Ollama tab — <strong>off by default</strong>. It only sends frames <em>after</em> you explicitly enable it.</p>
         <p><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/SECURITY.md">Read the full security & disclosure policy →</a></p>
       </div>
       <div class="demo">
@@ -740,216 +566,82 @@ python3 tony_stark_hud_control.py</pre>
         ✗ Report errors to a remote service<br>
         ✗ Upload camera frames<br>
         ✗ Track user identifiers<br>
-        ✗ Include ads, trackers, or third-party SDKs<br>
-        <br>
+        ✗ Include ads, trackers, or third-party SDKs<br><br>
         <span class="com"># What it DOES do</span><br>
-        <span class="ok">✓</span> Run the hand-tracking pipeline on your CPU<br>
+        <span class="ok">✓</span> Run hand-tracking on your CPU<br>
         <span class="ok">✓</span> Save calibration to <span class="prompt">calibration.npz</span><br>
         <span class="ok">✓</span> Save room map to <span class="prompt">room_map.json</span><br>
-        <span class="ok">✓</span> Optionally talk to <span class="prompt">127.0.0.1:8080</span> or <span class="prompt">ollama.com</span> (your choice, off by default)<br>
+        <span class="ok">✓</span> Optionally talk to <span class="prompt">127.0.0.1:8080</span> or <span class="prompt">ollama.com</span> (off by default)
       </div>
     </div>
   </div>
 </section>
 
+<!-- ROADMAP -->
 <section id="roadmap" style="background: linear-gradient(180deg, transparent, rgba(255,176,0,0.03));">
   <div class="wrap reveal" data-reveal>
     <h2>A real roadmap, not bullet points</h2>
-    <p class="muted" style="max-width: 720px;">
-      We commit publicly to where this project is going. Each release has a target quarter, scoped features,
-      and a definition of done. If priorities change, the diff is in the commit log.
-    </p>
-
+    <p class="muted" style="max-width: 720px;">We commit publicly to where this project is going. Each release has a target quarter, scoped features, and a definition of done.</p>
     <div class="roadmap">
-      <div class="rm-card">
-        <div class="ver">v1.1.0 · Q3 2026</div>
-        <h3>UX polish & platform parity</h3>
-        <ul>
-          <li><strong>Two-hand tracking</strong> with primary-hand arbitration</li>
-          <li><strong>Linux & macOS parity</strong> for the focus overlay</li>
-          <li><strong>Bundled-model installer</strong> (no first-run network)</li>
-          <li><strong>Per-gesture hooks</strong> (shell, HTTP, Python callbacks)</li>
-          <li><strong>CLI launch flags</strong> for power users</li>
-        </ul>
-      </div>
-      <div class="rm-card">
-        <div class="ver">v1.2.0 · Q4 2026</div>
-        <h3>Smart depth</h3>
-        <ul>
-          <li><strong>Monocular depth</strong> from MediaPipe z (no calibration rig)</li>
-          <li><strong>Phone-as-second-camera</strong> companion app over LAN</li>
-          <li><strong>Room-map gesture zoning</strong> — gestures scoped to physical zones</li>
-        </ul>
-      </div>
-      <div class="rm-card">
-        <div class="ver">v2.0.0 · Q1 2027</div>
-        <h3>Voice + vision</h3>
-        <ul>
-          <li><strong>"OK Jarvis" wake word</strong> + on-device LLM intent</li>
-          <li><strong>Sign-language dictionary</strong> (50 ASL letters/words)</li>
-          <li><strong>Plugin SDK</strong> for third-party gesture packages</li>
-        </ul>
-      </div>
+      <div class="rm-card"><div class="ver">v1.1.0 · Q3 2026</div><h3>UX polish & platform parity</h3><ul><li>Two-hand tracking with primary-hand arbitration</li><li>Linux & macOS parity for focus overlay</li><li>Bundled-model installer (no first-run network)</li><li>Per-gesture hooks (shell, HTTP, Python callbacks)</li></ul></div>
+      <div class="rm-card"><div class="ver">v1.2.0 · Q4 2026</div><h3>Smart depth</h3><ul><li>Monocular depth from MediaPipe z (no calibration rig)</li><li>Phone-as-second-camera companion app over LAN</li><li>Room-map gesture zoning</li></ul></div>
+      <div class="rm-card"><div class="ver">v2.0.0 · Q1 2027</div><h3>Voice + vision</h3><ul><li>"OK Jarvis" wake word + on-device LLM intent</li><li>Sign-language dictionary (50 ASL letters/words)</li><li>Plugin SDK for third-party gesture packages</li></ul></div>
     </div>
-
-    <p style="margin-top: 20px;">
-      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">See the full roadmap →</a>
-      &nbsp;·&nbsp;
-      <a href="https://github.com/Capslockb/tony-stark-hand-control/discussions">Suggest a feature →</a>
-    </p>
+    <p style="margin-top: 20px;"><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">See the full roadmap →</a> · <a href="https://github.com/Capslockb/tony-stark-hand-control/discussions">Suggest a feature →</a></p>
   </div>
 </section>
 
-<!-- RELEASE NOTES (visible changelog) -->
+<!-- CHANGELOG -->
 <section id="changelog" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.02));">
   <div class="wrap reveal" data-reveal>
     <h2>Release notes</h2>
-    <p class="muted" style="max-width: 720px;">
-      Every shipped version, with the exact bugs fixed and features added. Sourced from
-      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a>
-      in the repo. Newest first.
-    </p>
-
+    <p class="muted" style="max-width: 720px;">Every shipped version, with the exact bugs fixed and features added. <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a></p>
     <div class="changelog-list">
-
-      <!-- 1.0.3 -->
       <article class="cl-card cl-current">
-        <header class="cl-head">
-          <span class="cl-version">v1.0.3</span>
-          <span class="cl-date">2026-06-07</span>
-          <span class="cl-tag cl-tag-fix">release-readiness</span>
-        </header>
+        <header class="cl-head"><span class="cl-version">v1.0.3</span><span class="cl-date">2026-06-07</span><span class="cl-tag cl-tag-fix">release-readiness</span></header>
         <p class="cl-blurb">Cross-platform install + test fixes. The app and installer now actually work on Linux, macOS, and headless systems.</p>
         <h4>Fixed</h4>
-        <ul class="cl-list">
-          <li><code>pyautogui</code> import crashed on headless systems (no <code>$DISPLAY</code>). Now lazy-loaded with a no-op stub shim.</li>
-          <li>Single-instance lock was a silent no-op on Linux/macOS. Now uses <code>fcntl.flock</code> on POSIX.</li>
-          <li>Selection overlay crashed on Linux Tk (<code>TclError: bad attribute "-disabled"</code>). Windows-only attr now guarded.</li>
-          <li>Test suite had hardcoded <code>C:/Users/&lt;owner&gt;/...</code> paths — unloadable anywhere but the dev box. Now portable via <code>__file__</code>.</li>
-        </ul>
+        <ul class="cl-list"><li><code>pyautogui</code> import crashed on headless systems. Now lazy-loaded with a no-op stub shim.</li><li>Single-instance lock was a silent no-op on Linux/macOS. Now uses <code>fcntl.flock</code> on POSIX.</li><li>Selection overlay crashed on Linux Tk. Windows-only attr now guarded.</li><li>Test suite had hardcoded paths — now portable via <code>__file__</code>.</li></ul>
         <h4>Added</h4>
-        <ul class="cl-list">
-          <li>This promo site (desktop + mobile) with the social card baked in.</li>
-          <li><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">ROADMAP.md</a> with dated feature promises.</li>
-        </ul>
-        <p class="cl-test">Test status: <strong>70/71</strong> pass on Linux under <code>xvfb</code> (1 fail is the real-webcam test). All v1.0.0/v1.0.1 regressions pass.</p>
+        <ul class="cl-list"><li>This promo site (desktop + mobile) with the social card baked in.</li><li><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">ROADMAP.md</a> with dated feature promises.</li></ul>
+        <p class="cl-test">Test status: <strong>70/71</strong> pass on Linux under <code>xvfb</code> (1 fail is the real-webcam test).</p>
       </article>
-
-      <!-- 1.0.1 -->
       <article class="cl-card">
-        <header class="cl-head">
-          <span class="cl-version">v1.0.1</span>
-          <span class="cl-date">2026-06-04</span>
-          <span class="cl-tag cl-tag-fix">hotfix</span>
-        </header>
+        <header class="cl-head"><span class="cl-version">v1.0.1</span><span class="cl-date">2026-06-04</span><span class="cl-tag cl-tag-fix">hotfix</span></header>
         <p class="cl-blurb">Two crash bugs caught right after v1.0.0 shipped.</p>
-        <h4>Fixed</h4>
-        <ul class="cl-list">
-          <li><code>RoomMap.add()</code> crashed on numpy 0-d arrays (matplotlib <code>proj3d.inv_transform</code> returns 0-d). Coerced via <code>np.asarray(x).item()</code>.</li>
-          <li><code>flash_overlay()</code> / <code>refresh_selection_overlay()</code> crashed with <code>TclError: unknown color name "00FF00"</code> when <code>focus_highlight_color</code> was a bare hex string. Now auto-prepends <code>#</code>.</li>
-        </ul>
-        <p class="cl-test">Test status: <strong>81/81</strong> pass (77 main + 4 v1.0.1 regression tests).</p>
+        <ul class="cl-list"><li><code>RoomMap.add()</code> crashed on numpy 0-d arrays. Coerced via <code>np.asarray(x).item()</code>.</li><li><code>flash_overlay()</code> crashed with <code>TclError: unknown color name "00FF00"</code>. Now auto-prepends <code>#</code>.</li></ul>
+        <p class="cl-test"><strong>81/81</strong> pass (77 main + 4 regression tests).</p>
       </article>
-
-      <!-- 1.0.0 -->
       <article class="cl-card">
-        <header class="cl-head">
-          <span class="cl-version">v1.0.0</span>
-          <span class="cl-date">2026-06-04</span>
-          <span class="cl-tag cl-tag-new">initial release</span>
-        </header>
+        <header class="cl-head"><span class="cl-version">v1.0.0</span><span class="cl-date">2026-06-04</span><span class="cl-tag cl-tag-new">initial release</span></header>
         <p class="cl-blurb">The first public version. Multi-camera hand-tracking, accessibility navigation, 3D room mapping, all in one ~3,400-line Tkinter app.</p>
-        <h4>Highlights</h4>
-        <ul class="cl-list">
-          <li>Multi-camera (1-4) hand-tracking with async MediaPipe worker</li>
-          <li>One-Euro filter + velocity predictor for 1:1 tracking</li>
-          <li>Accessibility navigation: swipes → <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> / arrow keys, thumb-touches → <kbd>Enter</kbd> / right-click</li>
-          <li>Persistent green focus overlay (Win32 <code>GetGUIThreadInfo</code> at 10 Hz)</li>
-          <li>3D triangulation + interactive matplotlib room map with anchored walls / zones / hotspots</li>
-          <li>Engage gesture: open palm held ~0.6 s</li>
-          <li>Per-camera enable/disable with live-feed check</li>
-          <li>Fast Mode: 240p pre-downscale for ~30% faster MediaPipe inference</li>
-          <li>5-tab Tkinter GUI + live performance HUD</li>
-          <li>Single-instance lock, Ollama circuit breaker, 77-test suite, <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md">full docs in <code>docs/</code></a></li>
-        </ul>
-        <p class="cl-test">Test status: <strong>77/77</strong> pass (Linux path was hardcoded; only ran on the dev box).</p>
+        <ul class="cl-list"><li>Multi-camera (1-4) hand-tracking with async MediaPipe worker</li><li>One-Euro filter + velocity predictor for 1:1 tracking</li><li>Accessibility navigation: swipes → <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd>, thumb-touches → <kbd>Enter</kbd> / right-click</li><li>Persistent green focus overlay (Win32 <code>GetGUIThreadInfo</code> at 10 Hz)</li><li>3D triangulation + interactive matplotlib room map</li><li>Engage gesture: open palm held ~0.6 s</li><li>5-tab Tkinter GUI + live performance HUD</li><li>77-test suite, <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md">full docs</a></li></ul>
       </article>
-
     </div>
-
-    <p style="margin-top: 24px; text-align: center;">
-      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md" class="btn btn-ghost" style="display: inline-flex;">
-        View full changelog on GitHub →
-      </a>
-    </p>
+    <p style="margin-top: 24px; text-align: center;"><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md" class="btn btn-ghost" style="display: inline-flex;">View full changelog on GitHub →</a></p>
   </div>
 </section>
 
-<!-- PRESS KIT / SHARE -->
+<!-- PRESS KIT -->
 <section id="press" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.03));">
   <div class="wrap reveal" data-reveal>
     <h2>Press kit &amp; share images</h2>
-    <p class="muted" style="max-width: 720px;">
-      Sharing Tony Stark Hand Control? These assets are sized for GitHub, Discord, Slack,
-      X / Twitter, and LinkedIn. Drop them straight into your post — no edits needed.
-    </p>
-
+    <p class="muted" style="max-width: 720px;">Sharing Tony Stark Hand Control? These assets are sized for GitHub, Discord, Slack, X/Twitter, and LinkedIn.</p>
     <div class="press-grid">
-      <!-- 1200x630 social card (default share) -->
       <figure class="press-card">
-        <a href="assets/social-card.jpg" target="_blank" rel="noopener" class="press-frame">
-          <img src="assets/social-card.jpg" alt="Tony Stark Hand Control social card (1200x630)" width="600" height="315" loading="lazy" decoding="async">
-        </a>
-        <figcaption>
-          <div class="press-meta">
-            <strong>Social card</strong>
-            <span class="press-dim">1200 × 630 · JPG · 124 KB</span>
-          </div>
-          <div class="press-actions">
-            <a class="press-btn" href="assets/social-card.jpg" download>⬇ Download</a>
-            <button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.jpg" type="button">🔗 Copy URL</button>
-          </div>
-        </figcaption>
+        <a href="assets/social-card.jpg" target="_blank" rel="noopener" class="press-frame"><img src="assets/social-card.jpg" alt="Social card 1200×630" width="600" height="315" loading="lazy"></a>
+        <figcaption><div class="press-meta"><strong>Social card</strong><span class="press-dim">1200 × 630 · JPG · 124 KB</span></div><div class="press-actions"><a class="press-btn" href="assets/social-card.jpg" download>⬇ Download</a><button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.jpg">🔗 Copy URL</button></div></figcaption>
       </figure>
-
-      <!-- Favicon / app icon -->
       <figure class="press-card">
-        <a href="assets/favicon.svg" target="_blank" rel="noopener" class="press-frame press-frame-square">
-          <img src="assets/favicon.svg" alt="Tony Stark Hand Control favicon" width="180" height="180" loading="lazy" decoding="async">
-        </a>
-        <figcaption>
-          <div class="press-meta">
-            <strong>App icon</strong>
-            <span class="press-dim">Vector SVG · scales to any size</span>
-          </div>
-          <div class="press-actions">
-            <a class="press-btn" href="assets/favicon.svg" download>⬇ Download</a>
-            <button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/favicon.svg" type="button">🔗 Copy URL</button>
-          </div>
-        </figcaption>
+        <a href="assets/favicon.svg" target="_blank" rel="noopener" class="press-frame press-frame-square"><img src="assets/favicon.svg" alt="App icon" width="180" height="180" loading="lazy"></a>
+        <figcaption><div class="press-meta"><strong>App icon</strong><span class="press-dim">Vector SVG · scales to any size</span></div><div class="press-actions"><a class="press-btn" href="assets/favicon.svg" download>⬇ Download</a><button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/favicon.svg">🔗 Copy URL</button></div></figcaption>
       </figure>
-
-      <!-- Source SVG (for remix) -->
       <figure class="press-card">
-        <a href="assets/social-card.svg" target="_blank" rel="noopener" class="press-frame">
-          <img src="assets/social-card.svg" alt="Tony Stark Hand Control social card (SVG source)" width="600" height="315" loading="lazy" decoding="async">
-        </a>
-        <figcaption>
-          <div class="press-meta">
-            <strong>Source SVG</strong>
-            <span class="press-dim">Remix this — change colors, text, layout</span>
-          </div>
-          <div class="press-actions">
-            <a class="press-btn" href="assets/social-card.svg" download>⬇ Download</a>
-            <button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.svg" type="button">🔗 Copy URL</button>
-          </div>
-        </figcaption>
+        <a href="assets/social-card.svg" target="_blank" rel="noopener" class="press-frame"><img src="assets/social-card.svg" alt="Social card SVG" width="600" height="315" loading="lazy"></a>
+        <figcaption><div class="press-meta"><strong>Source SVG</strong><span class="press-dim">Remix this — change colors, text, layout</span></div><div class="press-actions"><a class="press-btn" href="assets/social-card.svg" download>⬇ Download</a><button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.svg">🔗 Copy URL</button></div></figcaption>
       </figure>
     </div>
-
-    <p class="muted" style="margin-top: 24px; font-size: 15px;">
-      Suggested caption: <em>"Hand-track your PC with a webcam. Local-only, no telemetry, MIT licensed. ⬇ capslockb.github.io/tony-stark-hand-control"</em>
-    </p>
+    <p class="muted" style="margin-top: 24px; font-size: 15px;">Suggested caption: <em>"Hand-track your PC with a webcam. Local-only, no telemetry, MIT licensed."</em></p>
   </div>
 </section>
 
@@ -962,404 +654,367 @@ python3 tony_stark_hud_control.py</pre>
       <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">Roadmap</a> ·
       <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md">Changelog</a>
     </div>
-    <div>
-      Built with MediaPipe, OpenCV, Tkinter, matplotlib · No analytics · No tracking
-    </div>
+    <div>Built with MediaPipe, OpenCV, Tkinter · No analytics · No tracking</div>
   </div>
 </footer>
+</div>
+<!-- ==================== END PROMO SITE ==================== -->
+
+<!-- ==================== FULLSCREEN CONTROL OVERLAY ==================== -->
+<div id="fs-control">
+  <div class="fs-video-layer" id="fs-video-layer"></div>
+  <canvas id="fs-overlay"></canvas>
+  <div class="fs-hud">
+    <div id="fs-status">Initializing…</div>
+    <div id="fs-hud-right">
+      <div class="fs-badge"><span class="lbl">FPS</span> <span class="val" id="fps-val">0</span></div>
+      <div class="fs-badge"><span class="lbl">GESTURE</span> <span class="val" id="gesture-val">—</span></div>
+      <div class="fs-badge"><span class="lbl">BRIDGE</span> <span class="val" id="bridge-val">Disconnected</span></div>
+      <div class="fs-badge"><span class="lbl">TRACKING</span> <span class="val" id="track-val">Ready</span></div>
+    </div>
+  </div>
+  <div id="fs-toast"></div>
+  <div id="fs-onboarding">
+    <h2>✋ You're in control</h2>
+    <p>Show your open palm to engage. Pinch thumb+index to click. Swipe to navigate.</p>
+    <div class="grid">
+      <div class="cell"><span class="g">🤏</span> Pinch = Left click</div>
+      <div class="cell"><span class="g">🤌</span> Thumb+Middle = Right click</div>
+      <div class="cell"><span class="g">🖐️</span> Open palm = Toggle control</div>
+      <div class="cell"><span class="g">✊</span> Fist = Disengage / Exit</div>
+      <div class="cell"><span class="g">👈👉</span> Swipe = Back / Forward</div>
+      <div class="cell"><span class="g">F</span> Fullscreen toggle</div>
+    </div>
+    <p class="close-hint">Auto-closes in 6s — tap anywhere to dismiss</p>
+  </div>
+  <button class="fs-btn" id="fs-toggle-btn" title="Toggle Fullscreen (F)">⛶</button>
+  <button class="fs-btn" id="fs-help-btn" title="Show Help">?</button>
+  <button class="fs-btn" id="fs-bridge-btn" title="Reconnect Bridge">⟳</button>
+  <div id="fs-cursor"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
-  // -------- Install tabs --------
-  const installs = {
-    src: 'git clone https://github.com/Capslockb/tony-stark-hand-control.git\ncd tony-stark-hand-control\npython install_wizard.py\n# Windows:\nstart_windows.bat\n# Linux / macOS:\npython3 tony_stark_hud_control.py',
-    win: '# Download tony_stark_hud_control.exe from:\n# https://github.com/Capslockb/tony-stark-hand-control/releases/latest\n# Double-click to run.\n# The app downloads hand_landmarker.task on first launch.',
-    lin: '# Download tony_stark_hud_control-linux-x86_64.tar.gz from:\n# https://github.com/Capslockb/tony-stark-hand-control/releases/latest\ntar -xzf tony_stark_hud_control-linux-x86_64.tar.gz\n./tony_stark_hud_control.sh'
-  };
-  const code = document.getElementById('install-code');
-  document.querySelectorAll('.install-tabs button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.install-tabs button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      code.textContent = installs[btn.dataset.os];
-    });
+// -------- Install tabs --------
+const installs = {
+  src: 'git clone https://github.com/Capslockb/tony-stark-hand-control.git\\ncd tony-stark-hand-control\\npython install_wizard.py\\n# Windows:\\nstart_windows.bat\\n# Linux / macOS:\\npython3 tony_stark_hud_control.py',
+  win: '# Download tony_stark_hud_control.exe from releases\\nDouble-click to run.',
+  lin: '# Download tony_stark_hud_control-linux-x86_64.tar.gz\\ntar -xzf ...\\n./tony_stark_hud_control.sh'
+};
+const code = document.getElementById('install-code');
+document.querySelectorAll('.install-tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.install-tabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    code.textContent = installs[btn.dataset.os];
   });
+});
 
-  // -------- Scroll-driven reveal (IntersectionObserver) --------
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const revealTargets = document.querySelectorAll('[data-reveal], .reveal');
-  if ('IntersectionObserver' in window && !reduced) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
-    revealTargets.forEach(el => io.observe(el));
-  } else {
-    // Fallback: show everything
-    revealTargets.forEach(el => el.classList.add('in'));
-  }
-
-  // -------- Press kit: copy-URL buttons --------
-  document.querySelectorAll('.press-btn[data-copy]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(btn.dataset.copy);
-        btn.classList.add('copied');
-        const orig = btn.textContent;
-        btn.textContent = '✓ Copied';
-        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = orig; }, 1500);
-      } catch (e) {
-        btn.textContent = 'Copy failed';
-        setTimeout(() => { btn.textContent = '🔗 Copy URL'; }, 1500);
-      }
+// -------- Scroll-driven reveal (IntersectionObserver) --------
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const revealTargets = document.querySelectorAll('[data-reveal], .reveal');
+if ('IntersectionObserver' in window && !reduced) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
     });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+  revealTargets.forEach(el => io.observe(el));
+} else {
+  revealTargets.forEach(el => el.classList.add('in'));
+}
+
+// -------- Press kit: copy-URL buttons --------
+document.querySelectorAll('.press-btn[data-copy]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(btn.dataset.copy);
+      btn.classList.add('copied');
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied';
+      setTimeout(() => { btn.classList.remove('copied'); btn.textContent = orig; }, 1500);
+    } catch (e) {
+      btn.textContent = 'Copy failed';
+      setTimeout(() => { btn.textContent = '🔗 Copy URL'; }, 1500);
+    }
   });
+});
 
-  // -------- Live in-browser hand-tracking demo --------
-  // Uses MediaPipe Tasks Vision (WASM) running entirely in this tab.
-  // No frames leave the device. CDN loads the model + JS bundle from
-  // Google's public storage on first run, then everything is local.
-  (function setupDemo() {
-    const video = document.getElementById('demo-video');
-    const canvas = document.getElementById('demo-canvas');
-    const overlay = document.getElementById('demo-overlay');
-    const empty = document.getElementById('demo-empty');
-    const startBtn = document.getElementById('demo-start');
-    const learnBtn = document.getElementById('demo-learn');
-    const errorCard = document.getElementById('demo-error-card');
-    const errorMsg = document.getElementById('demo-error-msg');
-    const fpsEl = document.getElementById('demo-fps');
-    const handsEl = document.getElementById('demo-hands');
-    const privacyCard = document.getElementById('demo-privacy-card');
-    if (!startBtn) return;
-
-    const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
-    const WasmBundle = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs';
-
-    let handLandmarker = null;
-    let stream = null;
-    let rafId = null;
-    let lastFrameTs = 0;
-    let fpsSamples = [];
-
-    // -------- Gesture engine state --------
-    // Mirrors the desktop app's heuristic exactly (see tony_stark_hud_control.py
-    // is_palm_open / HandProcessor). Wrist-relative distance is mirrored-camera
-    // safe (doesn't depend on Y-axis convention).
-    const ENGAGE_HOLD_S = 0.6;
-    const DISENGAGE_HOLD_S = 1.5;
-    const DISENGAGE_THRESHOLD = 0.3;  // must be strongly closed, not just barely
-    const FINGER_TIP_TO_PIP = 0.06;  // normalized units
-    const PALM_EXTENSION_THRESHOLD = 0.04;
-    const RING_BUFFER_LEN = 6;
-    const palmHistory = [];        // last N is_palm_open booleans
-    const fingerHistory = { index: [], middle: [], ring: [], pinky: [] };
-    let engaged = false;
-    let lastOpenHandTs = 0;
-    let lastClosedHandTs = -1;  // -1 = never set; only check timer if set
-    let wasHandOpen = false;
-    let lastFingerFireTs = 0;
-    const FINGER_COOLDOWN_S = 0.5;
-
-    function isPalmOpen(landmarks) {
-      // landmarks: array of 21 {x,y,z} in [0,1] normalized. Wrist = idx 0.
-      const wrist = landmarks[0];
-      let extended = 0;
-      // Tips: 8 (index), 12 (middle), 16 (ring), 20 (pinky). PIPs: 6,10,14,18.
-      for (const [tip, pip] of [[8,6],[12,10],[16,14],[20,18]]) {
-        const t = landmarks[tip], p = landmarks[pip];
-        const dt = Math.hypot(t.x - wrist.x, t.y - wrist.y);
-        const dp = Math.hypot(p.x - wrist.x, p.y - wrist.y);
-        if (dt - dp > PALM_EXTENSION_THRESHOLD) extended++;
-      }
-      return extended >= 3;
-    }
-    function isFingerCurled(landmarks, tipIdx, pipIdx) {
-      const wrist = landmarks[0], t = landmarks[tipIdx], p = landmarks[pipIdx];
-      const dt = Math.hypot(t.x - wrist.x, t.y - wrist.y);
-      const dp = Math.hypot(p.x - wrist.x, p.y - wrist.y);
-      return (dt - dp) < -FINGER_TIP_TO_PIP;
-    }
-    function fingerExtended(landmarks, name) {
-      const map = { index: [8,6], middle: [12,10], ring: [16,14], pinky: [20,18] };
-      const [tip, pip] = map[name];
-      return !isFingerCurled(landmarks, tip, pip);
-    }
-
-    const engagePill = () => document.getElementById('demo-engage');
-    const engageLabel = () => document.getElementById('demo-engage-label');
-    const logEl = () => document.getElementById('demo-log');
-    const MAX_LOG_LINES = 30;
-    function appendLog(key, label) {
-      const log = logEl();
-      if (!log) return;
-      const ts = new Date().toLocaleTimeString([], { hour12: false });
-      const line = document.createElement('div');
-      line.className = 'demo-log-line';
-      line.innerHTML = `<span class="ts">${ts}</span><span class="key">${key}</span><span class="lbl">${label}</span>`;
-      log.prepend(line);
-      while (log.children.length > MAX_LOG_LINES) log.removeChild(log.lastChild);
-    }
-    function dispatchKey(key, label) {
-      // Dispatch on the document so it reaches whatever the user is focused on.
-      // We send it twice (down+up) to match real keyboard semantics.
-      const opts = { key, bubbles: true, cancelable: true, composed: true };
-      document.dispatchEvent(new KeyboardEvent('keydown', opts));
-      document.dispatchEvent(new KeyboardEvent('keyup', opts));
-      appendLog(key, label);
-    }
-    function setEngaged(state) {
-      if (state === engaged) return;
-      engaged = state;
-      const pill = engagePill();
-      if (!pill) return;
-      pill.classList.toggle('engaged', state);
-      pill.hidden = false;
-      engageLabel().textContent = state ? '● Engaged' : 'Disengaged';
-      appendLog(state ? '●' : '○', state ? 'engaged — gestures active' : 'disengaged — gestures paused');
-      // Fullscreen: engaged opens, disengaged closes
-      if (state) {
-        try { document.documentElement.requestFullscreen(); } catch (e) {}
-      } else {
-        if (document.fullscreenElement) {
-          try { document.exitFullscreen(); } catch (e) {}
-        }
-      }
-    }
-
-    function tickGestures(landmarks) {
-      const now = performance.now() / 1000;
-      const palmOpen = isPalmOpen(landmarks);
-      palmHistory.push(palmOpen);
-      if (palmHistory.length > RING_BUFFER_LEN) palmHistory.shift();
-      const palmAvg = palmHistory.reduce((a, b) => a + (b ? 1 : 0), 0) / palmHistory.length;
-
-      // Engage: palm open for ENGAGE_HOLD_S seconds (>60% of last N frames)
-      const isHandOpen = palmAvg >= 0.6;
-      const isHandClosed = palmAvg < DISENGAGE_THRESHOLD;  // hysteresis: only disengage if strongly closed
-      if (isHandOpen && !wasHandOpen) lastOpenHandTs = now;   // transition: closed → open
-      else if (isHandClosed && wasHandOpen) lastClosedHandTs = now;  // transition: open → strongly closed
-      wasHandOpen = isHandOpen || (engaged && !isHandClosed);  // stay 'open' in hysteresis gap
-
-      if (!engaged && (now - lastOpenHandTs >= ENGAGE_HOLD_S)) setEngaged(true);
-      else if (engaged && lastClosedHandTs > 0 && (now - lastClosedHandTs >= DISENGAGE_HOLD_S)) setEngaged(false);
-
-      if (!engaged) return;
-
-      // Per-finger curl detection. We fire one event per curl-down per finger.
-      // Track the most recent state in a small history (no ring buffer — we
-      // need the most recent value, not a smoothed average).
-      const checks = [
-        { name: 'index',  key: 'Tab',     label: 'next focusable (Tab)' },
-        { name: 'middle', key: 'Enter',   label: 'activate (Enter)' },
-        { name: 'ring',   key: 'ArrowUp', label: 'arrow up' },
-        { name: 'pinky',  key: 'ArrowDown', label: 'arrow down' },
-      ];
-      if (now - lastFingerFireTs < FINGER_COOLDOWN_S) return;
-      for (const c of checks) {
-        const extended = fingerExtended(landmarks, c.name);
-        fingerHistory[c.name].push(extended);
-        if (fingerHistory[c.name].length > 3) fingerHistory[c.name].shift();
-        // Fire when the finger transitions from extended → curled
-        const prev = fingerHistory[c.name].length >= 2 ? fingerHistory[c.name][fingerHistory[c.name].length - 2] : true;
-        if (prev && !extended) {
-          dispatchKey(c.key, c.label);
-          lastFingerFireTs = now;
-          break;  // one event per frame
-        }
-      }
-    }
-
-    function showError(msg) {
-      errorCard.hidden = false;
-      errorMsg.textContent = msg;
-      startBtn.disabled = false;
-      startBtn.textContent = 'Try again';
-    }
-
-    function drawLandmarks(ctx, landmarks) {
-      // 21 landmarks per hand. MediaPipe's standard connections:
-      const CONNECTIONS = [
-        [0,1],[1,2],[2,3],[3,4],            // thumb
-        [0,5],[5,6],[6,7],[7,8],            // index
-        [5,9],[9,10],[10,11],[11,12],       // middle
-        [9,13],[13,14],[14,15],[15,16],     // ring
-        [13,17],[17,18],[18,19],[19,20],    // pinky
-        [0,17]                              // palm
-      ];
-      const w = ctx.canvas.width, h = ctx.canvas.height;
-      // Bounding box accent
-      let minX=1, minY=1, maxX=0, maxY=0;
-      for (const lm of landmarks) {
-        minX = Math.min(minX, lm.x); minY = Math.min(minY, lm.y);
-        maxX = Math.max(maxX, lm.x); maxY = Math.max(maxY, lm.y);
-      }
-      ctx.strokeStyle = 'rgba(255, 90, 31, 0.8)';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(minX * w, minY * h, (maxX - minX) * w, (maxY - minY) * h);
-      // Skeleton
-      ctx.strokeStyle = '#ff5a1f';
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      for (const [a, b] of CONNECTIONS) {
-        const A = landmarks[a], B = landmarks[b];
-        if (!A || !B) continue;
-        ctx.moveTo(A.x * w, A.y * h);
-        ctx.lineTo(B.x * w, B.y * h);
-      }
-      ctx.stroke();
-      // Joints
-      ctx.fillStyle = '#ffb000';
-      for (const lm of landmarks) {
-        ctx.beginPath();
-        ctx.arc(lm.x * w, lm.y * h, 3.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    async function start() {
-      startBtn.disabled = true;
-      startBtn.textContent = 'Loading model…';
-      try {
-        // Load the MediaPipe tasks-vision ES module from CDN.
-        const vision = await import(WasmBundle);
-        const { HandLandmarker, FilesetResolver } = vision;
-        const filesetResolver = await FilesetResolver.forVisionTasks(
-          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
-        );
-        handLandmarker = await HandLandmarker.createFromOptions(filesetResolver, {
-          baseOptions: {
-            modelAssetPath: MODEL_URL,
-            delegate: 'GPU'
-          },
-          runningMode: 'VIDEO',
-          numHands: 2
-        });
-
-        startBtn.textContent = 'Requesting camera…';
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
-          audio: false
-        });
-        video.srcObject = stream;
-        await video.play();
-
-        // Resize canvas to match video intrinsic size.
-        const vw = video.videoWidth || 1280;
-        const vh = video.videoHeight || 720;
-        canvas.width = vw; canvas.height = vh;
-
-        empty.hidden = true;
-        overlay.hidden = false;
-        const engage = document.getElementById('demo-engage');
-        if (engage) engage.hidden = false;
-        privacyCard.hidden = true;  // we already started, hide the prompt
-        // Pre-warm fullscreen (user gesture context from the click)
-        try { document.documentElement.requestFullscreen(); } catch (fsErr) { /* silently fail — still works without FS */ }
-        loop();
-      } catch (e) {
-        console.error('Demo startup failed:', e);
-        let msg = e.message || String(e);
-        if (e.name === 'NotAllowedError') msg = 'Camera permission was denied. Click the camera icon in your browser address bar to allow it, then try again.';
-        else if (e.name === 'NotFoundError') msg = 'No camera found. Plug in a webcam and try again.';
-        else if (e.name === 'NotReadableError') msg = 'Camera is in use by another application. Close it and try again.';
-        else if (/wasm/i.test(msg)) msg = 'WebAssembly failed to load. Your browser may be too old. Try Chrome, Firefox, or Safari 15+. If you are on a corporate network, the CDN at jsdelivr.net or the model at storage.googleapis.com may be blocked.';
-        showError(msg);
-      }
-    }
-
-    function loop() {
-      if (!handLandmarker || !stream) return;
-      const now = performance.now();
-      // MediaPipe needs monotonically-increasing timestamps.
-      if (lastFrameTs && now - lastFrameTs < 0) {
-        rafId = requestAnimationFrame(loop);
-        return;
-      }
-      lastFrameTs = now;
-      let results;
-      try {
-        results = handLandmarker.detectForVideo(video, now);
-      } catch (e) {
-        // Sometimes the first frame is invalid; keep going.
-        rafId = requestAnimationFrame(loop);
-        return;
-      }
-      // FPS sample
-      fpsSamples.push(now);
-      while (fpsSamples.length > 2 && fpsSamples[0] < now - 1000) fpsSamples.shift();
-      if (fpsSamples.length >= 2) {
-        const span = (fpsSamples[fpsSamples.length - 1] - fpsSamples[0]) / 1000;
-        if (span > 0) fpsEl.textContent = Math.round((fpsSamples.length - 1) / span);
-      }
-      handsEl.textContent = (results.landmarks || []).length;
-
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (const hand of (results.landmarks || [])) {
-        drawLandmarks(ctx, hand);
-        tickGestures(hand);  // engage state + per-finger gesture dispatch
-      }
-      // If the user is engaged and we have no hand, start counting down
-      // toward disengage (the tickGestures() above won't run if no hand).
-      if (engaged && (results.landmarks || []).length === 0) {
-        lastClosedHandTs = performance.now() / 1000;
-        if (performance.now() / 1000 - lastClosedHandTs >= DISENGAGE_HOLD_S) {
-          setEngaged(false);
-        }
-      }
-      rafId = requestAnimationFrame(loop);
-    }
-
-    function stop() {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = null;
-      if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-      if (handLandmarker) { try { handLandmarker.close(); } catch (e) {} handLandmarker = null; }
-      video.srcObject = null;
-      empty.hidden = false;
-      overlay.hidden = true;
-    }
-
-    startBtn.addEventListener('click', start);
-    learnBtn.addEventListener('click', () => {
-      privacyCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      privacyCard.style.transition = 'box-shadow 0.6s';
-      privacyCard.style.boxShadow = '0 0 0 3px rgba(46,204,113,0.4)';
-      setTimeout(() => { privacyCard.style.boxShadow = ''; }, 1200);
-    });
-    // Stop the camera when the user navigates away
-    window.addEventListener('pagehide', stop);
-    window.addEventListener('beforeunload', stop);
-  })();
-
-  // -------- Hero parallax (scroll-linked, not RAF, for perf) --------
+// -------- Hero parallax --------
+(function() {
+  if (reduced) return;
   const heroBg = document.querySelector('.hero-bg');
   const hero = document.querySelector('.hero');
-  if (heroBg && hero && !reduced) {
-    let ticking = false;
-    const update = () => {
-      const r = hero.getBoundingClientRect();
-      // r.top is negative once the hero has scrolled out
-      const offset = Math.max(-200, Math.min(200, -r.top * 0.35));
-      heroBg.style.setProperty('--parallax', `${offset}px`);
-      // Fade hero content as it leaves
-      const heroContent = hero.querySelector('.reveal');
-      if (heroContent) {
-        const fade = Math.max(0, 1 + r.top / 400);
-        heroContent.style.opacity = Math.min(1, fade);
-      }
-      ticking = false;
-    };
-    window.addEventListener('scroll', () => {
-      if (!ticking) { requestAnimationFrame(update); ticking = true; }
-    }, { passive: true });
-    update();
-  }
-</script>
+  if (!heroBg || !hero) return;
+  let ticking = false;
+  const update = () => {
+    const r = hero.getBoundingClientRect();
+    const offset = Math.max(-200, Math.min(200, -r.top * 0.35));
+    heroBg.style.setProperty('--parallax', `${offset}px`);
+    const hc = hero.querySelector('.reveal');
+    if (hc) hc.style.opacity = Math.min(1, Math.max(0, 1 + r.top / 400));
+    ticking = false;
+  };
+  window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(update); ticking = true; } }, { passive: true });
+  update();
+})();
 
+// ==================== FULLSCREEN HAND CONTROL ====================
+(function() {
+  'use strict';
+
+  const promo       = document.getElementById('promo-site');
+  const fsControl   = document.getElementById('fs-control');
+  const previewFrame= document.getElementById('preview-frame');
+  const placeholder = document.getElementById('placeholder');
+  const previewDot  = document.getElementById('preview-dot');
+  const previewLabel= document.getElementById('preview-label');
+  const startBtn    = document.getElementById('btn-start');
+  const fsBtn       = document.getElementById('btn-fullscreen');
+  const video       = document.getElementById('demo-video');
+  const fsVideoLayer= document.getElementById('fs-video-layer');
+  const overlay     = document.getElementById('fs-overlay');
+  const ctx         = overlay.getContext('2d');
+  const statusBar   = document.getElementById('fs-status');
+  const fpsVal      = document.getElementById('fps-val');
+  const gestureVal  = document.getElementById('gesture-val');
+  const bridgeVal   = document.getElementById('bridge-val');
+  const trackVal    = document.getElementById('track-val');
+  const toast       = document.getElementById('fs-toast');
+  const cursorDot   = document.getElementById('fs-cursor');
+  const fsToggle    = document.getElementById('fs-toggle-btn');
+  const fsHelp      = document.getElementById('fs-help-btn');
+  const fsBridge    = document.getElementById('fs-bridge-btn');
+  const onboarding  = document.getElementById('fs-onboarding');
+  const hudRight    = document.getElementById('fs-hud-right');
+
+  let ws, wsReconnectTimer, lastSend = 0;
+  const SEND_INT = 30, WS_PORT = 8124;
+  let sx = 0.5, sy = 0.5, curGesture = '—';
+  let toastTimer, frameCount = 0, fpsTime = performance.now(), fps = 0;
+  let hands, camera, stream, mpReady = false, zoomed = false;
+  let prevCx = null, swipeCd = 0, lastClick = 0;
+  const CLICK_CD = 400;
+
+  function showToast(t, sub) {
+    toast.innerHTML = t + (sub ? `<div class="sub">${sub}</div>` : '');
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 800);
+  }
+  function setBridge(c) { bridgeVal.textContent = c ? 'Connected' : 'Disconnected'; }
+  function setTrack(a) { trackVal.textContent = a ? 'Active' : 'Waiting…'; }
+  function smoothCursor(tx, ty) {
+    sx += (tx - sx) * 0.35; sy += (ty - sy) * 0.35;
+    cursorDot.style.left = (sx * window.innerWidth) + 'px';
+    cursorDot.style.top  = (sy * window.innerHeight) + 'px';
+  }
+
+  document.addEventListener('keydown', e => { if ((e.key === 'f' || e.key === 'F') && zoomed) toggleBrowserFS(); if (e.key === 'Escape' && zoomed) exitFS(); });
+  function toggleBrowserFS() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+    else document.exitFullscreen().catch(() => {});
+  }
+  function showOnboarding() {
+    onboarding.classList.add('show');
+    setTimeout(() => onboarding.classList.remove('show'), 6000);
+  }
+  onboarding.addEventListener('click', () => onboarding.classList.remove('show'));
+  fsHelp.addEventListener('click', showOnboarding);
+
+  function connectWS() {
+    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+    try { ws = new WebSocket(`ws://127.0.0.1:${WS_PORT}`); }
+    catch (_) { setBridge(false); scheduleReconnect(); return; }
+    ws.onopen = () => { setBridge(true); clearTimeout(wsReconnectTimer); };
+    ws.onclose = () => { setBridge(false); scheduleReconnect(); };
+    ws.onerror = () => { ws.close(); };
+  }
+  function scheduleReconnect() { clearTimeout(wsReconnectTimer); wsReconnectTimer = setTimeout(connectWS, 3000); }
+  function sendBridge(type, data) {
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    if (performance.now() - lastSend < SEND_INT) return;
+    lastSend = performance.now();
+    try { ws.send(JSON.stringify({ type, ...data })); } catch (_) {}
+  }
+  fsBridge.addEventListener('click', () => { if (ws) try { ws.close(); } catch(_) {} connectWS(); });
+
+  // Gesture detection
+  function dist(a, b) { return Math.hypot(a.x-b.x, a.y-b.y, (a.z||0)-(b.z||0)); }
+  function isOpenPalm(lm) { return [4,8,12,16,20].filter(i => dist(lm[0], lm[i]) > 0.12).length >= 4; }
+  function isPinch(t, i) { return dist(t, i) < 0.06; }
+  function isFist(lm) { return [8,12,16,20].every(i => dist(lm[9], lm[i]) < 0.12) && dist(lm[9], lm[4]) < 0.12; }
+  function detectSwipe(lm) {
+    const cx = lm[0].x;
+    if (prevCx === null) { prevCx = cx; return null; }
+    const dx = cx - prevCx; prevCx = cx;
+    const now = performance.now();
+    if (now < swipeCd) return null;
+    if (Math.abs(dx) > 0.015) { swipeCd = now + 400; return dx > 0 ? 'swipe_right' : 'swipe_left'; }
+    return null;
+  }
+  function detectClick(lm) {
+    const t = lm[4], i = lm[8], m = lm[12], now = performance.now();
+    if (dist(t, m) < 0.05 && now - lastClick > CLICK_CD*2) { lastClick = now; return 'right'; }
+    if (isPinch(t, i) && now - lastClick > CLICK_CD) { lastClick = now; return 'left'; }
+    return null;
+  }
+
+  function drawHand(lm, isLeft) {
+    const w = overlay.width, h = overlay.height;
+    const color = isLeft ? '#2ecc71' : '#ff5a1f';
+    ctx.strokeStyle = color; ctx.lineWidth = Math.max(2, Math.min(4, Math.min(w,h)/300));
+    const conn = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],
+                  [0,9],[9,10],[10,11],[11,12],[0,13],[13,14],[14,15],[15,16],
+                  [0,17],[17,18],[18,19],[19,20],[0,5],[5,9],[9,13],[13,17]];
+    conn.forEach(([i,j]) => { ctx.beginPath(); ctx.moveTo(lm[i].x*w, lm[i].y*h); ctx.lineTo(lm[j].x*w, lm[j].y*h); ctx.stroke(); });
+    const r = Math.max(3, Math.min(7, Math.min(w,h)/250));
+    lm.forEach((p, idx) => {
+      ctx.fillStyle = (idx===4||idx===8) ? '#ffb000' : color;
+      ctx.beginPath(); ctx.arc(p.x*w, p.y*h, r, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  function onResults(results) {
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    if (overlay.width !== window.innerWidth || overlay.height !== window.innerHeight) {
+      overlay.width = window.innerWidth; overlay.height = window.innerHeight;
+    }
+    frameCount++;
+    const now = performance.now();
+    if (now - fpsTime >= 1000) { fps = frameCount; fpsVal.textContent = fps; frameCount = 0; fpsTime = now; }
+    if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
+      statusBar.textContent = 'No hands detected'; setTrack(false);
+      cursorDot.classList.remove('active'); gestureVal.textContent = '—'; prevCx = null;
+      return;
+    }
+    setTrack(true);
+    const n = results.multiHandLandmarks.length;
+    statusBar.textContent = n === 1 ? '1 hand' : `${n} hands`;
+    let rightLM = null;
+    for (let i = 0; i < n; i++) {
+      const lm = results.multiHandLandmarks[i];
+      const isL = results.multiHandedness[i].label === 'Left';
+      drawHand(lm, isL);
+      if (!isL) rightLM = lm;
+    }
+    const hand = rightLM || results.multiHandLandmarks[0];
+    if (hand) {
+      smoothCursor(hand[8].x, hand[8].y);
+      cursorDot.classList.add('active');
+      sendBridge('cursor', { x: sx, y: sy });
+      const click = detectClick(hand);
+      if (click === 'left') {
+        showToast('🖱️ Click'); sendBridge('click',{button:'left'});
+        cursorDot.classList.add('clicking');
+        setTimeout(() => cursorDot.classList.remove('clicking'), 200);
+        curGesture = 'Click';
+      } else if (click === 'right') {
+        showToast('🖱️ Right Click'); sendBridge('click',{button:'right'});
+        curGesture = 'Right Click';
+      } else if (isOpenPalm(hand)) {
+        curGesture = 'Open Palm ⚡'; sendBridge('open_palm',{});
+      } else if (isFist(hand)) {
+        curGesture = 'Fist ✊'; sendBridge('fist',{});
+        exitFS();
+      } else {
+        const sw = detectSwipe(hand);
+        if (sw) {
+          const dir = sw === 'swipe_left' ? 'left' : 'right';
+          curGesture = sw === 'swipe_left' ? 'Swipe ←' : 'Swipe →';
+          showToast(curGesture); sendBridge('swipe',{direction:dir});
+        } else { curGesture = 'Tracking'; }
+      }
+    }
+    gestureVal.textContent = curGesture;
+  }
+
+  async function initMP() {
+    statusBar.textContent = 'Initializing MediaPipe…';
+    hands = new Hands({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
+    hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+    hands.onResults(onResults);
+    await hands.initialize();
+    mpReady = true;
+    statusBar.textContent = 'Ready — show your hand';
+    camera = new Camera(video, {
+      onFrame: async () => { if (mpReady) await hands.send({ image: video }); },
+      width: 1920, height: 1080
+    });
+    camera.start();
+  }
+
+  async function initCamera() {
+    startBtn.disabled = true; startBtn.textContent = 'Requesting camera…';
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1920 }, height: { ideal: 1080 }, facingMode: 'user' }
+      });
+    } catch (e) {
+      startBtn.textContent = 'Camera access needed'; startBtn.disabled = false;
+      return;
+    }
+    video.srcObject = stream;
+    await new Promise(r => { video.onloadedmetadata = r; });
+    placeholder.hidden = true; previewDot.hidden = false;
+    startBtn.textContent = 'Camera ready'; startBtn.disabled = true;
+    fsBtn.disabled = false;
+  }
+
+  function zoomFS() {
+    if (zoomed) return; zoomed = true;
+    document.body.classList.add('zoomed');
+    previewDot.classList.add('hidden');
+    previewFrame.classList.add('zoomed');
+    setTimeout(() => {
+      fsVideoLayer.appendChild(video);
+      video.style.width = '100%'; video.style.height = '100%';
+      video.style.objectFit = 'cover'; video.style.transform = 'scaleX(-1)'; video.style.display = 'block';
+      promo.style.display = 'none';
+      fsControl.classList.add('visible');
+      overlay.width = window.innerWidth; overlay.height = window.innerHeight;
+      statusBar.classList.add('show'); hudRight.classList.add('show');
+      fsToggle.classList.add('show'); fsHelp.classList.add('show'); fsBridge.classList.add('show');
+      connectWS();
+      initMP();
+      setTimeout(showOnboarding, 700);
+    }, 950);
+  }
+
+  function exitFS() {
+    if (!zoomed) return; zoomed = false;
+    if (camera) { try { camera.stop(); } catch(_) {} camera = null; }
+    if (hands) { try { hands.close(); } catch(_) {} hands = null; mpReady = false; }
+    previewFrame.appendChild(video);
+    video.style.position = ''; video.style.width = ''; video.style.height = '';
+    video.style.objectFit = ''; video.style.transform = ''; video.style.display = '';
+    fsControl.classList.remove('visible');
+    promo.style.display = '';
+    previewFrame.classList.remove('zoomed');
+    document.body.classList.remove('zoomed');
+    previewDot.classList.add('hidden');
+    placeholder.hidden = false;
+    startBtn.textContent = '▶ Start Camera'; startBtn.disabled = false;
+    fsBtn.disabled = true;
+    statusBar.classList.remove('show'); hudRight.classList.remove('show');
+    fsToggle.classList.remove('show'); fsHelp.classList.remove('show'); fsBridge.classList.remove('show');
+    onboarding.classList.remove('show'); cursorDot.classList.remove('active');
+  }
+
+  startBtn.addEventListener('click', initCamera);
+  fsBtn.addEventListener('click', zoomFS);
+  fsToggle.addEventListener('click', toggleBrowserFS);
+  window.addEventListener('resize', () => { overlay.width = window.innerWidth; overlay.height = window.innerHeight; });
+
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && zoomed) showToast('⛶ Exited Fullscreen', 'Press F to re-enter');
+  });
+
+  connectWS();
+})();
+</script>
 </body>
 </html>
