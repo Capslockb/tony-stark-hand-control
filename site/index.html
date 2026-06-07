@@ -54,8 +54,62 @@
     .reveal.in .stagger:nth-child(6) { transition-delay: 0.40s; }
     .reveal.in .stagger { opacity: 1; transform: translateY(0); }
     .hl { background: linear-gradient(180deg, transparent 60%, rgba(255,90,31,0.25) 60%); padding: 0 2px; }
+
+    /* -------- Page-load animations (run once, no scroll trigger) -------- */
+    .load-fade { opacity: 0; transform: translateY(12px); animation: loadFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .load-fade-1 { animation-delay: 0.10s; }
+    .load-fade-2 { animation-delay: 0.22s; }
+    .load-fade-3 { animation-delay: 0.34s; }
+    .load-fade-4 { animation-delay: 0.46s; }
+    .load-fade-5 { animation-delay: 0.58s; }
+    @keyframes loadFade { to { opacity: 1; transform: translateY(0); } }
+    .load-rise { opacity: 0; transform: translateY(24px); animation: loadRise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .load-rise-1 { animation-delay: 0.15s; }
+    .load-rise-2 { animation-delay: 0.30s; }
+    .load-rise-3 { animation-delay: 0.45s; }
+    @keyframes loadRise { to { opacity: 1; transform: translateY(0); } }
+    .load-glow { opacity: 0; animation: loadGlow 1.2s ease forwards; animation-delay: 0.5s; }
+    @keyframes loadGlow { 0% { opacity: 0; filter: blur(6px); transform: scale(0.95); } 60% { opacity: 1; filter: blur(0); transform: scale(1.02); } 100% { opacity: 1; filter: blur(0); transform: scale(1); } }
+    .icon-pop { opacity: 0; transform: scale(0.6); animation: iconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .icon-pop-1 { animation-delay: 0.20s; }
+    .icon-pop-2 { animation-delay: 0.35s; }
+    .icon-pop-3 { animation-delay: 0.50s; }
+    @keyframes iconPop { to { opacity: 1; transform: scale(1); } }
+
+    /* -------- Section title slide-in (fires on scroll) -------- */
+    .reveal-title { opacity: 0; transform: translateX(-24px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal-title.in { opacity: 1; transform: translateX(0); }
+    .reveal-title::before {
+      content: ""; display: inline-block; width: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      vertical-align: middle; margin-right: 12px; border-radius: 2px;
+      transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+    }
+    .reveal-title.in::before { width: 36px; }
+
+    /* -------- Card hover lift -------- */
+    .card { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease; }
+    .card:hover { transform: translateY(-4px); border-color: rgba(255,90,31,0.4); box-shadow: 0 14px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,90,31,0.15); }
+    .rm-card { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease; }
+    .rm-card:hover { transform: translateY(-3px); border-color: rgba(255,176,0,0.4); }
+    .cl-card { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease; }
+    .cl-card:hover { transform: translateY(-2px); }
+
+    /* -------- Button micro-interactions -------- */
+    .btn { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s, background 0.2s, box-shadow 0.2s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary:hover { filter: brightness(1.08); box-shadow: 0 8px 24px rgba(255,90,31,0.35); }
+    .btn:active { transform: translateY(0) scale(0.98); }
+
+    /* -------- Cursor pulse on interactive elements -------- */
+    a { transition: color 0.2s ease; }
+    a:hover { color: var(--accent-2); }
+
     @media (prefers-reduced-motion: reduce) {
-      .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
+      .reveal, .reveal.in, .reveal-title, .reveal-title.in { opacity: 1; transform: none; transition: none; }
+      .load-fade, .load-rise, .load-glow, .icon-pop { opacity: 1; transform: none; animation: none; }
+      .card, .rm-card, .cl-card { transition: none; }
+      .card:hover, .rm-card:hover, .cl-card:hover { transform: none; }
     }
 
     nav {
@@ -406,23 +460,23 @@
 <section class="hero">
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="wrap reveal" data-reveal>
-    <span class="eyebrow">v1.0.3 · MIT licensed · 100% local</span>
-    <h1>Control your PC with a <span class="glow">hand wave</span>.</h1>
-    <p class="lede">
+    <span class="eyebrow load-fade load-fade-1">v1.0.3 · MIT licensed · 100% local</span>
+    <h1 class="load-glow">Control your PC with a <span class="glow">hand wave</span>.</h1>
+    <p class="lede load-fade load-fade-2">
       Multi-camera hand tracking + 3D room mapping for PC control. Swipes drive keyboard navigation.
       Thumb-to-finger taps become clicks. Your hand is reconstructed in 3D, live. No cloud, no telemetry,
       no API keys — just a webcam and a browser.
     </p>
-    <div class="cta">
+    <div class="cta load-fade load-fade-3">
       <a class="btn btn-primary" href="#try">▶ Try it now</a>
       <a class="btn btn-ghost" href="https://github.com/Capslockb/tony-stark-hand-control">★ Star on GitHub</a>
       <a class="btn btn-ghost" href="mobile/">📱 Mobile</a>
     </div>
-    <div class="badges">
-      <span class="badge">Python 3.10+</span>
-      <span class="badge">Windows / Linux / macOS</span>
-      <span class="badge">OpenCV + MediaPipe + Tk</span>
-      <span class="badge green">● No telemetry, ever</span>
+    <div class="badges load-fade load-fade-4">
+      <span class="badge icon-pop icon-pop-1">Python 3.10+</span>
+      <span class="badge icon-pop icon-pop-2">Windows / Linux / macOS</span>
+      <span class="badge icon-pop icon-pop-3">OpenCV + MediaPipe + Tk</span>
+      <span class="badge green load-fade load-fade-5">● No telemetry, ever</span>
     </div>
   </div>
 </section>
@@ -430,7 +484,7 @@
 <!-- ===== LIVE BROWSER DEMO ===== -->
 <section id="try" style="background: linear-gradient(180deg, transparent, rgba(255,90,31,0.02));">
   <div class="wrap reveal" data-reveal>
-    <h2>Try it — right here, in your browser</h2>
+    <h2><span class="reveal-title">Try it — right here, in your browser</span></h2>
     <p class="muted" style="max-width: 720px;">
       The full hand-tracking pipeline running on this page. Same MediaPipe model the desktop app uses.
       <strong>No frames leave your device.</strong> Grant camera access, then click "Go Fullscreen" to
@@ -483,7 +537,7 @@
 <!-- FEATURES -->
 <section id="features">
   <div class="wrap reveal" data-reveal>
-    <h2>Built for the way you actually use a computer</h2>
+    <h2><span class="reveal-title">Built for the way you actually use a computer</span></h2>
     <p class="muted" style="max-width: 720px;">
       Most webcam hand trackers ship a virtual mouse and call it done. This one doesn't —
       because clicking the wrong thing is one pixel of slop away. We do <span class="hl">accessibility navigation</span>:
@@ -503,7 +557,7 @@
 <!-- INSTALL -->
 <section id="install" style="background: linear-gradient(180deg, transparent, rgba(255,90,31,0.02));">
   <div class="wrap reveal" data-reveal>
-    <h2>Up and running in 60 seconds</h2>
+    <h2><span class="reveal-title">Up and running in 60 seconds</span></h2>
     <p class="muted" style="max-width: 720px;">
       Clone, run the install wizard, launch. The wizard handles Python, pip, and the MediaPipe model.
       No admin rights required. Prebuilt binaries for Windows (.exe) and Linux x86_64 (.tar.gz).
@@ -533,7 +587,7 @@ python3 tony_stark_hud_control.py</pre>
 <!-- DOCS -->
 <section id="docs">
   <div class="wrap reveal" data-reveal>
-    <h2>Documentation</h2>
+    <h2><span class="reveal-title">Documentation</span></h2>
     <p class="muted">Full guides for setup, calibration, gestures, architecture, and troubleshooting.</p>
     <div class="grid-3 stagger-group" style="margin-top:20px;">
       <a href="docs/?file=installation" class="card stagger" style="text-decoration:none; display:block;"><h3>📦 Installation</h3><p>Step-by-step install for Windows, Linux, macOS.</p><span class="doc-link">Read →</span></a>
@@ -554,7 +608,7 @@ python3 tony_stark_hud_control.py</pre>
   <div class="wrap reveal" data-reveal>
     <div class="grid-2">
       <div>
-        <h2>Privacy isn't a feature, it's the default.</h2>
+        <h2><span class="reveal-title">Privacy isn't a feature, it's the default.</span></h2>
         <p>The hand-tracking pipeline never touches the network. Camera frames live in process memory. No usage data, no error reports, no "phone home" check on launch.</p>
         <p>The only optional network path is the Ollama tab — <strong>off by default</strong>. It only sends frames <em>after</em> you explicitly enable it.</p>
         <p><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/SECURITY.md">Read the full security & disclosure policy →</a></p>
@@ -580,7 +634,7 @@ python3 tony_stark_hud_control.py</pre>
 <!-- ROADMAP -->
 <section id="roadmap" style="background: linear-gradient(180deg, transparent, rgba(255,176,0,0.03));">
   <div class="wrap reveal" data-reveal>
-    <h2>A real roadmap, not bullet points</h2>
+    <h2><span class="reveal-title">A real roadmap, not bullet points</span></h2>
     <p class="muted" style="max-width: 720px;">We commit publicly to where this project is going. Each release has a target quarter, scoped features, and a definition of done.</p>
     <div class="roadmap">
       <div class="rm-card"><div class="ver">v1.1.0 · Q3 2026</div><h3>UX polish & platform parity</h3><ul><li>Two-hand tracking with primary-hand arbitration</li><li>Linux & macOS parity for focus overlay</li><li>Bundled-model installer (no first-run network)</li><li>Per-gesture hooks (shell, HTTP, Python callbacks)</li></ul></div>
@@ -594,7 +648,7 @@ python3 tony_stark_hud_control.py</pre>
 <!-- CHANGELOG -->
 <section id="changelog" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.02));">
   <div class="wrap reveal" data-reveal>
-    <h2>Release notes</h2>
+    <h2><span class="reveal-title">Release notes</span></h2>
     <p class="muted" style="max-width: 720px;">Every shipped version, with the exact bugs fixed and features added. <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a></p>
     <div class="changelog-list">
       <article class="cl-card cl-current">
@@ -625,7 +679,7 @@ python3 tony_stark_hud_control.py</pre>
 <!-- PRESS KIT -->
 <section id="press" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.03));">
   <div class="wrap reveal" data-reveal>
-    <h2>Press kit &amp; share images</h2>
+    <h2><span class="reveal-title">Press kit &amp; share images</span></h2>
     <p class="muted" style="max-width: 720px;">Sharing Tony Stark Hand Control? These assets are sized for GitHub, Discord, Slack, X/Twitter, and LinkedIn.</p>
     <div class="press-grid">
       <figure class="press-card">
@@ -675,7 +729,7 @@ python3 tony_stark_hud_control.py</pre>
   </div>
   <div id="fs-toast"></div>
   <div id="fs-onboarding">
-    <h2>✋ You're in control</h2>
+    <h2><span class="reveal-title">✋ You're in control</span></h2>
     <p>Show your open palm to engage. Pinch thumb+index to click. Swipe to navigate.</p>
     <div class="grid">
       <div class="cell"><span class="g">🤏</span> Pinch = Left click</div>
@@ -715,7 +769,7 @@ document.querySelectorAll('.install-tabs button').forEach(btn => {
 
 // -------- Scroll-driven reveal (IntersectionObserver) --------
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const revealTargets = document.querySelectorAll('[data-reveal], .reveal');
+const revealTargets = document.querySelectorAll('[data-reveal], .reveal, .reveal-title');
 if ('IntersectionObserver' in window && !reduced) {
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
