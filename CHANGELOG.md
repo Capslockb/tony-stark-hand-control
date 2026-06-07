@@ -5,6 +5,25 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.3] - 2026-06-07
+
+### Fixed (release-readiness — found by sequential e2e testing on Linux + Python 3.11)
+- **`pyautogui` import crashed headless systems** with `KeyError: 'DISPLAY'` from `mouseinfo.Display(os.environ['DISPLAY'])`. The install wizard's "Install complete" message was a lie on any Linux server, CI runner, or SSH session. Now wrapped in `try/except` with a `StubPyAutoGUI` shim — `pyautogui.<x>` calls are no-ops when the real lib can't load.
+- **`_SingleInstance.acquire()` was a silent no-op on Linux/macOS** because the file lock used `msvcrt.locking` (Windows-only). Now branches on `sys.platform`: `msvcrt` on Windows, `fcntl.flock` on POSIX. Real lock now works on all three platforms. The v1.0.0 hotfix on Windows is unchanged.
+- **Selection overlay construction crashed on Linux Tk** with `TclError: bad attribute "-disabled"`. `-disabled` is a Windows-only `wm_attributes` flag. Now guarded with `if sys.platform == 'win32'`.
+- **8 test files had hardcoded `C:/Users/Bernardo/...` paths** that made the test suite unloadable on any machine other than the original dev box. README's "81/81 passing" claim was false on Linux/macOS/CI. Replaced with `os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tony_stark_hud_control.py'))` so tests run on any platform.
+- **4 test files were missing `import os`** after the path fix. Added.
+
+### Changed
+- Test suite is now cross-platform. On Linux: 70/71 pass (1 expected fail: `CameraManager opens >=1 camera` — requires a real webcam, no webcam on the test host). On Windows: same as before.
+- README "What's coming next" teaser now points to ROADMAP.md for full versioned commitments.
+
+### Added
+- ROADMAP.md with dated feature promises for v1.1.0 (Q3 2026), v1.2.0 (Q4 2026), v2.0.0 (Q1 2027), and a "Considering" bucket.
+- GitHub Pages promo site at `https://capslockb.github.io/tony-stark-hand-control/` (dark theme, OS-aware install tabs, social card).
+- `.github/workflows/pages.yml` auto-deploys the promo site on push to main.
+and this project adheres to [Semantic Versioning](https://semver.org/).
+
 ## [1.0.1] - 2026-06-04
 
 ### Fixed
