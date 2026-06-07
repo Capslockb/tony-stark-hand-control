@@ -179,6 +179,126 @@
     }
     .cl-test strong { color: var(--green); }
     .cl-test code { font-size: 12px; }
+
+    /* -------- Live in-browser hand-tracking demo -------- */
+    .demo-shell {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+    @media (max-width: 820px) {
+      .demo-shell { grid-template-columns: 1fr; }
+    }
+    .demo-frame {
+      position: relative;
+      background: #0b0d10;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .demo-frame video, .demo-frame canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);  /* mirror so it feels like a mirror */
+    }
+    .demo-overlay {
+      position: absolute;
+      top: 12px; left: 12px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 10px;
+      background: rgba(11, 13, 16, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px; color: var(--muted);
+      z-index: 2;
+    }
+    .demo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .demo-status { display: flex; align-items: center; gap: 6px; }
+    .demo-status .num { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    .demo-empty {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px;
+      text-align: center;
+      padding: 24px;
+      z-index: 1;
+    }
+    .demo-empty-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--bg-2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      border: 1px solid var(--border);
+    }
+    .demo-empty h3 { margin: 0; font-size: 18px; font-weight: 700; }
+    .demo-empty p { margin: 0; font-size: 14px; color: var(--muted); max-width: 320px; }
+    .demo-cta {
+      margin-top: 4px;
+      padding: 12px 20px;
+      background: var(--accent);
+      color: #0b0d10;
+      border: 0;
+      border-radius: 10px;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer;
+      min-height: 48px;
+    }
+    .demo-cta:active { background: #e64a0f; }
+    .demo-cta[disabled] { background: var(--bg-3); color: var(--muted); cursor: not-allowed; }
+    .demo-cta-secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      margin-top: 4px;
+      padding: 10px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .demo-side {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .demo-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .demo-card h4 { margin: 0 0 6px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .demo-card p { margin: 0; font-size: 14px; color: var(--fg); }
+    .demo-card .demo-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+    .demo-card .demo-row + .demo-row { border-top: 1px solid var(--border); }
+    .demo-card .demo-row span:first-child { color: var(--muted); }
+    .demo-card .demo-row .val { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .demo-error {
+      background: rgba(231, 76, 60, 0.08);
+      border-color: rgba(231, 76, 60, 0.3);
+      color: #ff8a7a;
+    }
+    .demo-error h4 { color: #ff8a7a; }
+    .demo-privacy {
+      background: rgba(46, 204, 113, 0.06);
+      border-color: rgba(46, 204, 113, 0.25);
+    }
+    .demo-privacy h4 { color: var(--green); }
     :root {
       --bg: #0b0d10;
       --bg-2: #11151a;
@@ -337,6 +457,7 @@
     <span>Tony Stark Hand Control</span>
   </div>
   <div class="nav-links">
+    <a href="#try">Try it</a>
     <a href="#features">Features</a>
     <a href="#install">Install</a>
     <a href="#privacy">Privacy</a>
@@ -376,6 +497,55 @@
   </div>
 </section>
 
+<!-- LIVE IN-BROWSER DEMO -->
+<section id="try" style="background: linear-gradient(180deg, transparent, rgba(255,90,31,0.02));">
+  <div class="wrap reveal" data-reveal>
+    <h2>Try it — right here, in your browser</h2>
+    <p class="muted" style="max-width: 720px;">
+      The full hand-tracking pipeline running on this page, in your browser, with your webcam.
+      Same MediaPipe model the desktop app uses. <strong>No frames leave your device.</strong>
+      No upload, no signup, no analytics. Click below, allow the camera, and wave.
+    </p>
+
+    <div class="demo-shell">
+      <div class="demo-frame" id="demo-frame">
+        <video id="demo-video" autoplay playsinline muted></video>
+        <canvas id="demo-canvas"></canvas>
+        <div class="demo-overlay" id="demo-overlay" hidden>
+          <span class="demo-dot"></span>
+          <span class="demo-status">
+            <span class="num" id="demo-fps">0</span> fps ·
+            <span class="num" id="demo-hands">0</span> hands
+          </span>
+        </div>
+        <div class="demo-empty" id="demo-empty">
+          <div class="demo-empty-icon">📷</div>
+          <h3>Run the demo</h3>
+          <p>Uses your webcam. All processing happens on your CPU/GPU in this tab.</p>
+          <button class="demo-cta" id="demo-start" type="button">Enable camera &amp; start</button>
+          <button class="demo-cta-secondary" id="demo-learn" type="button">How is this private?</button>
+        </div>
+      </div>
+
+      <div class="demo-side">
+        <div class="demo-card demo-privacy" id="demo-privacy-card">
+          <h4>● Local-only</h4>
+          <p>The MediaPipe model runs entirely in your browser via WebAssembly. Your camera stream is processed by JavaScript on this page and never sent to a server. When you close this tab, everything is gone.</p>
+        </div>
+        <div class="demo-card">
+          <h4>How it works</h4>
+          <p>Loads <code>@mediapipe/tasks-vision</code> from a CDN, opens your webcam with <code>getUserMedia()</code>, runs <code>HandLandmarker</code> in VIDEO mode on every frame, draws the 21-landmark skeleton over the video. The desktop app does the same thing — plus One-Euro smoothing, gesture detection, and accessibility navigation.</p>
+        </div>
+        <div class="demo-card demo-error" id="demo-error-card" hidden>
+          <h4>⚠ Couldn't start</h4>
+          <p id="demo-error-msg">Unknown error.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
 <section id="features">
   <div class="wrap reveal" data-reveal>
     <h2>Built for the way you actually use a computer</h2>
@@ -758,6 +928,183 @@ python3 tony_stark_hud_control.py</pre>
       }
     });
   });
+
+  // -------- Live in-browser hand-tracking demo --------
+  // Uses MediaPipe Tasks Vision (WASM) running entirely in this tab.
+  // No frames leave the device. CDN loads the model + JS bundle from
+  // Google's public storage on first run, then everything is local.
+  (function setupDemo() {
+    const video = document.getElementById('demo-video');
+    const canvas = document.getElementById('demo-canvas');
+    const overlay = document.getElementById('demo-overlay');
+    const empty = document.getElementById('demo-empty');
+    const startBtn = document.getElementById('demo-start');
+    const learnBtn = document.getElementById('demo-learn');
+    const errorCard = document.getElementById('demo-error-card');
+    const errorMsg = document.getElementById('demo-error-msg');
+    const fpsEl = document.getElementById('demo-fps');
+    const handsEl = document.getElementById('demo-hands');
+    const privacyCard = document.getElementById('demo-privacy-card');
+    if (!startBtn) return;
+
+    const MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
+    const WasmBundle = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs';
+
+    let handLandmarker = null;
+    let stream = null;
+    let rafId = null;
+    let lastFrameTs = 0;
+    let fpsSamples = [];
+
+    function showError(msg) {
+      errorCard.hidden = false;
+      errorMsg.textContent = msg;
+      startBtn.disabled = false;
+      startBtn.textContent = 'Try again';
+    }
+
+    function drawLandmarks(ctx, landmarks) {
+      // 21 landmarks per hand. MediaPipe's standard connections:
+      const CONNECTIONS = [
+        [0,1],[1,2],[2,3],[3,4],            // thumb
+        [0,5],[5,6],[6,7],[7,8],            // index
+        [5,9],[9,10],[10,11],[11,12],       // middle
+        [9,13],[13,14],[14,15],[15,16],     // ring
+        [13,17],[17,18],[18,19],[19,20],    // pinky
+        [0,17]                              // palm
+      ];
+      const w = ctx.canvas.width, h = ctx.canvas.height;
+      // Bounding box accent
+      let minX=1, minY=1, maxX=0, maxY=0;
+      for (const lm of landmarks) {
+        minX = Math.min(minX, lm.x); minY = Math.min(minY, lm.y);
+        maxX = Math.max(maxX, lm.x); maxY = Math.max(maxY, lm.y);
+      }
+      ctx.strokeStyle = 'rgba(255, 90, 31, 0.8)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(minX * w, minY * h, (maxX - minX) * w, (maxY - minY) * h);
+      // Skeleton
+      ctx.strokeStyle = '#ff5a1f';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (const [a, b] of CONNECTIONS) {
+        const A = landmarks[a], B = landmarks[b];
+        if (!A || !B) continue;
+        ctx.moveTo(A.x * w, A.y * h);
+        ctx.lineTo(B.x * w, B.y * h);
+      }
+      ctx.stroke();
+      // Joints
+      ctx.fillStyle = '#ffb000';
+      for (const lm of landmarks) {
+        ctx.beginPath();
+        ctx.arc(lm.x * w, lm.y * h, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    async function start() {
+      startBtn.disabled = true;
+      startBtn.textContent = 'Loading model…';
+      try {
+        // Load the MediaPipe tasks-vision ES module from CDN.
+        const vision = await import(WasmBundle);
+        const { HandLandmarker, FilesetResolver } = vision;
+        const filesetResolver = await FilesetResolver.forVisionTasks(
+          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+        );
+        handLandmarker = await HandLandmarker.createFromOptions(filesetResolver, {
+          baseOptions: {
+            modelAssetPath: MODEL_URL,
+            delegate: 'GPU'
+          },
+          runningMode: 'VIDEO',
+          numHands: 2
+        });
+
+        startBtn.textContent = 'Requesting camera…';
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+          audio: false
+        });
+        video.srcObject = stream;
+        await video.play();
+
+        // Resize canvas to match video intrinsic size.
+        const vw = video.videoWidth || 1280;
+        const vh = video.videoHeight || 720;
+        canvas.width = vw; canvas.height = vh;
+
+        empty.hidden = true;
+        overlay.hidden = false;
+        privacyCard.hidden = true;  // we already started, hide the prompt
+        loop();
+      } catch (e) {
+        console.error('Demo startup failed:', e);
+        let msg = e.message || String(e);
+        if (e.name === 'NotAllowedError') msg = 'Camera permission was denied. Click the camera icon in your browser address bar to allow it, then try again.';
+        else if (e.name === 'NotFoundError') msg = 'No camera found. Plug in a webcam and try again.';
+        else if (e.name === 'NotReadableError') msg = 'Camera is in use by another application. Close it and try again.';
+        else if (/wasm/i.test(msg)) msg = 'WebAssembly failed to load. Your browser may be too old. Try Chrome, Firefox, or Safari 15+.';
+        showError(msg);
+      }
+    }
+
+    function loop() {
+      if (!handLandmarker || !stream) return;
+      const now = performance.now();
+      // MediaPipe needs monotonically-increasing timestamps.
+      if (lastFrameTs && now - lastFrameTs < 0) {
+        rafId = requestAnimationFrame(loop);
+        return;
+      }
+      lastFrameTs = now;
+      let results;
+      try {
+        results = handLandmarker.detectForVideo(video, now);
+      } catch (e) {
+        // Sometimes the first frame is invalid; keep going.
+        rafId = requestAnimationFrame(loop);
+        return;
+      }
+      // FPS sample
+      fpsSamples.push(now);
+      while (fpsSamples.length > 2 && fpsSamples[0] < now - 1000) fpsSamples.shift();
+      if (fpsSamples.length >= 2) {
+        const span = (fpsSamples[fpsSamples.length - 1] - fpsSamples[0]) / 1000;
+        if (span > 0) fpsEl.textContent = Math.round((fpsSamples.length - 1) / span);
+      }
+      handsEl.textContent = (results.landmarks || []).length;
+
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const hand of (results.landmarks || [])) {
+        drawLandmarks(ctx, hand);
+      }
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function stop() {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+      if (handLandmarker) { try { handLandmarker.close(); } catch (e) {} handLandmarker = null; }
+      video.srcObject = null;
+      empty.hidden = false;
+      overlay.hidden = true;
+    }
+
+    startBtn.addEventListener('click', start);
+    learnBtn.addEventListener('click', () => {
+      privacyCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      privacyCard.style.transition = 'box-shadow 0.6s';
+      privacyCard.style.boxShadow = '0 0 0 3px rgba(46,204,113,0.4)';
+      setTimeout(() => { privacyCard.style.boxShadow = ''; }, 1200);
+    });
+    // Stop the camera when the user navigates away
+    window.addEventListener('pagehide', stop);
+    window.addEventListener('beforeunload', stop);
+  })();
 
   // -------- Hero parallax (scroll-linked, not RAF, for perf) --------
   const heroBg = document.querySelector('.hero-bg');
