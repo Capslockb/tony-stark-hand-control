@@ -299,6 +299,62 @@
       border-color: rgba(46, 204, 113, 0.25);
     }
     .demo-privacy h4 { color: var(--green); }
+
+    /* -------- Demo: gesture engine (engaged state) -------- */
+    .demo-engage-pill {
+      position: absolute;
+      bottom: 12px; right: 12px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      background: rgba(11, 13, 16, 0.78);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 13px; font-weight: 600;
+      z-index: 2;
+      transition: border-color 0.25s, color 0.25s, background 0.25s;
+    }
+    .demo-engage-pill.engaged {
+      border-color: rgba(46, 204, 113, 0.6);
+      color: var(--green);
+      background: rgba(46, 204, 113, 0.12);
+      box-shadow: 0 0 12px rgba(46, 204, 113, 0.25);
+    }
+    .demo-engage-pill .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+    .demo-engage-pill:not(.engaged) .pulse {
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    .demo-engage-pill.engaged .pulse {
+      animation: none;
+    }
+
+    /* Live event log of dispatched keyboard events */
+    .demo-log {
+      margin-top: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .demo-log-line {
+      display: flex; gap: 8px;
+      padding: 3px 0;
+      color: var(--muted);
+    }
+    .demo-log-line .ts { color: var(--muted-2); flex-shrink: 0; }
+    .demo-log-line .key { color: var(--accent-2); font-weight: 600; }
+    .demo-log-line .lbl { color: var(--fg); }
+    .demo-log:empty::before {
+      content: "Hold an open palm for 0.6 s to engage. Then curl index → Tab, middle → Enter, etc.";
+      color: var(--muted-2);
+      font-family: inherit;
+      font-size: 12px;
+    }
     :root {
       --bg: #0b0d10;
       --bg-2: #11151a;
@@ -504,7 +560,8 @@
     <p class="muted" style="max-width: 720px;">
       The full hand-tracking pipeline running on this page, in your browser, with your webcam.
       Same MediaPipe model the desktop app uses. <strong>No frames leave your device.</strong>
-      No upload, no signup, no analytics. Click below, allow the camera, and wave.
+      No upload, no signup, no analytics. Click below, allow the camera, hold an open palm to
+      engage, then curl your fingers to drive real keyboard events.
     </p>
 
     <div class="demo-shell">
@@ -517,6 +574,10 @@
             <span class="num" id="demo-fps">0</span> fps ·
             <span class="num" id="demo-hands">0</span> hands
           </span>
+        </div>
+        <div class="demo-engage-pill" id="demo-engage" hidden>
+          <span class="pulse"></span>
+          <span id="demo-engage-label">Disengaged</span>
         </div>
         <div class="demo-empty" id="demo-empty">
           <div class="demo-empty-icon">📷</div>
@@ -533,8 +594,13 @@
           <p>The MediaPipe model runs entirely in your browser via WebAssembly. Your camera stream is processed by JavaScript on this page and never sent to a server. When you close this tab, everything is gone.</p>
         </div>
         <div class="demo-card">
+          <h4>Live event log</h4>
+          <p style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">Keyboard events dispatched from your hand to the page:</p>
+          <div class="demo-log" id="demo-log"></div>
+        </div>
+        <div class="demo-card">
           <h4>How it works</h4>
-          <p>Loads <code>@mediapipe/tasks-vision</code> from a CDN, opens your webcam with <code>getUserMedia()</code>, runs <code>HandLandmarker</code> in VIDEO mode on every frame, draws the 21-landmark skeleton over the video. The desktop app does the same thing — plus One-Euro smoothing, gesture detection, and accessibility navigation.</p>
+          <p>Loads <code>@mediapipe/tasks-vision</code> from a CDN, opens your webcam with <code>getUserMedia()</code>, runs <code>HandLandmarker</code> in VIDEO mode on every frame, draws the 21-landmark skeleton over the video, and dispatches real <code>KeyboardEvent</code>s to the page. Hold an open palm for 0.6 s to engage, then curl your index finger → <kbd>Tab</kbd>, middle → <kbd>Enter</kbd>, ring → <kbd>↑</kbd>, pinky → <kbd>↓</kbd>. The desktop app does the same thing, plus One-Euro smoothing and per-gesture hooks.</p>
         </div>
         <div class="demo-card demo-error" id="demo-error-card" hidden>
           <h4>⚠ Couldn't start</h4>
@@ -956,6 +1022,121 @@ python3 tony_stark_hud_control.py</pre>
     let lastFrameTs = 0;
     let fpsSamples = [];
 
+    // -------- Gesture engine state --------
+    // Mirrors the desktop app's heuristic exactly (see tony_stark_hud_control.py
+    // is_palm_open / HandProcessor). Wrist-relative distance is mirrored-camera
+    // safe (doesn't depend on Y-axis convention).
+    const ENGAGE_HOLD_S = 0.6;
+    const DISENGAGE_HOLD_S = 0.3;
+    const FINGER_TIP_TO_PIP = 0.06;  // normalized units
+    const PALM_EXTENSION_THRESHOLD = 0.04;
+    const RING_BUFFER_LEN = 6;
+    const palmHistory = [];        // last N is_palm_open booleans
+    const fingerHistory = { index: [], middle: [], ring: [], pinky: [] };
+    let engaged = false;
+    let lastOpenHandTs = 0;
+    let lastClosedHandTs = 0;
+    let lastFingerFireTs = 0;
+    const FINGER_COOLDOWN_S = 0.5;
+
+    function isPalmOpen(landmarks) {
+      // landmarks: array of 21 {x,y,z} in [0,1] normalized. Wrist = idx 0.
+      const wrist = landmarks[0];
+      let extended = 0;
+      // Tips: 8 (index), 12 (middle), 16 (ring), 20 (pinky). PIPs: 6,10,14,18.
+      for (const [tip, pip] of [[8,6],[12,10],[16,14],[20,18]]) {
+        const t = landmarks[tip], p = landmarks[pip];
+        const dt = Math.hypot(t.x - wrist.x, t.y - wrist.y);
+        const dp = Math.hypot(p.x - wrist.x, p.y - wrist.y);
+        if (dt - dp > PALM_EXTENSION_THRESHOLD) extended++;
+      }
+      return extended >= 3;
+    }
+    function isFingerCurled(landmarks, tipIdx, pipIdx) {
+      const wrist = landmarks[0], t = landmarks[tipIdx], p = landmarks[pipIdx];
+      const dt = Math.hypot(t.x - wrist.x, t.y - wrist.y);
+      const dp = Math.hypot(p.x - wrist.x, p.y - wrist.y);
+      return (dt - dp) < -FINGER_TIP_TO_PIP;
+    }
+    function fingerExtended(landmarks, name) {
+      const map = { index: [8,6], middle: [12,10], ring: [16,14], pinky: [20,18] };
+      const [tip, pip] = map[name];
+      return !isFingerCurled(landmarks, tip, pip);
+    }
+
+    const engagePill = () => document.getElementById('demo-engage');
+    const engageLabel = () => document.getElementById('demo-engage-label');
+    const logEl = () => document.getElementById('demo-log');
+    const MAX_LOG_LINES = 30;
+    function appendLog(key, label) {
+      const log = logEl();
+      if (!log) return;
+      const ts = new Date().toLocaleTimeString([], { hour12: false });
+      const line = document.createElement('div');
+      line.className = 'demo-log-line';
+      line.innerHTML = `<span class="ts">${ts}</span><span class="key">${key}</span><span class="lbl">${label}</span>`;
+      log.prepend(line);
+      while (log.children.length > MAX_LOG_LINES) log.removeChild(log.lastChild);
+    }
+    function dispatchKey(key, label) {
+      // Dispatch on the document so it reaches whatever the user is focused on.
+      // We send it twice (down+up) to match real keyboard semantics.
+      const opts = { key, bubbles: true, cancelable: true, composed: true };
+      document.dispatchEvent(new KeyboardEvent('keydown', opts));
+      document.dispatchEvent(new KeyboardEvent('keyup', opts));
+      appendLog(key, label);
+    }
+    function setEngaged(state) {
+      if (state === engaged) return;
+      engaged = state;
+      const pill = engagePill();
+      if (!pill) return;
+      pill.classList.toggle('engaged', state);
+      pill.hidden = false;
+      engageLabel().textContent = state ? '● Engaged' : 'Disengaged';
+      appendLog(state ? '●' : '○', state ? 'engaged — gestures active' : 'disengaged — gestures paused');
+    }
+
+    function tickGestures(landmarks) {
+      const now = performance.now() / 1000;
+      const palmOpen = isPalmOpen(landmarks);
+      palmHistory.push(palmOpen);
+      if (palmHistory.length > RING_BUFFER_LEN) palmHistory.shift();
+      const palmAvg = palmHistory.reduce((a, b) => a + (b ? 1 : 0), 0) / palmHistory.length;
+
+      // Engage: palm open for ENGAGE_HOLD_S seconds (>60% of last N frames)
+      if (palmAvg >= 0.6) lastOpenHandTs = now;
+      else lastClosedHandTs = now;
+
+      if (!engaged && (now - lastOpenHandTs >= ENGAGE_HOLD_S)) setEngaged(true);
+      else if (engaged && (now - lastClosedHandTs >= DISENGAGE_HOLD_S)) setEngaged(false);
+
+      if (!engaged) return;
+
+      // Per-finger curl detection. We fire one event per curl-down per finger.
+      // Track the most recent state in a small history (no ring buffer — we
+      // need the most recent value, not a smoothed average).
+      const checks = [
+        { name: 'index',  key: 'Tab',     label: 'next focusable (Tab)' },
+        { name: 'middle', key: 'Enter',   label: 'activate (Enter)' },
+        { name: 'ring',   key: 'ArrowUp', label: 'arrow up' },
+        { name: 'pinky',  key: 'ArrowDown', label: 'arrow down' },
+      ];
+      if (now - lastFingerFireTs < FINGER_COOLDOWN_S) return;
+      for (const c of checks) {
+        const extended = fingerExtended(landmarks, c.name);
+        fingerHistory[c.name].push(extended);
+        if (fingerHistory[c.name].length > 3) fingerHistory[c.name].shift();
+        // Fire when the finger transitions from extended → curled
+        const prev = fingerHistory[c.name].length >= 2 ? fingerHistory[c.name][fingerHistory[c.name].length - 2] : true;
+        if (prev && !extended) {
+          dispatchKey(c.key, c.label);
+          lastFingerFireTs = now;
+          break;  // one event per frame
+        }
+      }
+    }
+
     function showError(msg) {
       errorCard.hidden = false;
       errorMsg.textContent = msg;
@@ -1037,6 +1218,8 @@ python3 tony_stark_hud_control.py</pre>
 
         empty.hidden = true;
         overlay.hidden = false;
+        const engage = document.getElementById('demo-engage');
+        if (engage) engage.hidden = false;
         privacyCard.hidden = true;  // we already started, hide the prompt
         loop();
       } catch (e) {
@@ -1080,6 +1263,15 @@ python3 tony_stark_hud_control.py</pre>
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (const hand of (results.landmarks || [])) {
         drawLandmarks(ctx, hand);
+        tickGestures(hand);  // engage state + per-finger gesture dispatch
+      }
+      // If the user is engaged and we have no hand, start counting down
+      // toward disengage (the tickGestures() above won't run if no hand).
+      if (engaged && (results.landmarks || []).length === 0) {
+        lastClosedHandTs = performance.now() / 1000;
+        if (performance.now() / 1000 - lastClosedHandTs >= DISENGAGE_HOLD_S) {
+          setEngaged(false);
+        }
       }
       rafId = requestAnimationFrame(loop);
     }
