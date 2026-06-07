@@ -1,8 +1,9 @@
 """Demonstrate the OLD is_palm_open bug: it returns wrong answer for
 mirrored Y axis (selfie cameras)."""
+import os, importlib.util
 import importlib.util
 spec = importlib.util.spec_from_file_location(
-    'm', r'C:/Users/Bernardo/tony_stark_hand_control/tony_stark_hud_control.py')
+    'm', os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tony_stark_hud_control.py')))
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 

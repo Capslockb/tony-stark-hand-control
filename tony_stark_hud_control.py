@@ -50,7 +50,16 @@
 
 import cv2
 import mediapipe as mp
-import pyautogui
+# pyautogui is imported lazily (inside methods that use it) so headless systems
+# without $DISPLAY (Linux servers, CI, SSH sessions) can still import this module
+# and run the install wizard without crashing. The eager import used to fail with
+# `KeyError: 'DISPLAY'` from mouseinfo's `Display(os.environ['DISPLAY'])`.
+try:
+    import pyautogui
+    pyautogui.FAILSAFE = False
+except (KeyError, ImportError, OSError):
+    # Headless / no-display environment — cursor control will be a no-op
+    pyautogui = None  # type: ignore[assignment]
 import numpy as np
 import math
 import random
@@ -68,8 +77,21 @@ from tkinter import ttk, filedialog, messagebox
 from collections import deque
 from PIL import Image, ImageTk
 
-# Disable PyAutoGUI fail-safe
-pyautogui.FAILSAFE = False
+# (PyAutoGUI fail-safe is disabled inside the try/except import above)
+
+# Guarded shim: on headless systems pyautogui is None — every call is a no-op.
+# This keeps the rest of the code calling pyautogui.<x> naturally without
+# peppering the codebase with None-checks.
+def _pag(*args, **kwargs):
+    """No-op shim for pyautogui calls when running headless."""
+    return None
+if pyautogui is None:
+    pyautogui = type("StubPyAutoGUI", (), {
+        "size": _pag, "moveTo": _pag, "press": _pag, "hotkey": _pag,
+        "click": _pag, "scroll": _pag, "typewrite": _pag,
+        "position": _pag, "onScreen": lambda *a, **k: False,
+        "FAILSAFE": False, "PAUSE": 0,
+    })()
 
 # MediaPipe
 mp_tasks = mp.tasks
@@ -2808,7 +2830,14 @@ class HandControlApp:
             self.overlay = tk.Toplevel(self.root)
             self.overlay.overrideredirect(True)
             self.overlay.attributes('-topmost', True)
-            self.overlay.attributes('-disabled', False)
+            if sys.platform == 'win32':
+                # `-disabled` is a Windows-only attribute. Setting it
+                # elsewhere raises TclError; skip on POSIX so the
+                # overlay still works on Linux/macOS.
+                try:
+                    self.overlay.attributes('-disabled', False)
+                except Exception:
+                    pass
             try:
                 self.overlay.attributes('-transparentcolor', 'white')
             except Exception:
@@ -3221,26 +3250,41 @@ class _SingleInstance:
         # ---- Layer 2: file-based lock (belt-and-suspenders) ----
         try:
             self.lock_fd = open(self.lock_path, 'w')
-            # msvcrt.locking is Windows-specific. On Python 3.11+ it's
-            # in the msvcrt stdlib module. LK_NBLCK = non-blocking
-            # (return immediately if the lock is held).
-            import msvcrt
-            LK_NBLCK = 2
-            try:
-                msvcrt.locking(self.lock_fd.fileno(), LK_NBLCK, 1)
-            except OSError:
-                # Lock is held by another process. Close our fd and
-                # signal already-running.
-                self.lock_fd.close()
-                self.lock_fd = None
-                self._surface_existing_window()
-                return False
+            if sys.platform == 'win32':
+                # msvcrt.locking is Windows-specific. On Python 3.11+ it's
+                # in the msvcrt stdlib module. LK_NBLCK = non-blocking
+                # (return immediately if the lock is held).
+                import msvcrt
+                LK_NBLCK = 2
+                try:
+                    msvcrt.locking(self.lock_fd.fileno(), LK_NBLCK, 1)
+                except OSError:
+                    # Lock is held by another process. Close our fd and
+                    # signal already-running.
+                    self.lock_fd.close()
+                    self.lock_fd = None
+                    self._surface_existing_window()
+                    return False
+            else:
+                # POSIX (Linux / macOS) — use fcntl.flock with LOCK_NB
+                import fcntl
+                try:
+                    fcntl.flock(self.lock_fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except (BlockingIOError, OSError):
+                    self.lock_fd.close()
+                    self.lock_fd = None
+                    self._surface_existing_window()
+                    return False
         except Exception:
-            # msvcrt unavailable (non-Windows). Don't block -- this
-            # module is also used on the rare case someone runs it
-            # from WSL/Linux.
+            # Lock infrastructure unavailable for some reason.
+            # Close fd if we opened one, then return True (best-effort:
+            # we'd rather run than refuse to start). This matches the
+            # v1.0.0 behavior on exotic platforms.
             if self.lock_fd is not None:
-                self.lock_fd.close()
+                try:
+                    self.lock_fd.close()
+                except Exception:
+                    pass
                 self.lock_fd = None
 
         return True
@@ -3312,14 +3356,23 @@ class _SingleInstance:
         """Release the locks. Safe to call multiple times."""
         try:
             if self.lock_fd is not None:
-                import msvcrt
-                LK_UNLCK = 0
-                try:
-                    # Move to byte 0 first, then unlock 1 byte
-                    self.lock_fd.seek(0)
-                    msvcrt.locking(self.lock_fd.fileno(), LK_UNLCK, 1)
-                except Exception:
-                    pass
+                if sys.platform == 'win32':
+                    import msvcrt
+                    LK_UNLCK = 0
+                    try:
+                        # Move to byte 0 first, then unlock 1 byte
+                        self.lock_fd.seek(0)
+                        msvcrt.locking(self.lock_fd.fileno(), LK_UNLCK, 1)
+                    except Exception:
+                        pass
+                else:
+                    # POSIX — flock is released automatically when the fd
+                    # is closed, but unlock explicitly to be safe.
+                    try:
+                        import fcntl
+                        fcntl.flock(self.lock_fd.fileno(), fcntl.LOCK_UN)
+                    except Exception:
+                        pass
                 try:
                     self.lock_fd.close()
                 except Exception:
