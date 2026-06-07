@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - ROADMAP.md with dated feature promises for v1.1.0 (Q3 2026), v1.2.0 (Q4 2026), v2.0.0 (Q1 2027), and a "Considering" bucket.
 - GitHub Pages promo site at `https://capslockb.github.io/tony-stark-hand-control/` (dark theme, OS-aware install tabs, social card).
 - `.github/workflows/pages.yml` auto-deploys the promo site on push to main.
-and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [1.0.1] - 2026-06-04
 
