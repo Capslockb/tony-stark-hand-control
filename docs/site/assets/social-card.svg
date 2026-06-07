@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b0d10"/>
+      <stop offset="100%" stop-color="#11151a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff5a1f"/>
+      <stop offset="100%" stop-color="#ffb000"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.2" cy="0.0" r="0.8">
+      <stop offset="0%" stop-color="rgba(255,90,31,0.18)"/>
+      <stop offset="100%" stop-color="rgba(255,90,31,0)"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.85" cy="0.7" r="0.7">
+      <stop offset="0%" stop-color="rgba(255,176,0,0.12)"/>
+      <stop offset="100%" stop-color="rgba(255,176,0,0)"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- Concentric HUD rings (right side) -->
+  <g transform="translate(900, 315)">
+    <circle r="240" fill="none" stroke="#1f262e" stroke-width="1"/>
+    <circle r="200" fill="none" stroke="#1f262e" stroke-width="1"/>
+    <circle r="160" fill="none" stroke="#1f262e" stroke-width="1"/>
+    <circle r="120" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.6"/>
+    <circle r="60"  fill="url(#accent)" opacity="0.85"/>
+    <circle r="6"   fill="#fff"/>
+    <g stroke="#8b95a3" stroke-width="2">
+      <line x1="0" y1="-240" x2="0" y2="-220"/>
+      <line x1="0" y1="240" x2="0" y2="220"/>
+      <line x1="-240" y1="0" x2="-220" y2="0"/>
+      <line x1="240" y1="0" x2="220" y2="0"/>
+    </g>
+  </g>
+
+  <g transform="translate(80, 140)">
+    <g>
+      <circle cx="22" cy="22" r="20" fill="none" stroke="#ff5a1f" stroke-width="3"/>
+      <circle cx="22" cy="22" r="9" fill="#ff5a1f"/>
+      <path d="M22 2 L28 12 L16 12 Z" fill="#ffb000"/>
+      <text x="60" y="30" fill="#e6e8eb" font-family="-apple-system, system-ui, sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">TONY STARK HAND CONTROL</text>
+    </g>
+
+    <text x="0" y="160" fill="#e6e8eb" font-family="-apple-system, system-ui, sans-serif" font-size="72" font-weight="800" letter-spacing="-2">Control your PC</text>
+    <text x="0" y="240" fill="url(#accent)" font-family="-apple-system, system-ui, sans-serif" font-size="72" font-weight="800" letter-spacing="-2">with a hand wave.</text>
+
+    <text x="0" y="300" fill="#8b95a3" font-family="-apple-system, system-ui, sans-serif" font-size="22">Multi-camera hand tracking · 3D room mapping · 100% local</text>
+
+    <g transform="translate(0, 340)">
+      <g>
+        <rect x="0" y="0" width="150" height="40" rx="20" fill="#11151a" stroke="#1f262e"/>
+        <text x="75" y="26" fill="#e6e8eb" font-family="-apple-system, system-ui, sans-serif" font-size="15" font-weight="600" text-anchor="middle">Python 3.10+</text>
+      </g>
+      <g transform="translate(165, 0)">
+        <rect width="180" height="40" rx="20" fill="#11151a" stroke="#1f262e"/>
+        <text x="90" y="26" fill="#e6e8eb" font-family="-apple-system, system-ui, sans-serif" font-size="15" font-weight="600" text-anchor="middle">Win / Linux / macOS</text>
+      </g>
+      <g transform="translate(360, 0)">
+        <rect width="140" height="40" rx="20" fill="#11151a" stroke="#1f262e"/>
+        <text x="70" y="26" fill="#e6e8eb" font-family="-apple-system, system-ui, sans-serif" font-size="15" font-weight="600" text-anchor="middle">MIT licensed</text>
+      </g>
+      <g transform="translate(515, 0)">
+        <rect width="200" height="40" rx="20" fill="#11151a" stroke="rgba(46,204,113,0.4)"/>
+        <text x="100" y="26" fill="#2ecc71" font-family="-apple-system, system-ui, sans-serif" font-size="15" font-weight="600" text-anchor="middle">● No telemetry, ever</text>
+      </g>
+    </g>
+  </g>
+</svg>

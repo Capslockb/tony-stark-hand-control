@@ -1,10 +1,30 @@
 # Tony Stark Hand Control
 
-> Multi-camera hand-tracking + 3D room mapping for PC control (Tony Stark HUD style).
+**Multi-camera, GPU-friendly hand tracking for PC control — in the spirit of the Iron Man HUD.**
 
-A local-first, GPU-accelerated hand-tracking system that uses one or more cameras to detect hand gestures, reconstructs the hand in 3D space, and drives your PC via **accessibility navigation** (Tab/Shift+Tab/Arrow) — not mouse emulation. Built for users who want hands-on control without touching the keyboard or mouse.
+A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation, thumb-to-finger taps become clicks, and the whole rig reconstructs your hand in 3D space. No cloud. No telemetry. No mouse required.
 
-![architecture](docs/images/architecture.svg)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB.svg)](https://www.python.org)
+[![Platform: Windows / Linux / macOS](https://img.shields.io/badge/platform-Win%20%7C%20Linux%20%7C%20macOS-999)](#quick-start)
+[![Local-only](https://img.shields.io/badge/privacy-100%25%20local-success)](#privacy)
+[![Tests: 81/81](https://img.shields.io/badge/tests-81%2F81%20passing-brightgreen)](#tests)
+
+<p align="center">
+  <img src="docs/images/architecture.svg" alt="Architecture overview" width="720">
+</p>
+
+---
+
+## Why this exists
+
+Most webcam hand-tracking demos do **mouse emulation** — they hand you a virtual mouse and call it a day. That's broken for real use: clicking the wrong thing is one pixel of slop away, every menu fights you, and the cursor is always exactly where you don't want it.
+
+Tony Stark Hand Control takes a different approach: **accessibility navigation**. Swipes send `Tab` / `Shift+Tab` / `↑` / `↓`, thumb-touches fire `Enter` and the context-menu key, and a **persistent green border** tracks the focused UI element so you always know what will activate. It's the same paradigm every operating system already uses for keyboard navigation — we just drive it with a hand.
+
+For the people who want a mouse anyway, screen-cursor mode is one checkbox away. For the people who want to **see** what their hand is doing in 3D space, the Room tab triangulates your fingertips across cameras and renders them in a live matplotlib viewport with anchored walls, zones, and hotspots.
+
+---
 
 ## Features
 
@@ -19,8 +39,12 @@ A local-first, GPU-accelerated hand-tracking system that uses one or more camera
 | **Live performance readout** | Per-loop ms, target FPS, app CPU%, RAM, thread count, all on the Main tab |
 | **Single-instance lock** | One app at a time. Second launch focuses the existing window instead of stuttering |
 | **Local-only** | Everything runs on your CPU/GPU. No cloud, no telemetry, no API keys required |
+| **Optional LLM gestures** | Drop in Ollama (cloud or local llama.cpp) to add custom gestures the local detector doesn't know. Off by default. |
+| **Multi-platform binaries** | Prebuilt `.exe` for Windows and `tar.gz` for Linux x86_64. No build tools needed. |
 
-## Quick start (Windows)
+---
+
+## Quick start
 
 **Option A — install from source**:
 ```cmd
@@ -57,6 +81,8 @@ cd tony-stark-hand-control
 python3 install_wizard.py
 python3 tony_stark_hud_control.py
 ```
+
+---
 
 ## Usage
 
@@ -98,6 +124,8 @@ All configuration lives in the GUI tabs:
 - **[Architecture](docs/architecture.md)** — how the pieces fit together
 - **[Ollama integration](docs/ollama_integration.md)** — adding optional cloud / local LLM gesture recognition
 
+---
+
 ## Performance
 
 On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480×360 / 30 fps:
@@ -119,14 +147,34 @@ python -m unittest discover tests
 
 The test suite covers: RoomMap, HandProcessor, CameraManager, StereoCalibrator, triangulate_point_rays, OllamaGestureRecognizer circuit breaker, and full HandControlApp construction. Current status: **81/81 passing** (77 main + 4 v1.0.1 hotfix).
 
+---
+
+## What's coming next
+
+A real roadmap of public features is in [`ROADMAP.md`](ROADMAP.md). Highlights:
+
+- **v1.1.0 (Q3 2026)** — two-hand tracking, Linux & macOS focus-overlay parity, bundled-model installer, per-gesture hooks, CLI flags
+- **v1.2.0 (Q4 2026)** — monocular depth from MediaPipe z, phone-as-second-camera companion app, room-map gesture zoning
+- **v2.0.0 (Q1 2027)** — "OK Jarvis" wake word, sign-language dictionary, third-party plugin SDK
+
+These are publicly promised, not "maybe someday" bullet points. The roadmap is binding intent. If something moves, the doc updates.
+
+---
+
 ## Contributing
 
-This is a personal project, but PRs are welcome. See `CONTRIBUTING.md` for the workflow.
+PRs are welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the workflow. Code style: PEP 8, 4-space indent, snake_case functions, PascalCase classes, docstrings on public methods, Conventional Commits for messages.
 
 ## License
 
-MIT — see `LICENSE`.
+MIT — see [`LICENSE`](LICENSE).
 
 ## Privacy
 
 The app is **100% local**. No network calls are made by the hand-tracking pipeline. The optional Ollama tab can be configured to use a cloud endpoint, but it is **off by default** and requires explicit user configuration. See `SECURITY.md` for the full disclosure policy.
+
+## Acknowledgments
+
+- [MediaPipe](https://developers.google.com/mediapipe) for the HandLandmarker model
+- [One-Euro Filter](https://cristal.univ-lille.fr/~casiez/1euro/) by Casiez et al.
+- The open-source accessibility community, which built every keyboard-navigation pattern this app leans on
