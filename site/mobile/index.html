@@ -314,6 +314,40 @@
     .share-btn:active { background: var(--border); }
     .share-btn.copied { background: rgba(46, 204, 113, 0.15); border-color: var(--green); color: var(--green); }
 
+    /* -------- Release notes (mobile) -------- */
+    .cl-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .cl-card.cl-current {
+      border-color: rgba(255, 90, 31, 0.4);
+      box-shadow: 0 0 0 1px rgba(255, 90, 31, 0.15);
+    }
+    .cl-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+    .cl-version {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 15px; font-weight: 700; color: var(--accent);
+    }
+    .cl-date { font-size: 12px; color: var(--muted); }
+    .cl-tag {
+      font-size: 10px; padding: 2px 7px; border-radius: 999px;
+      letter-spacing: 0.4px; text-transform: uppercase; font-weight: 600;
+    }
+    .cl-tag-fix { background: rgba(255, 90, 31, 0.12); color: var(--accent); }
+    .cl-tag-new { background: rgba(46, 204, 113, 0.12); color: var(--green); }
+    .cl-blurb { color: var(--muted); margin: 4px 0 10px; font-size: 14px; }
+    .cl-list { margin: 0 0 0 16px; padding: 0; color: var(--fg); font-size: 14px; }
+    .cl-list li { margin: 4px 0; }
+    .cl-list code { font-size: 12px; background: var(--bg-3); padding: 1px 4px; border-radius: 4px; }
+    .cl-test {
+      margin: 10px 0 0; padding: 8px 10px;
+      background: var(--bg-3); border-radius: 8px;
+      font-size: 12px; color: var(--muted);
+    }
+    .cl-test strong { color: var(--green); }
+
     /* -------- Trust strip -------- */
     .trust {
       display: flex; flex-wrap: wrap; gap: 6px;
@@ -514,6 +548,31 @@
       <summary>Can I uninstall it?</summary>
       <div class="faq-body">Yes. Delete the folder. The installer keeps everything self-contained — no system files touched, no registry entries on Windows, no daemons on Linux/macOS.</div>
     </details>
+  </section>
+
+  <!-- RELEASE NOTES -->
+  <section class="reveal" data-reveal>
+    <h2>What's new</h2>
+    <article class="cl-card cl-current" style="margin-top: 16px;">
+      <header class="cl-head">
+        <span class="cl-version">v1.0.3</span>
+        <span class="cl-date">2026-06-07</span>
+        <span class="cl-tag cl-tag-fix">release-readiness</span>
+      </header>
+      <p class="cl-blurb">Cross-platform install + test fixes. Now actually works on Linux, macOS, and headless systems.</p>
+      <ul class="cl-list">
+        <li>Headless import: <code>pyautogui</code> no longer crashes on systems without a display.</li>
+        <li>Single-instance lock: real <code>fcntl.flock</code> on Linux/macOS (was a silent no-op).</li>
+        <li>Selection overlay: works on Linux Tk (the <code>-disabled</code> attribute was Windows-only).</li>
+        <li>Test suite: portable paths — runs on any machine, not just the dev box.</li>
+      </ul>
+      <p class="cl-test">Test status: <strong>70/71</strong> pass on Linux (1 environmental fail is the real-webcam test).</p>
+    </article>
+    <p style="text-align: center; margin-top: 16px;">
+      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md" class="btn btn-ghost" style="max-width: 320px; margin: 0 auto;">
+        Full changelog on GitHub →
+      </a>
+    </p>
   </section>
 
   <!-- SHARE / PRESS KIT -->

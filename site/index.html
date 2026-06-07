@@ -129,6 +129,56 @@
     }
     .press-btn:active { background: var(--border); }
     .press-btn.copied { background: rgba(46, 204, 113, 0.15); border-color: var(--green); color: var(--green); }
+
+    /* -------- Release notes / changelog -------- */
+    .changelog-list {
+      display: flex; flex-direction: column; gap: 14px;
+      margin-top: 20px;
+    }
+    .cl-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      position: relative;
+    }
+    .cl-card.cl-current {
+      border-color: rgba(255, 90, 31, 0.4);
+      box-shadow: 0 0 0 1px rgba(255, 90, 31, 0.15);
+    }
+    .cl-head {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .cl-version {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 16px; font-weight: 700; color: var(--fg);
+    }
+    .cl-current .cl-version { color: var(--accent); }
+    .cl-date { font-size: 13px; color: var(--muted); }
+    .cl-tag {
+      font-size: 11px; padding: 3px 9px; border-radius: 999px;
+      letter-spacing: 0.4px; text-transform: uppercase; font-weight: 600;
+    }
+    .cl-tag-fix { background: rgba(255, 90, 31, 0.12); color: var(--accent); }
+    .cl-tag-new { background: rgba(46, 204, 113, 0.12); color: var(--green); }
+    .cl-blurb { color: var(--muted); margin: 4px 0 12px; font-size: 15px; }
+    .cl-card h4 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .cl-list { margin: 0 0 0 18px; padding: 0; color: var(--fg); font-size: 15px; }
+    .cl-list li { margin: 4px 0; }
+    .cl-list code { font-size: 13px; background: var(--bg-3); padding: 1px 5px; border-radius: 4px; }
+    .cl-list kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px; background: var(--bg-3); color: var(--accent-2);
+      padding: 1px 6px; border-radius: 4px; border: 1px solid var(--border);
+    }
+    .cl-test {
+      margin: 12px 0 0; padding: 8px 12px;
+      background: var(--bg-3); border-radius: 8px;
+      font-size: 13px; color: var(--muted);
+    }
+    .cl-test strong { color: var(--green); }
+    .cl-test code { font-size: 12px; }
     :root {
       --bg: #0b0d10;
       --bg-2: #11151a;
@@ -291,6 +341,7 @@
     <a href="#install">Install</a>
     <a href="#privacy">Privacy</a>
     <a href="#roadmap">Roadmap</a>
+    <a href="#changelog">Changelog</a>
     <a href="#press">Press</a>
     <a href="mobile/">Mobile</a>
     <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub →</a>
@@ -490,6 +541,91 @@ python3 tony_stark_hud_control.py</pre>
   </div>
 </section>
 
+<!-- RELEASE NOTES (visible changelog) -->
+<section id="changelog" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.02));">
+  <div class="wrap reveal" data-reveal>
+    <h2>Release notes</h2>
+    <p class="muted" style="max-width: 720px;">
+      Every shipped version, with the exact bugs fixed and features added. Sourced from
+      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a>
+      in the repo. Newest first.
+    </p>
+
+    <div class="changelog-list">
+
+      <!-- 1.0.3 -->
+      <article class="cl-card cl-current">
+        <header class="cl-head">
+          <span class="cl-version">v1.0.3</span>
+          <span class="cl-date">2026-06-07</span>
+          <span class="cl-tag cl-tag-fix">release-readiness</span>
+        </header>
+        <p class="cl-blurb">Cross-platform install + test fixes. The app and installer now actually work on Linux, macOS, and headless systems.</p>
+        <h4>Fixed</h4>
+        <ul class="cl-list">
+          <li><code>pyautogui</code> import crashed on headless systems (no <code>$DISPLAY</code>). Now lazy-loaded with a no-op stub shim.</li>
+          <li>Single-instance lock was a silent no-op on Linux/macOS. Now uses <code>fcntl.flock</code> on POSIX.</li>
+          <li>Selection overlay crashed on Linux Tk (<code>TclError: bad attribute "-disabled"</code>). Windows-only attr now guarded.</li>
+          <li>Test suite had hardcoded <code>C:/Users/&lt;owner&gt;/...</code> paths — unloadable anywhere but the dev box. Now portable via <code>__file__</code>.</li>
+        </ul>
+        <h4>Added</h4>
+        <ul class="cl-list">
+          <li>This promo site (desktop + mobile) with the social card baked in.</li>
+          <li><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">ROADMAP.md</a> with dated feature promises.</li>
+        </ul>
+        <p class="cl-test">Test status: <strong>70/71</strong> pass on Linux under <code>xvfb</code> (1 fail is the real-webcam test). All v1.0.0/v1.0.1 regressions pass.</p>
+      </article>
+
+      <!-- 1.0.1 -->
+      <article class="cl-card">
+        <header class="cl-head">
+          <span class="cl-version">v1.0.1</span>
+          <span class="cl-date">2026-06-04</span>
+          <span class="cl-tag cl-tag-fix">hotfix</span>
+        </header>
+        <p class="cl-blurb">Two crash bugs caught right after v1.0.0 shipped.</p>
+        <h4>Fixed</h4>
+        <ul class="cl-list">
+          <li><code>RoomMap.add()</code> crashed on numpy 0-d arrays (matplotlib <code>proj3d.inv_transform</code> returns 0-d). Coerced via <code>np.asarray(x).item()</code>.</li>
+          <li><code>flash_overlay()</code> / <code>refresh_selection_overlay()</code> crashed with <code>TclError: unknown color name "00FF00"</code> when <code>focus_highlight_color</code> was a bare hex string. Now auto-prepends <code>#</code>.</li>
+        </ul>
+        <p class="cl-test">Test status: <strong>81/81</strong> pass (77 main + 4 v1.0.1 regression tests).</p>
+      </article>
+
+      <!-- 1.0.0 -->
+      <article class="cl-card">
+        <header class="cl-head">
+          <span class="cl-version">v1.0.0</span>
+          <span class="cl-date">2026-06-04</span>
+          <span class="cl-tag cl-tag-new">initial release</span>
+        </header>
+        <p class="cl-blurb">The first public version. Multi-camera hand-tracking, accessibility navigation, 3D room mapping, all in one ~3,400-line Tkinter app.</p>
+        <h4>Highlights</h4>
+        <ul class="cl-list">
+          <li>Multi-camera (1-4) hand-tracking with async MediaPipe worker</li>
+          <li>One-Euro filter + velocity predictor for 1:1 tracking</li>
+          <li>Accessibility navigation: swipes → <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> / arrow keys, thumb-touches → <kbd>Enter</kbd> / right-click</li>
+          <li>Persistent green focus overlay (Win32 <code>GetGUIThreadInfo</code> at 10 Hz)</li>
+          <li>3D triangulation + interactive matplotlib room map with anchored walls / zones / hotspots</li>
+          <li>Engage gesture: open palm held ~0.6 s</li>
+          <li>Per-camera enable/disable with live-feed check</li>
+          <li>Fast Mode: 240p pre-downscale for ~30% faster MediaPipe inference</li>
+          <li>5-tab Tkinter GUI + live performance HUD</li>
+          <li>Single-instance lock, Ollama circuit breaker, 77-test suite, <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md">full docs in <code>docs/</code></a></li>
+        </ul>
+        <p class="cl-test">Test status: <strong>77/77</strong> pass (Linux path was hardcoded; only ran on the dev box).</p>
+      </article>
+
+    </div>
+
+    <p style="margin-top: 24px; text-align: center;">
+      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md" class="btn btn-ghost" style="display: inline-flex;">
+        View full changelog on GitHub →
+      </a>
+    </p>
+  </div>
+</section>
+
 <!-- PRESS KIT / SHARE -->
 <section id="press" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.03));">
   <div class="wrap reveal" data-reveal>
@@ -564,7 +700,8 @@ python3 tony_stark_hud_control.py</pre>
       Tony Stark Hand Control · MIT licensed ·
       <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub</a> ·
       <a href="mobile/">Mobile install</a> ·
-      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">Roadmap</a>
+      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">Roadmap</a> ·
+      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md">Changelog</a>
     </div>
     <div>
       Built with MediaPipe, OpenCV, Tkinter, matplotlib · No analytics · No tracking
