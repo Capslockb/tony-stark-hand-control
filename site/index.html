@@ -916,10 +916,16 @@ document.querySelectorAll('.press-btn[data-copy]').forEach(btn => {
         showToast('🖱️ Right Click'); sendBridge('click',{button:'right'});
         curGesture = 'Right Click';
       } else if (isOpenPalm(hand)) {
-        curGesture = 'Open Palm ⚡'; sendBridge('open_palm',{});
+        curGesture = 'Open Palm ⚡';
+        sendBridge('open_palm', {});
+        if (!zoomed) {
+          zoomFS();
+        } else {
+          exitFS();
+        }
       } else if (isFist(hand)) {
-        curGesture = 'Fist ✊'; sendBridge('fist',{});
-        exitFS();
+        curGesture = 'Fist ✊';
+        sendBridge('fist', {});
       } else {
         const sw = detectSwipe(hand);
         if (sw) {
