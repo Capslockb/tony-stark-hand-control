@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Tony Stark Hand Control — for your phone</title>
+  <meta name="description" content="Quick install guide for Tony Stark Hand Control, mobile-optimized. Big buttons. Clear steps. Under 2 minutes.">
+  <meta name="theme-color" content="#0b0d10">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://capslockb.github.io/tony-stark-hand-control/mobile/">
+  <meta property="og:title" content="Tony Stark Hand Control — Mobile Install">
+  <meta property="og:description" content="Quick install guide. Big buttons. Clear steps. Under 2 minutes.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="../assets/social-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    /* -------- Reset + tokens -------- */
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg: #0b0d10;
+      --bg-2: #11151a;
+      --bg-3: #1a1f26;
+      --fg: #e6e8eb;
+      --muted: #8b95a3;
+      --muted-2: #5c6573;
+      --accent: #ff5a1f;
+      --accent-2: #ffb000;
+      --green: #2ecc71;
+      --red: #e74c3c;
+      --border: #2a323c;
+      --tap: 56px;          /* minimum tap target */
+      --radius: 14px;
+      --pad: 20px;
+      --safe-top: env(safe-area-inset-top, 0);
+      --safe-bottom: env(safe-area-inset-bottom, 0);
+    }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: contain;
+    }
+    body { padding-bottom: calc(80px + var(--safe-bottom)); }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:active { opacity: 0.7; }
+    code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    /* -------- Layout -------- */
+    .page { max-width: 680px; margin: 0 auto; padding: 0 var(--pad); }
+    .pad-top { padding-top: calc(20px + var(--safe-top)); }
+    .pad-bottom { padding-bottom: 24px; }
+
+    /* -------- Header -------- */
+    header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px var(--pad);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; flex: 1; }
+    .brand-mark { width: 32px; height: 32px; }
+    .header-link { color: var(--muted); font-size: 14px; padding: 8px 4px; }
+
+    /* -------- Hero -------- */
+    .hero { padding: 28px 0 12px; }
+    .eyebrow {
+      display: inline-block; padding: 6px 12px; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--muted);
+      font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 36px; line-height: 1.1; letter-spacing: -1px;
+      margin: 0 0 12px; font-weight: 800;
+    }
+    h1 .glow {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .lede { font-size: 18px; color: var(--muted); margin: 0 0 24px; }
+
+    /* -------- Big CTAs (primary action surfaces) -------- */
+    .ctas { display: flex; flex-direction: column; gap: 12px; margin: 24px 0; }
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: var(--tap);
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      font-size: 17px; font-weight: 700;
+      border: 2px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      width: 100%;
+      -webkit-user-select: none; user-select: none;
+    }
+    .btn-primary { background: var(--accent); color: #0b0d10; }
+    .btn-primary:active { background: #e64a0f; }
+    .btn-ghost {
+      background: var(--bg-2); color: var(--fg);
+      border-color: var(--border);
+    }
+    .btn-ghost:active { background: var(--bg-3); }
+    .btn .icon { font-size: 20px; }
+
+    /* -------- Step list -------- */
+    .steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+    .step {
+      display: flex; gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      counter-increment: step;
+    }
+    .step:last-child { border-bottom: 0; }
+    .step-num {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #0b0d10;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 20px;
+    }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-size: 19px; font-weight: 700; margin: 4px 0 6px; }
+    .step-desc { color: var(--muted); margin: 0 0 12px; font-size: 16px; }
+    .step-command {
+      display: block;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      color: var(--accent-2);
+      word-break: break-all;
+      line-height: 1.45;
+    }
+    .copy-row { display: flex; gap: 8px; margin-top: 10px; }
+    .copy-btn {
+      flex: 1;
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--bg-3);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      font-size: 15px; font-weight: 600;
+      cursor: pointer;
+    }
+    .copy-btn:active { background: var(--border); }
+    .copy-btn.copied { background: rgba(46, 204, 113, 0.15); border-color: var(--green); color: var(--green); }
+
+    /* -------- OS switcher (segmented control) -------- */
+    .os-switcher {
+      display: flex; gap: 6px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      margin: 16px 0 24px;
+    }
+    .os-btn {
+      flex: 1;
+      min-height: 48px;
+      padding: 12px 8px;
+      background: transparent;
+      color: var(--muted);
+      border: 0;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer;
+    }
+    .os-btn[aria-selected="true"] {
+      background: var(--accent);
+      color: #0b0d10;
+    }
+    .os-btn:active { opacity: 0.8; }
+
+    /* -------- Section headings -------- */
+    h2 {
+      font-size: 24px; line-height: 1.2; letter-spacing: -0.3px;
+      margin: 32px 0 12px; font-weight: 700;
+    }
+    h3 { font-size: 17px; margin: 20px 0 8px; font-weight: 600; }
+    p { margin: 0 0 12px; }
+
+    /* -------- Direction card (gesture cheat sheet) -------- */
+    .dir-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .dir {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+    .dir .arrow { font-size: 28px; line-height: 1; margin-bottom: 6px; }
+    .dir .label { font-size: 13px; color: var(--muted); }
+    .dir .action { font-size: 14px; font-weight: 600; color: var(--fg); margin-top: 2px; }
+
+    /* -------- FAQ -------- */
+    details {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0;
+      margin: 10px 0;
+    }
+    details[open] { padding-bottom: 14px; }
+    summary {
+      list-style: none;
+      cursor: pointer;
+      min-height: 56px;
+      padding: 16px 18px;
+      font-size: 16px; font-weight: 600;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-size: 22px; color: var(--muted); transition: transform 0.2s; }
+    details[open] summary::after { content: "−"; }
+    summary:active { background: var(--bg-3); border-radius: 12px; }
+    .faq-body { padding: 0 18px; color: var(--muted); font-size: 15px; }
+
+    /* -------- Bottom action bar (always-visible primary CTA) -------- */
+    .bottom-bar {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      background: linear-gradient(180deg, transparent, var(--bg) 30%);
+      padding: 24px var(--pad) calc(16px + var(--safe-bottom));
+      z-index: 9;
+    }
+    .bottom-bar .btn { box-shadow: 0 10px 30px rgba(255, 90, 31, 0.25); }
+
+    /* -------- Trust strip -------- */
+    .trust {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin: 16px 0 8px;
+    }
+    .trust-badge {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--bg-2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .trust-badge.green { color: var(--green); border-color: rgba(46, 204, 113, 0.3); }
+
+    /* -------- Privacy / no-leak note -------- */
+    .note {
+      background: var(--bg-2);
+      border-left: 3px solid var(--green);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--muted);
+      margin: 16px 0;
+    }
+    .note strong { color: var(--fg); }
+
+    /* -------- Footer -------- */
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 32px var(--pad);
+    }
+    footer a { color: var(--muted); }
+
+    /* -------- Hide-on-desktop nudges (since this is the mobile page) -------- */
+    .desktop-only { display: none; }
+
+    @media (min-width: 820px) {
+      /* On wider screens, expand tap targets slightly and constrain width */
+      .page { max-width: 720px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
+      <circle cx="16" cy="16" r="14" stroke="#ff5a1f" stroke-width="2"/>
+      <circle cx="16" cy="16" r="6" fill="#ff5a1f"/>
+      <path d="M16 2 L20 8 L12 8 Z" fill="#ffb000"/>
+    </svg>
+    <span>Tony Stark Hand Control</span>
+  </div>
+  <a class="header-link" href="../">Desktop ↗</a>
+</header>
+
+<main class="page pad-top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="eyebrow">Mobile install</span>
+    <h1>Get the <span class="glow">installer</span> on your computer.</h1>
+    <p class="lede">
+      This page is built for phones. Big buttons, clear steps, no fiddly hover menus.
+      You'll be running the app in under 2&nbsp;minutes.
+    </p>
+    <div class="trust">
+      <span class="trust-badge green">● No telemetry</span>
+      <span class="trust-badge">MIT licensed</span>
+      <span class="trust-badge">Win / Mac / Linux</span>
+    </div>
+  </section>
+
+  <!-- PRIMARY CTA -->
+  <section>
+    <div class="ctas">
+      <a class="btn btn-primary" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest">
+        <span class="icon">⬇</span>
+        Download the installer
+      </a>
+      <a class="btn btn-ghost" href="https://github.com/Capslockb/tony-stark-hand-control">
+        <span class="icon">★</span>
+        Star on GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- 3-STEP INSTALL -->
+  <section>
+    <h2>Three steps. Under 2 minutes.</h2>
+
+    <div class="os-switcher" role="tablist" aria-label="Choose your operating system">
+      <button class="os-btn" data-os="win" role="tab" aria-selected="true">Windows</button>
+      <button class="os-btn" data-os="mac" role="tab" aria-selected="false">macOS</button>
+      <button class="os-btn" data-os="lin" role="tab" aria-selected="false">Linux</button>
+    </div>
+
+    <ol class="steps">
+      <li class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3 class="step-title">Download</h3>
+          <p class="step-desc" id="step1-desc">Tap the orange button above. GitHub will give you a single file.</p>
+          <div class="copy-row">
+            <a class="copy-btn" id="step1-btn" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest">
+              Open GitHub releases
+            </a>
+          </div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3 class="step-title">Run the installer</h3>
+          <p class="step-desc" id="step2-desc">
+            <strong>Windows:</strong> double-click the <code>.exe</code>. SmartScreen may warn you — click "More info" → "Run anyway".
+          </p>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3 class="step-title">Wave at your webcam</h3>
+          <p class="step-desc">
+            Hold an open palm toward the camera for half a second. The app shows <strong>Engaged</strong> in green. Then swipe to navigate.
+          </p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="note">
+      <strong>Privacy:</strong> The app runs entirely on your computer. No frames leave the device. No account, no signup, no analytics.
+    </div>
+  </section>
+
+  <!-- GESTURE CHEAT SHEET -->
+  <section>
+    <h2>What each gesture does</h2>
+    <p style="color: var(--muted);">Hold an open palm first to "engage" — about 0.6 seconds. Then try these:</p>
+    <div class="dir-grid">
+      <div class="dir">
+        <div class="arrow">→</div>
+        <div class="action">Next</div>
+        <div class="label">swipe right</div>
+      </div>
+      <div class="dir">
+        <div class="arrow">←</div>
+        <div class="action">Previous</div>
+        <div class="label">swipe left</div>
+      </div>
+      <div class="dir">
+        <div class="arrow">↑</div>
+        <div class="action">Up</div>
+        <div class="label">swipe up</div>
+      </div>
+      <div class="dir">
+        <div class="arrow">↓</div>
+        <div class="action">Down</div>
+        <div class="label">swipe down</div>
+      </div>
+      <div class="dir">
+        <div class="arrow">👌</div>
+        <div class="action">Activate</div>
+        <div class="label">thumb to index</div>
+      </div>
+      <div class="dir">
+        <div class="arrow">🤞</div>
+        <div class="action">Right-click</div>
+        <div class="label">thumb to middle</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section>
+    <h2>Quick answers</h2>
+    <details>
+      <summary>Does it cost anything?</summary>
+      <div class="faq-body">No. MIT-licensed open source. Free forever, no trial, no upsell.</div>
+    </details>
+    <details>
+      <summary>Does it work without internet?</summary>
+      <div class="faq-body">Yes. The hand-tracking pipeline is 100% local. The first launch downloads a 7&nbsp;MB model file; after that no network is used (unless you explicitly enable the optional Ollama gestures).</div>
+    </details>
+    <details>
+      <summary>What cameras work?</summary>
+      <div class="faq-body">Any UVC webcam — built-in laptop cam, USB webcam, or virtual camera. For 3D room mapping, two or more cameras spaced 10–30&nbsp;cm apart.</div>
+    </details>
+    <details>
+      <summary>Does it drain my battery?</summary>
+      <div class="faq-body">At idle (no hands in frame), it uses ~3% of one CPU core and ~200&nbsp;MB RAM. On a laptop this is roughly the same as a browser tab.</div>
+    </details>
+    <details>
+      <summary>Can I uninstall it?</summary>
+      <div class="faq-body">Yes. Delete the folder. The installer keeps everything self-contained — no system files touched, no registry entries on Windows, no daemons on Linux/macOS.</div>
+    </details>
+  </section>
+
+  <!-- DESKTOP LINK PROMPT (since this is the mobile page) -->
+  <section style="text-align: center; margin: 32px 0;">
+    <p style="color: var(--muted); margin-bottom: 12px;">Need the full feature tour?</p>
+    <a class="btn btn-ghost" href="../" style="max-width: 320px; margin: 0 auto;">
+      Open the full site →
+    </a>
+  </section>
+
+</main>
+
+<!-- BOTTOM-ANCHORED PRIMARY CTA (mobile pattern) -->
+<nav class="bottom-bar" aria-label="Primary actions">
+  <a class="btn btn-primary" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest">
+    <span class="icon">⬇</span>
+    Download for <span id="bottom-os">Windows</span>
+  </a>
+</nav>
+
+<footer>
+  Built with MediaPipe + OpenCV · No analytics · No tracking<br>
+  <a href="../">Desktop site</a> · <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub</a>
+</footer>
+
+<script>
+  // ---- OS switcher ----
+  const step1Desc = document.getElementById('step1-desc');
+  const step1Btn  = document.getElementById('step1-btn');
+  const step2Desc = document.getElementById('step2-desc');
+  const bottomOs  = document.getElementById('bottom-os');
+
+  const copy = {
+    win: {
+      step1: 'Tap the orange button above. GitHub will give you a single file.',
+      step1btn: 'Open GitHub releases (Windows .exe)',
+      step2: '<strong>Windows:</strong> double-click the <code>.exe</code>. SmartScreen may warn you — tap "More info" → "Run anyway".',
+      bottom: 'Windows',
+    },
+    mac: {
+      step1: 'On a Mac? Use a <code>.zip</code> for Apple Silicon, or build from source. The prebuilt is Windows-only for now.',
+      step1btn: 'Open GitHub releases',
+      step2: '<strong>macOS:</strong> download the <code>.zip</code> for Apple Silicon, or build from source with <code>python3 install_wizard.py</code>. The prebuilt Windows .exe does not run on macOS — use the source build instead.',
+      bottom: 'macOS (source)',
+    },
+    lin: {
+      step1: 'On Linux? The prebuilt <code>.tar.gz</code> is x86_64 only. For ARM or other arches, build from source.',
+      step1btn: 'Open GitHub releases',
+      step2: '<strong>Linux:</strong> extract the <code>.tar.gz</code> and run <code>./tony_stark_hud_control.sh</code>. For source: <code>python3 install_wizard.py</code>.',
+      bottom: 'Linux (source)',
+    },
+  };
+
+  function setOs(os) {
+    document.querySelectorAll('.os-btn').forEach(b => {
+      b.setAttribute('aria-selected', b.dataset.os === os ? 'true' : 'false');
+    });
+    step1Desc.textContent = copy[os].step1;
+    step1Btn.textContent = copy[os].step1btn;
+    step2Desc.innerHTML = copy[os].step2;
+    bottomOs.textContent = copy[os].bottom;
+    // Persist the choice so it sticks on the desktop site
+    try { localStorage.setItem('preferred-os', os); } catch (e) {}
+  }
+  document.querySelectorAll('.os-btn').forEach(b => {
+    b.addEventListener('click', () => setOs(b.dataset.os));
+  });
+  // Restore preference
+  try {
+    const saved = localStorage.getItem('preferred-os');
+    if (saved && copy[saved]) setOs(saved);
+  } catch (e) {}
+
+  // ---- Copy-to-clipboard for any future command blocks ----
+  document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy);
+        btn.classList.add('copied');
+        const orig = btn.textContent;
+        btn.textContent = 'Copied ✓';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = orig; }, 1500);
+      } catch (e) {
+        btn.textContent = 'Copy failed';
+        setTimeout(() => { btn.textContent = btn.dataset.copy || ''; }, 1500);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
