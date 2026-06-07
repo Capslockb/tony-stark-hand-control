@@ -32,10 +32,31 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Render social card PNG
+      - name: Render social card JPEG (with grain baked in)
         run: |
-          pip install --quiet cairosvg
-          python -c "import cairosvg; cairosvg.svg2png(url='site/assets/social-card.svg', write_to='site/assets/social-card.png', output_width=1200, output_height=630)"
+          pip install --quiet cairosvg numpy Pillow
+          python3 - <<'PYEOF'
+          import cairosvg
+          from PIL import Image
+          cairosvg.svg2png(
+              url='site/assets/social-card.svg',
+              write_to='/tmp/card-clean.png',
+              output_width=1200, output_height=630,
+          )
+          img = Image.open('/tmp/card-clean.png').convert('RGBA')
+          grain_tile = Image.open('site/assets/grain.png').convert('RGBA')
+          layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+          for y in range(0, img.size[1], 120):
+              for x in range(0, img.size[0], 120):
+                  layer.paste(grain_tile, (x, y))
+          layer.putalpha(layer.split()[3].point(lambda v: int(v * 0.4)))
+          img.alpha_composite(layer)
+          result = img.convert('RGB')
+          result.save(
+              'site/assets/social-card.jpg', 'JPEG',
+              quality=85, optimize=True, progressive=True,
+          )
+          PYEOF
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

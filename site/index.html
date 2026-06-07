@@ -12,11 +12,23 @@
   <meta property="og:title" content="Tony Stark Hand Control">
   <meta property="og:description" content="Multi-camera hand tracking + 3D room mapping for PC control. Local-only. Open source.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/social-card.png">
+  <meta property="og:image" content="assets/social-card.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Tony Stark Hand Control">
   <meta name="twitter:description" content="Multi-camera hand tracking + 3D room mapping for PC control. Local-only. Open source.">
   <style>
+    /* -------- Background grain (procedural PNG, ~11 KB) -------- */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url("assets/grain.png");
+      background-repeat: repeat;
+      background-size: 120px 120px;
+      opacity: 0.18;
+    }
+    body { position: relative; z-index: 1; }
     :root {
       --bg: #0b0d10;
       --bg-2: #11151a;
