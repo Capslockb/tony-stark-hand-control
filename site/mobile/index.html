@@ -277,6 +277,43 @@
     }
     .bottom-bar .btn { box-shadow: 0 10px 30px rgba(255, 90, 31, 0.25); }
 
+    /* -------- Share / press kit (mobile) -------- */
+    .share-card {
+      margin: 16px 0;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .share-card a { display: block; aspect-ratio: 1200 / 630; background: #0b0d10; }
+    .share-card img {
+      display: block;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .share-card figcaption {
+      padding: 14px 16px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .share-dim { font-size: 12px; color: var(--muted); }
+    .share-actions { display: flex; gap: 8px; }
+    .share-btn {
+      flex: 1;
+      min-height: 48px;
+      padding: 11px 14px;
+      background: var(--bg-3);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .share-btn:active { background: var(--border); }
+    .share-btn.copied { background: rgba(46, 204, 113, 0.15); border-color: var(--green); color: var(--green); }
+
     /* -------- Trust strip -------- */
     .trust {
       display: flex; flex-wrap: wrap; gap: 6px;
@@ -479,6 +516,27 @@
     </details>
   </section>
 
+  <!-- SHARE / PRESS KIT -->
+  <section class="reveal" data-reveal>
+    <h2>Sharing the project?</h2>
+    <p style="color: var(--muted); font-size: 15px;">Here's a ready-to-go image with the dimensions Discord, Slack, X, and LinkedIn all expect.</p>
+    <figure class="share-card">
+      <a href="../assets/social-card.jpg" target="_blank" rel="noopener">
+        <img src="../assets/social-card.jpg" alt="Tony Stark Hand Control social card 1200x630" width="600" height="315" loading="lazy" decoding="async">
+      </a>
+      <figcaption>
+        <span class="share-dim">1200 × 630 · JPG · 124 KB</span>
+        <div class="share-actions">
+          <a class="share-btn" href="../assets/social-card.jpg" download>⬇ Download</a>
+          <button class="share-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.jpg" type="button">🔗 Copy URL</button>
+        </div>
+      </figcaption>
+    </figure>
+    <p style="color: var(--muted); font-size: 14px; margin-top: 16px;">
+      <em>"Hand-track your PC with a webcam. Local-only, no telemetry, MIT licensed. ⬇ capslockb.github.io/tony-stark-hand-control"</em>
+    </p>
+  </section>
+
   <!-- DESKTOP LINK PROMPT (since this is the mobile page) -->
   <section style="text-align: center; margin: 32px 0;">
     <p style="color: var(--muted); margin-bottom: 12px;">Need the full feature tour?</p>
@@ -550,8 +608,8 @@
     if (saved && copy[saved]) setOs(saved);
   } catch (e) {}
 
-  // ---- Copy-to-clipboard for any future command blocks ----
-  document.querySelectorAll('.copy-btn[data-copy]').forEach(btn => {
+  // ---- Copy-to-clipboard (install steps + share kit) ----
+  document.querySelectorAll('.copy-btn[data-copy], .share-btn[data-copy]').forEach(btn => {
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(btn.dataset.copy);
@@ -561,7 +619,7 @@
         setTimeout(() => { btn.classList.remove('copied'); btn.textContent = orig; }, 1500);
       } catch (e) {
         btn.textContent = 'Copy failed';
-        setTimeout(() => { btn.textContent = btn.dataset.copy || ''; }, 1500);
+        setTimeout(() => { btn.textContent = btn.dataset.copy ? '🔗 Copy URL' : ''; }, 1500);
       }
     });
   });

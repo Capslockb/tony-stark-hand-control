@@ -68,6 +68,67 @@
       .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
       .hero-bg { transform: none; }
     }
+
+    /* -------- Press kit / share images -------- */
+    .press-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+    .press-grid > .press-card:nth-child(3) { grid-column: 1 / -1; }
+    @media (max-width: 720px) {
+      .press-grid { grid-template-columns: 1fr; }
+      .press-grid > .press-card:nth-child(3) { grid-column: auto; }
+    }
+    .press-card {
+      margin: 0;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .press-frame {
+      display: block;
+      aspect-ratio: 1200 / 630;
+      background: #0b0d10;
+      overflow: hidden;
+      position: relative;
+    }
+    .press-frame img {
+      display: block;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .press-frame:hover img { transform: scale(1.02); }
+    .press-frame-square { aspect-ratio: 1 / 1; }
+    .press-frame-square img { object-fit: contain; padding: 12%; }
+    figcaption {
+      padding: 14px 16px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .press-meta { display: flex; flex-direction: column; gap: 2px; }
+    .press-meta strong { font-size: 15px; }
+    .press-dim { font-size: 12px; color: var(--muted); }
+    .press-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .press-btn {
+      flex: 1;
+      min-height: 40px;
+      padding: 9px 12px;
+      background: var(--bg-3);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .press-btn:active { background: var(--border); }
+    .press-btn.copied { background: rgba(46, 204, 113, 0.15); border-color: var(--green); color: var(--green); }
     :root {
       --bg: #0b0d10;
       --bg-2: #11151a;
@@ -230,6 +291,7 @@
     <a href="#install">Install</a>
     <a href="#privacy">Privacy</a>
     <a href="#roadmap">Roadmap</a>
+    <a href="#press">Press</a>
     <a href="mobile/">Mobile</a>
     <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub →</a>
   </div>
@@ -428,6 +490,74 @@ python3 tony_stark_hud_control.py</pre>
   </div>
 </section>
 
+<!-- PRESS KIT / SHARE -->
+<section id="press" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.03));">
+  <div class="wrap reveal" data-reveal>
+    <h2>Press kit &amp; share images</h2>
+    <p class="muted" style="max-width: 720px;">
+      Sharing Tony Stark Hand Control? These assets are sized for GitHub, Discord, Slack,
+      X / Twitter, and LinkedIn. Drop them straight into your post — no edits needed.
+    </p>
+
+    <div class="press-grid">
+      <!-- 1200x630 social card (default share) -->
+      <figure class="press-card">
+        <a href="assets/social-card.jpg" target="_blank" rel="noopener" class="press-frame">
+          <img src="assets/social-card.jpg" alt="Tony Stark Hand Control social card (1200x630)" width="600" height="315" loading="lazy" decoding="async">
+        </a>
+        <figcaption>
+          <div class="press-meta">
+            <strong>Social card</strong>
+            <span class="press-dim">1200 × 630 · JPG · 124 KB</span>
+          </div>
+          <div class="press-actions">
+            <a class="press-btn" href="assets/social-card.jpg" download>⬇ Download</a>
+            <button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.jpg" type="button">🔗 Copy URL</button>
+          </div>
+        </figcaption>
+      </figure>
+
+      <!-- Favicon / app icon -->
+      <figure class="press-card">
+        <a href="assets/favicon.svg" target="_blank" rel="noopener" class="press-frame press-frame-square">
+          <img src="assets/favicon.svg" alt="Tony Stark Hand Control favicon" width="180" height="180" loading="lazy" decoding="async">
+        </a>
+        <figcaption>
+          <div class="press-meta">
+            <strong>App icon</strong>
+            <span class="press-dim">Vector SVG · scales to any size</span>
+          </div>
+          <div class="press-actions">
+            <a class="press-btn" href="assets/favicon.svg" download>⬇ Download</a>
+            <button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/favicon.svg" type="button">🔗 Copy URL</button>
+          </div>
+        </figcaption>
+      </figure>
+
+      <!-- Source SVG (for remix) -->
+      <figure class="press-card">
+        <a href="assets/social-card.svg" target="_blank" rel="noopener" class="press-frame">
+          <img src="assets/social-card.svg" alt="Tony Stark Hand Control social card (SVG source)" width="600" height="315" loading="lazy" decoding="async">
+        </a>
+        <figcaption>
+          <div class="press-meta">
+            <strong>Source SVG</strong>
+            <span class="press-dim">Remix this — change colors, text, layout</span>
+          </div>
+          <div class="press-actions">
+            <a class="press-btn" href="assets/social-card.svg" download>⬇ Download</a>
+            <button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.svg" type="button">🔗 Copy URL</button>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+
+    <p class="muted" style="margin-top: 24px; font-size: 15px;">
+      Suggested caption: <em>"Hand-track your PC with a webcam. Local-only, no telemetry, MIT licensed. ⬇ capslockb.github.io/tony-stark-hand-control"</em>
+    </p>
+  </div>
+</section>
+
 <footer>
   <div class="wrap footer-grid">
     <div>
@@ -475,6 +605,22 @@ python3 tony_stark_hud_control.py</pre>
     // Fallback: show everything
     revealTargets.forEach(el => el.classList.add('in'));
   }
+
+  // -------- Press kit: copy-URL buttons --------
+  document.querySelectorAll('.press-btn[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy);
+        btn.classList.add('copied');
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = orig; }, 1500);
+      } catch (e) {
+        btn.textContent = 'Copy failed';
+        setTimeout(() => { btn.textContent = '🔗 Copy URL'; }, 1500);
+      }
+    });
+  });
 
   // -------- Hero parallax (scroll-linked, not RAF, for perf) --------
   const heroBg = document.querySelector('.hero-bg');
