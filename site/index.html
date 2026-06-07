@@ -189,6 +189,17 @@
     }
     @media (max-width: 820px) {
       .demo-shell { grid-template-columns: 1fr; }
+      .demo-frame { min-height: 260px; }
+      .demo-empty { padding: 16px; }
+      .demo-empty h3 { font-size: 16px; }
+      .demo-empty p { max-width: 100%; font-size: 13px; }
+      .demo-cta { font-size: 14px; padding: 10px 16px; }
+      .demo-side .demo-card { padding: 12px 14px; }
+      .demo-side .demo-card p { font-size: 13px; }
+      .demo-overlay { font-size: 11px; padding: 4px 8px; top: 8px; left: 8px; }
+    }
+    @media (max-width: 420px) {
+      .demo-frame { min-height: 200px; }
     }
     .demo-frame {
       position: relative;
@@ -1048,6 +1059,7 @@ python3 tony_stark_hud_control.py</pre>
     let engaged = false;
     let lastOpenHandTs = 0;
     let lastClosedHandTs = 0;
+    let wasHandOpen = false;  // tracks prev state so we only timestamp transitions
     let lastFingerFireTs = 0;
     const FINGER_COOLDOWN_S = 0.5;
 
@@ -1117,8 +1129,10 @@ python3 tony_stark_hud_control.py</pre>
       const palmAvg = palmHistory.reduce((a, b) => a + (b ? 1 : 0), 0) / palmHistory.length;
 
       // Engage: palm open for ENGAGE_HOLD_S seconds (>60% of last N frames)
-      if (palmAvg >= 0.6) lastOpenHandTs = now;
-      else lastClosedHandTs = now;
+      const isHandOpen = palmAvg >= 0.6;
+      if (isHandOpen && !wasHandOpen) lastOpenHandTs = now;   // transition: closed → open
+      else if (!isHandOpen && wasHandOpen) lastClosedHandTs = now;  // transition: open → closed
+      wasHandOpen = isHandOpen;
 
       if (!engaged && (now - lastOpenHandTs >= ENGAGE_HOLD_S)) setEngaged(true);
       else if (engaged && (now - lastClosedHandTs >= DISENGAGE_HOLD_S)) setEngaged(false);
