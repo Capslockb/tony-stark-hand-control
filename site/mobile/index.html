@@ -9,6 +9,7 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="canonical" href="https://capslockb.github.io/tony-stark-hand-control/mobile/">
+  <link rel="preload" as="image" href="../assets/grain.png">
   <meta property="og:title" content="Tony Stark Hand Control — Mobile Install">
   <meta property="og:description" content="Quick install guide. Big buttons. Clear steps. Under 2 minutes.">
   <meta property="og:type" content="website">
@@ -27,6 +28,19 @@
       opacity: 0.18;
     }
     body { position: relative; z-index: 1; }
+
+    /* -------- Scroll-driven reveal -------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
+    }
+
     /* -------- Reset + tokens -------- */
     *, *::before, *::after { box-sizing: border-box; }
     :root {
@@ -79,8 +93,14 @@
     .brand-mark { width: 32px; height: 32px; }
     .header-link { color: var(--muted); font-size: 14px; padding: 8px 4px; }
 
-    /* -------- Hero -------- */
-    .hero { padding: 28px 0 12px; }
+    /* -------- Hero --------
+       Position: not flush to the top, not centered in the middle.
+       Left-aligned text, with deliberate top breathing room
+       (min 80px, scales to 12vh on tall phones). The "Wave at your
+       webcam" CTA visible above the fold. */
+    .hero {
+      padding: clamp(60px, 12vh, 120px) 0 16px;
+    }
     .eyebrow {
       display: inline-block; padding: 6px 12px; border-radius: 999px;
       border: 1px solid var(--border); color: var(--muted);
@@ -88,8 +108,11 @@
       margin-bottom: 16px;
     }
     h1 {
-      font-size: 36px; line-height: 1.1; letter-spacing: -1px;
+      font-size: clamp(32px, 9vw, 40px); line-height: 1.1; letter-spacing: -1px;
       margin: 0 0 12px; font-weight: 800;
+      /* Ensure h1 starts at the top of the .hero, not centered in
+         the remaining vertical space. */
+      align-self: flex-start;
     }
     h1 .glow {
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
@@ -310,13 +333,14 @@
     </svg>
     <span>Tony Stark Hand Control</span>
   </div>
+  <a class="header-link" href="https://github.com/Capslockb/tony-stark-hand-control">GitHub</a>
   <a class="header-link" href="../">Desktop ↗</a>
 </header>
 
 <main class="page pad-top">
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero reveal" data-reveal>
     <span class="eyebrow">Mobile install</span>
     <h1>Get the <span class="glow">installer</span> on your computer.</h1>
     <p class="lede">
@@ -331,7 +355,7 @@
   </section>
 
   <!-- PRIMARY CTA -->
-  <section>
+  <section class="reveal" data-reveal>
     <div class="ctas">
       <a class="btn btn-primary" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest">
         <span class="icon">⬇</span>
@@ -345,7 +369,7 @@
   </section>
 
   <!-- 3-STEP INSTALL -->
-  <section>
+  <section class="reveal" data-reveal>
     <h2>Three steps. Under 2 minutes.</h2>
 
     <div class="os-switcher" role="tablist" aria-label="Choose your operating system">
@@ -393,7 +417,7 @@
   </section>
 
   <!-- GESTURE CHEAT SHEET -->
-  <section>
+  <section class="reveal" data-reveal>
     <h2>What each gesture does</h2>
     <p style="color: var(--muted);">Hold an open palm first to "engage" — about 0.6 seconds. Then try these:</p>
     <div class="dir-grid">
@@ -431,7 +455,7 @@
   </section>
 
   <!-- FAQ -->
-  <section>
+  <section class="reveal" data-reveal>
     <h2>Quick answers</h2>
     <details>
       <summary>Does it cost anything?</summary>
@@ -475,7 +499,7 @@
 
 <footer>
   Built with MediaPipe + OpenCV · No analytics · No tracking<br>
-  <a href="../">Desktop site</a> · <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub</a>
+  <a href="../">Desktop site</a> · <a href="mobile/">Mobile (this page)</a> · <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub</a>
 </footer>
 
 <script>
@@ -541,6 +565,23 @@
       }
     });
   });
+
+  // ---- Scroll-driven reveal ----
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const revealTargets = document.querySelectorAll('[data-reveal], .reveal');
+  if ('IntersectionObserver' in window && !reduced) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    revealTargets.forEach(el => io.observe(el));
+  } else {
+    revealTargets.forEach(el => el.classList.add('in'));
+  }
 </script>
 
 </body>
