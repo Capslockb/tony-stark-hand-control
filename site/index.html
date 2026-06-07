@@ -611,6 +611,18 @@
   </div>
 </section>
 
+<!-- DEMO → INSTALL BRIDGE -->
+<section style="background: linear-gradient(180deg, rgba(255,90,31,0.02), transparent);">
+  <div class="wrap" style="text-align: center; padding: 8px 0 0;">
+    <a href="#install" class="btn btn-primary" style="display: inline-flex;">
+      ⬇ Loved it? Install on your PC
+    </a>
+    <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">
+      Free · MIT licensed · 100% local · Windows / macOS / Linux
+    </p>
+  </div>
+</section>
+
 <!-- FEATURES -->
 <section id="features">
   <div class="wrap reveal" data-reveal>
@@ -1228,7 +1240,7 @@ python3 tony_stark_hud_control.py</pre>
         if (e.name === 'NotAllowedError') msg = 'Camera permission was denied. Click the camera icon in your browser address bar to allow it, then try again.';
         else if (e.name === 'NotFoundError') msg = 'No camera found. Plug in a webcam and try again.';
         else if (e.name === 'NotReadableError') msg = 'Camera is in use by another application. Close it and try again.';
-        else if (/wasm/i.test(msg)) msg = 'WebAssembly failed to load. Your browser may be too old. Try Chrome, Firefox, or Safari 15+.';
+        else if (/wasm/i.test(msg)) msg = 'WebAssembly failed to load. Your browser may be too old. Try Chrome, Firefox, or Safari 15+. If you are on a corporate network, the CDN at jsdelivr.net or the model at storage.googleapis.com may be blocked.';
         showError(msg);
       }
     }
