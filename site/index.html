@@ -1050,7 +1050,8 @@ python3 tony_stark_hud_control.py</pre>
     // is_palm_open / HandProcessor). Wrist-relative distance is mirrored-camera
     // safe (doesn't depend on Y-axis convention).
     const ENGAGE_HOLD_S = 0.6;
-    const DISENGAGE_HOLD_S = 0.3;
+    const DISENGAGE_HOLD_S = 1.5;
+    const DISENGAGE_THRESHOLD = 0.3;  // must be strongly closed, not just barely
     const FINGER_TIP_TO_PIP = 0.06;  // normalized units
     const PALM_EXTENSION_THRESHOLD = 0.04;
     const RING_BUFFER_LEN = 6;
@@ -1058,8 +1059,8 @@ python3 tony_stark_hud_control.py</pre>
     const fingerHistory = { index: [], middle: [], ring: [], pinky: [] };
     let engaged = false;
     let lastOpenHandTs = 0;
-    let lastClosedHandTs = 0;
-    let wasHandOpen = false;  // tracks prev state so we only timestamp transitions
+    let lastClosedHandTs = -1;  // -1 = never set; only check timer if set
+    let wasHandOpen = false;
     let lastFingerFireTs = 0;
     const FINGER_COOLDOWN_S = 0.5;
 
@@ -1138,12 +1139,13 @@ python3 tony_stark_hud_control.py</pre>
 
       // Engage: palm open for ENGAGE_HOLD_S seconds (>60% of last N frames)
       const isHandOpen = palmAvg >= 0.6;
+      const isHandClosed = palmAvg < DISENGAGE_THRESHOLD;  // hysteresis: only disengage if strongly closed
       if (isHandOpen && !wasHandOpen) lastOpenHandTs = now;   // transition: closed → open
-      else if (!isHandOpen && wasHandOpen) lastClosedHandTs = now;  // transition: open → closed
-      wasHandOpen = isHandOpen;
+      else if (isHandClosed && wasHandOpen) lastClosedHandTs = now;  // transition: open → strongly closed
+      wasHandOpen = isHandOpen || (engaged && !isHandClosed);  // stay 'open' in hysteresis gap
 
       if (!engaged && (now - lastOpenHandTs >= ENGAGE_HOLD_S)) setEngaged(true);
-      else if (engaged && (now - lastClosedHandTs >= DISENGAGE_HOLD_S)) setEngaged(false);
+      else if (engaged && lastClosedHandTs > 0 && (now - lastClosedHandTs >= DISENGAGE_HOLD_S)) setEngaged(false);
 
       if (!engaged) return;
 
