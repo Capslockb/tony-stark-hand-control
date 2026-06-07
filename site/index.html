@@ -361,7 +361,7 @@
     .demo-log-line .key { color: var(--accent-2); font-weight: 600; }
     .demo-log-line .lbl { color: var(--fg); }
     .demo-log:empty::before {
-      content: "Hold an open palm for 0.6 s to engage. Then curl index → Tab, middle → Enter, etc.";
+      content: "Hold an open palm for 0.6 s → fullscreen. Then curl index → Tab, middle → Enter, etc. Lower hand → exit fullscreen.";
       color: var(--muted-2);
       font-family: inherit;
       font-size: 12px;
@@ -611,7 +611,7 @@
         </div>
         <div class="demo-card">
           <h4>How it works</h4>
-          <p>Loads <code>@mediapipe/tasks-vision</code> from a CDN, opens your webcam with <code>getUserMedia()</code>, runs <code>HandLandmarker</code> in VIDEO mode on every frame, draws the 21-landmark skeleton over the video, and dispatches real <code>KeyboardEvent</code>s to the page. Hold an open palm for 0.6 s to engage, then curl your index finger → <kbd>Tab</kbd>, middle → <kbd>Enter</kbd>, ring → <kbd>↑</kbd>, pinky → <kbd>↓</kbd>. The desktop app does the same thing, plus One-Euro smoothing and per-gesture hooks.</p>
+          <p>Loads <code>@mediapipe/tasks-vision</code> from a CDN, opens your webcam with <code>getUserMedia()</code>, runs <code>HandLandmarker</code> in VIDEO mode on every frame, draws the 21-landmark skeleton over the video, and dispatches real <code>KeyboardEvent</code>s to the page. Hold an open palm for 0.6 s to engage (page enters fullscreen), then curl your index finger → <kbd>Tab</kbd>, middle → <kbd>Enter</kbd>, ring → <kbd>↑</kbd>, pinky → <kbd>↓</kbd>. Lower your hand to disengage and exit fullscreen. The desktop app does the same thing, plus One-Euro smoothing and per-gesture hooks.</p>
         </div>
         <div class="demo-card demo-error" id="demo-error-card" hidden>
           <h4>⚠ Couldn't start</h4>
@@ -1119,6 +1119,14 @@ python3 tony_stark_hud_control.py</pre>
       pill.hidden = false;
       engageLabel().textContent = state ? '● Engaged' : 'Disengaged';
       appendLog(state ? '●' : '○', state ? 'engaged — gestures active' : 'disengaged — gestures paused');
+      // Fullscreen: engaged opens, disengaged closes
+      if (state) {
+        try { document.documentElement.requestFullscreen(); } catch (e) {}
+      } else {
+        if (document.fullscreenElement) {
+          try { document.exitFullscreen(); } catch (e) {}
+        }
+      }
     }
 
     function tickGestures(landmarks) {
@@ -1247,6 +1255,8 @@ python3 tony_stark_hud_control.py</pre>
         const engage = document.getElementById('demo-engage');
         if (engage) engage.hidden = false;
         privacyCard.hidden = true;  // we already started, hide the prompt
+        // Pre-warm fullscreen (user gesture context from the click)
+        try { document.documentElement.requestFullscreen(); } catch (fsErr) { /* silently fail — still works without FS */ }
         loop();
       } catch (e) {
         console.error('Demo startup failed:', e);
