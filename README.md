@@ -10,6 +10,9 @@ A local-first, accessibility-focused hand-tracking system. Point one (or up to f
 [![Local-only](https://img.shields.io/badge/privacy-100%25%20local-success)](#privacy)
 [![Tests: 81/81](https://img.shields.io/badge/tests-81%2F81%20passing-brightgreen)](#tests)
 
+> 🌐 **Live site:** [**capslockb.github.io/tony-stark-hand-control**](https://capslockb.github.io/tony-stark-hand-control/) — install in 60 seconds, no clone required.
+> 📱 **On your phone?** Open the mobile install page: [**capslockb.github.io/tony-stark-hand-control/mobile**](https://capslockb.github.io/tony-stark-hand-control/mobile/)
+
 <p align="center">
   <img src="docs/images/architecture.svg" alt="Architecture overview" width="720">
 </p>
