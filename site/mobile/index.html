@@ -29,16 +29,61 @@
     }
     body { position: relative; z-index: 1; }
 
-    /* -------- Scroll-driven reveal -------- */
-    .reveal {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: opacity, transform;
+    /* -------- Page-load animations (run once, no scroll trigger) -------- */
+    .load-fade { opacity: 0; transform: translateY(12px); animation: loadFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .load-fade-1 { animation-delay: 0.10s; }
+    .load-fade-2 { animation-delay: 0.22s; }
+    .load-fade-3 { animation-delay: 0.34s; }
+    .load-fade-4 { animation-delay: 0.46s; }
+    .load-fade-5 { animation-delay: 0.58s; }
+    @keyframes loadFade { to { opacity: 1; transform: translateY(0); } }
+    .load-glow { opacity: 0; animation: loadGlow 1.2s ease forwards; animation-delay: 0.5s; }
+    @keyframes loadGlow { 0% { opacity: 0; filter: blur(6px); transform: scale(0.95); } 60% { opacity: 1; filter: blur(0); transform: scale(1.02); } 100% { opacity: 1; filter: blur(0); transform: scale(1); } }
+    .icon-pop { opacity: 0; transform: scale(0.6); animation: iconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .icon-pop-1 { animation-delay: 0.20s; }
+    .icon-pop-2 { animation-delay: 0.35s; }
+    .icon-pop-3 { animation-delay: 0.50s; }
+    @keyframes iconPop { to { opacity: 1; transform: scale(1); } }
+
+    /* -------- Section title slide-in (fires on scroll) -------- */
+    .reveal-title { opacity: 0; transform: translateX(-24px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal-title.in { opacity: 1; transform: translateX(0); }
+    .reveal-title::before {
+      content: ""; display: inline-block; width: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      vertical-align: middle; margin-right: 12px; border-radius: 2px;
+      transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
     }
-    .reveal.in { opacity: 1; transform: translateY(0); }
+    .reveal-title.in::before { width: 36px; }
+
+    /* -------- Card / step hover lift -------- */
+    .step, .dir, details, .cl-card, .share-card { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, box-shadow 0.4s ease; }
+    .step:active, .dir:active { transform: scale(0.98); }
+    details[open] { transform: translateY(-2px); border-color: rgba(255,90,31,0.3); }
+    .cl-card:hover { transform: translateY(-2px); border-color: rgba(255,90,31,0.4); }
+    .share-card:hover { transform: translateY(-3px); }
+
+    /* -------- Button micro-interactions -------- */
+    .btn { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s, background 0.2s, box-shadow 0.2s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary:hover { filter: brightness(1.08); box-shadow: 0 8px 24px rgba(255,90,31,0.4); }
+    .btn:active { transform: translateY(0) scale(0.98); }
+    .copy-btn, .share-btn { transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; }
+    .copy-btn:hover, .share-btn:hover { transform: translateY(-1px); }
+    .os-btn { transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease; }
+    .os-btn:active { transform: scale(0.96); }
+
+    /* -------- Smooth focus rings for accessibility -------- */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--accent-2);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
+      .reveal, .reveal.in, .reveal-title, .reveal-title.in { opacity: 1; transform: none; transition: none; }
+      .load-fade, .load-glow, .icon-pop { opacity: 1; transform: none; animation: none; }
+      .step, .dir, details, .cl-card, .share-card, .btn, .copy-btn, .share-btn, .os-btn { transition: none; }
     }
 
     /* -------- Reset + tokens -------- */
@@ -412,16 +457,16 @@
 
   <!-- HERO -->
   <section class="hero reveal" data-reveal>
-    <span class="eyebrow">Mobile install</span>
-    <h1>Get the <span class="glow">installer</span> on your computer.</h1>
-    <p class="lede">
+    <span class="eyebrow load-fade load-fade-1">Mobile install</span>
+    <h1 class="load-glow">Get the <span class="glow">installer</span> on your computer.</h1>
+    <p class="lede load-fade load-fade-2">
       This page is built for phones. Big buttons, clear steps, no fiddly hover menus.
       You'll be running the app in under 2&nbsp;minutes.
     </p>
-    <div class="trust">
-      <span class="trust-badge green">● No telemetry</span>
-      <span class="trust-badge">MIT licensed</span>
-      <span class="trust-badge">Win / Mac / Linux</span>
+    <div class="trust load-fade load-fade-3">
+      <span class="trust-badge green icon-pop icon-pop-1">● No telemetry</span>
+      <span class="trust-badge icon-pop icon-pop-2">MIT licensed</span>
+      <span class="trust-badge icon-pop icon-pop-3">Win / Mac / Linux</span>
     </div>
   </section>
 
@@ -441,7 +486,7 @@
 
   <!-- 3-STEP INSTALL -->
   <section class="reveal" data-reveal>
-    <h2>Three steps. Under 2 minutes.</h2>
+    <h2><span class="reveal-title">Three steps. Under 2 minutes.</span></h2>
 
     <div class="os-switcher" role="tablist" aria-label="Choose your operating system">
       <button class="os-btn" data-os="win" role="tab" aria-selected="true">Windows</button>
@@ -489,7 +534,7 @@
 
   <!-- GESTURE CHEAT SHEET -->
   <section class="reveal" data-reveal>
-    <h2>What each gesture does</h2>
+    <h2><span class="reveal-title">What each gesture does</span></h2>
     <p style="color: var(--muted);">Hold an open palm first to "engage" — about 0.6 seconds. Then try these:</p>
     <div class="dir-grid">
       <div class="dir">
@@ -527,7 +572,7 @@
 
   <!-- FAQ -->
   <section class="reveal" data-reveal>
-    <h2>Quick answers</h2>
+    <h2><span class="reveal-title">Quick answers</span></h2>
     <details>
       <summary>Does it cost anything?</summary>
       <div class="faq-body">No. MIT-licensed open source. Free forever, no trial, no upsell.</div>
@@ -552,7 +597,7 @@
 
   <!-- RELEASE NOTES -->
   <section class="reveal" data-reveal>
-    <h2>What's new</h2>
+    <h2><span class="reveal-title">What's new</span></h2>
     <article class="cl-card cl-current" style="margin-top: 16px;">
       <header class="cl-head">
         <span class="cl-version">v1.0.3</span>
@@ -580,7 +625,7 @@
 
   <!-- SHARE / PRESS KIT -->
   <section class="reveal" data-reveal>
-    <h2>Sharing the project?</h2>
+    <h2><span class="reveal-title">Sharing the project?</span></h2>
     <p style="color: var(--muted); font-size: 15px;">Here's a ready-to-go image with the dimensions Discord, Slack, X, and LinkedIn all expect.</p>
     <figure class="share-card">
       <a href="../assets/social-card.jpg" target="_blank" rel="noopener">
@@ -688,7 +733,7 @@
 
   // ---- Scroll-driven reveal ----
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const revealTargets = document.querySelectorAll('[data-reveal], .reveal');
+  const revealTargets = document.querySelectorAll('[data-reveal], .reveal, .reveal-title');
   if ('IntersectionObserver' in window && !reduced) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach(entry => {

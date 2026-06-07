@@ -51,10 +51,24 @@
     #content th { background: var(--bg-2); font-weight: 600; }
 
     .doc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 24px; }
-    .doc-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-decoration: none; color: var(--fg); transition: border-color 0.2s; }
-    .doc-card:hover { border-color: var(--accent); }
+    .doc-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-decoration: none; color: var(--fg); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s; }
+    .doc-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,90,31,0.2); }
     .doc-card h3 { font-size: 16px; margin-bottom: 4px; }
     .doc-card p { font-size: 13px; color: var(--muted); }
+
+    /* Page-load animations */
+    .load-fade { opacity: 0; transform: translateY(12px); animation: loadFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .load-fade-1 { animation-delay: 0.10s; }
+    .load-fade-2 { animation-delay: 0.22s; }
+    .load-fade-3 { animation-delay: 0.34s; }
+    @keyframes loadFade { to { opacity: 1; transform: translateY(0); } }
+    .load-glow { opacity: 0; animation: loadGlow 1.0s ease forwards; animation-delay: 0.4s; }
+    @keyframes loadGlow { 0% { opacity: 0; filter: blur(6px); transform: scale(0.96); } 60% { opacity: 1; filter: blur(0); transform: scale(1.02); } 100% { opacity: 1; filter: blur(0); transform: scale(1); } }
+    @media (prefers-reduced-motion: reduce) {
+      .doc-card { transition: none; }
+      .doc-card:hover { transform: none; }
+      .load-fade, .load-glow { opacity: 1; transform: none; animation: none; }
+    }
     #loading { color: var(--muted); text-align: center; padding: 60px 0; }
     #error { color: #e74c3c; text-align: center; padding: 60px 0; }
     #error a { color: var(--accent); }
@@ -72,11 +86,11 @@
   </style>
 </head>
 <body>
-  <a class="back" href="../">← Back to Tony Stark Hand Control</a>
-  <h1><span class="glow">Documentation</span></h1>
+  <a class="back load-fade load-fade-1" href="../">← Back to Tony Stark Hand Control</a>
+  <h1 class="load-glow"><span class="glow">Documentation</span></h1>
 
   <div id="content">
-    <p class="meta" style="margin-bottom: 0;">Select a guide below, or use the nav links from the main site.</p>
+    <p class="meta load-fade load-fade-2" style="margin-bottom: 0;">Select a guide below, or use the nav links from the main site.</p>
     <div class="doc-list" id="doc-list"></div>
   </div>
 
