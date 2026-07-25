@@ -20,7 +20,7 @@ The Windows path is the one that's been beaten on. Linux needs an equivalent of 
 The `hand_landmarker.task` (~7 MB) is downloaded on first run. For users who want a single `.exe` with no network at all, the install wizard should embed the model. PyInstaller `--add-data` already covers the mechanics.
 
 ### 🎯 Per-gesture hook system
-Users want to fire shell commands, HTTP requests, or Python callbacks when a specific gesture fires. The architecture is: a hook table in `gesture_hooks.json` next to `room_map.json`, evaluated on each confirmed gesture. No code change to enable — just a JSON file.
+Users want to fire shell commands, HTTP requests, or Python callbacks when a specific gesture fires. The planned architecture is a validated hook table in `gesture_hooks.json` next to `room_map.json`, evaluated only after a gesture is confirmed. This requires a schema, loader, dispatch layer, failure isolation, and explicit safety controls before user-defined hooks can be enabled.
 
 ### 🎯 Command-line launch flags
 `--calibrate`, `--engaged-on-start`, `--no-overlay`, `--camera-index N`. Useful for power users and for headless test rigs.
