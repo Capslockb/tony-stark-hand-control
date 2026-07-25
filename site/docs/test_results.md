@@ -1,6 +1,6 @@
 # End-to-End Test Results
 
-This document captures the live test results for the Tony Stark Hand Control app at the time of the v1.0.0 release.
+This document captures the live test results recorded for the Tony Stark Hand Control v1.0.0 release. It is a historical result, not a statement about the current `main` branch.
 
 ## Environment
 
@@ -14,7 +14,7 @@ This document captures the live test results for the Tony Stark Hand Control app
 | Cams | 4 webcams via DSHOW (indices 0-3) at 480x360 / 30 fps |
 | Disk free | ~16 GB |
 
-## Test suite: 77 / 77 PASS
+## Historical v1.0.0 result: 77 / 77 PASS
 
 ```
 $ python -m unittest discover tests -v
@@ -30,7 +30,7 @@ $ python -m unittest discover tests -v
 === SUMMARY: 77 passed, 0 failed ===
 ```
 
-The full audit harness lives in `tests/test_app.py` and exercises:
+The original core audit harness lives in `tests/test_app.py` and exercises:
 - `RoomMap.add/remove/clear/save/load/nearest_within/invalid-type-fallback`
 - `HandProcessor.smooth/predict/adjust/is_palm_open` (open, closed, mirrored Y, presets 1-5, worker cleanup)
 - `CameraManager.release/is_feed_live` (empty, double-call, black, uniform, noisy, None, real cameras)
@@ -38,6 +38,8 @@ The full audit harness lives in `tests/test_app.py` and exercises:
 - `triangulate_point_rays` (2 non-parallel rays, recovers the synthetic 3D point)
 - `OllamaGestureRecognizer` circuit breaker (3 failures → 30s cooldown)
 - Full `HandControlApp` construction with all 6 tabs, all state vars, `_apply_responsiveness`, `_set_attr`, anchor add, `on_close` cleanup
+
+Repository-wide discovery now includes additional regression and benchmark modules, so the current total is not expected to remain 77.
 
 ## Hot-path micro-benchmarks
 
@@ -81,7 +83,7 @@ The app, when started, holds:
 3. **MSMF backend returns black frames for the first few reads** while the sensor warms up. The auto-detect probe handles this by reading 5 frames and accepting on the last live frame.
 4. **No GPU acceleration for OpenCV operations** on this host. All cv2 work is CPU. (PyTorch and onnxruntime-gpu are installed for future use; not currently exercised.)
 
-## Reproducing these results
+## Reproducing on the current branch
 
 ```bash
 # Clone
@@ -91,7 +93,7 @@ cd tony-stark-hand-control
 # Install
 python install_wizard.py
 
-# Run the full test suite
+# Run repository-wide discovery
 python -m unittest discover tests -v
 
 # Or with pytest
@@ -99,4 +101,4 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
-Expected output: 77 passed, 0 failed.
+Use the command's final summary and the GitHub Actions run for the exact commit as the source of truth. The current CI matrix is failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); the historical 77/77 result above must not be treated as current validation.
