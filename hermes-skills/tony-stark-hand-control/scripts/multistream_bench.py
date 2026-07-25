@@ -81,3 +81,72 @@ def main():
     if not os.path.exists(script_path):
         print(f'ERROR: script not found: {script_path}')
         sys.exit(1)
+
+    print(f'Loading {script_path}...')
+    m = load_module(script_path)
+    print(f'Loaded. Module has {len([k for k in dir(m) if not k.startswith("_")])} symbols.')
+    print()
+
+    app = build_fake_app(m)
+    lm = synth_landmarks()
+
+    # Pre-generate frames OUTSIDE the timed loop. This is the
+    # critical micro-bench hygiene from audit_2026_06_04_pass5.md
+    # -- np.random.rand(...).astype(uint8) is ~5ms and will
+    # drown the cv2 work you're trying to measure.
+    print(f'Pre-generating {N_CAMS} x {N_FRAMES_PER_TRIAL} frames '
+          f'at {FRAME_W}x{FRAME_H}...')
+    frames = [(np.random.rand(FRAME_H, FRAME_W, 3) * 255).astype(np.uint8)
+              for _ in range(N_CAMS * N_FRAMES_PER_TRIAL)]
+
+    # Warmup
+    print('Warming up...')
+    for f in frames[:3]:
+        app.draw_hud(f.copy(), lm)
+
+    # Real measurement
+    times_hud = []
+    times_copy = []
+    times_loop = []
+    print(f'Benchmarking {N_TRIALS} trials x {N_FRAMES_PER_TRIAL} frames '
+          f'x {N_CAMS} cams...')
+    for trial in range(N_TRIALS):
+        t_loop0 = time.perf_counter()
+        for i, frame in enumerate(frames):
+            t_c0 = time.perf_counter()
+            display = frame.copy()
+            times_copy.append((time.perf_counter() - t_c0) * 1000)
+            t_h0 = time.perf_counter()
+            app.draw_hud(display, lm)
+            times_hud.append((time.perf_counter() - t_h0) * 1000)
+        times_loop.append((time.perf_counter() - t_loop0) * 1000)
+        print(f'  trial {trial + 1}: {times_loop[-1]:.1f}ms total')
+
+    print()
+    print('=== Results ===')
+    print(f'  draw_hud: median={np.median(times_hud):.3f}ms '
+          f'p95={np.percentile(times_hud, 95):.3f}ms '
+          f'max={max(times_hud):.3f}ms')
+    print(f'  frame.copy: median={np.median(times_copy):.3f}ms')
+    print(f'  per-loop ({N_CAMS} cams): {np.mean(times_loop):.1f}ms')
+    print()
+    target_fps_per_cam = 30
+    total_calls_per_sec = N_CAMS * target_fps_per_cam
+    hud_ms_per_sec = np.median(times_hud) * total_calls_per_sec
+    hud_pct_core = hud_ms_per_sec / 10  # 1000ms = 100% of one core
+    print(f'  At {target_fps_per_cam} fps x {N_CAMS} cams = {total_calls_per_sec} calls/sec:')
+    print(f'    draw_hud: {hud_ms_per_sec:.0f}ms/sec = {hud_pct_core:.1f}% of one core')
+    print()
+    # Verdict
+    if hud_pct_core < 5:
+        print('  >>> draw_hud cost is negligible. Don\'t optimize further.')
+    elif hud_pct_core < 20:
+        print('  >>> draw_hud cost is acceptable. Focus on other hot-path items.')
+    elif hud_pct_core < 50:
+        print('  >>> draw_hud cost is significant. Worth optimizing.')
+    else:
+        print('  >>> draw_hud cost is the dominant cost. MUST optimize.')
+
+
+if __name__ == '__main__':
+    main()
