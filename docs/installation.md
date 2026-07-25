@@ -12,14 +12,13 @@ Detailed setup instructions for Tony Stark Hand Control.
 - **Camera**: any USB webcam or built-in laptop camera. Multiple cameras recommended for 3D reconstruction.
 - **Disk**: 500 MB (Python + dependencies + the MediaPipe model)
 
-### Software
+### Software and platform status
 
 - **Python** ≥ 3.10 (3.11+ recommended)
-- **Operating systems supported**:
-  - Windows 10 / 11 (tested)
-  - macOS 12+ (should work; not heavily tested)
-  - Linux with Tkinter (usually preinstalled; `sudo apt install python3-tk` on Debian/Ubuntu)
-- **Webcam drivers**: whatever your OS provides (UVC on Linux, MSMF/DSHOW on Windows, AVFoundation on macOS)
+- **Windows 10 / 11** is the primary tested and documented path.
+- **Linux and macOS** have source-install guidance below, but they are not yet first-class parity targets. Focus discovery and the persistent selection overlay still require platform-specific work tracked in [ROADMAP.md](../ROADMAP.md#v110--ux-polish--platform-parity).
+- **WSL** is not equivalent to a native Linux desktop for this camera-and-GUI application. Use the native Windows path unless you have deliberately configured GUI and webcam forwarding.
+- **Webcam drivers**: whatever your OS provides (UVC on Linux, MSMF/DSHOW on Windows, AVFoundation on macOS).
 
 ## Quick install (Windows)
 
@@ -39,7 +38,7 @@ The install wizard will:
 
 If the install wizard fails at any step, fix the issue and re-run. Each step is independent.
 
-## Quick install (Linux / WSL)
+## Experimental source install (Linux)
 
 ```bash
 git clone https://github.com/Capslockb/tony-stark-hand-control.git
@@ -51,7 +50,9 @@ python install_wizard.py
 python3 tony_stark_hud_control.py
 ```
 
-## Quick install (macOS)
+This is a source-install path, not a claim of feature parity with Windows. In particular, focus discovery and the persistent selection overlay may be incomplete depending on the desktop session and display server.
+
+## Experimental source install (macOS)
 
 ```bash
 git clone https://github.com/Capslockb/tony-stark-hand-control.git
@@ -63,7 +64,7 @@ python install_wizard.py
 python3 tony_stark_hud_control.py
 ```
 
-> **Note on macOS**: the `pywin32` and `winshell` packages are Windows-only and skipped via the `sys_platform` marker in `requirements.txt`. Everything else should work.
+The `pywin32` and `winshell` packages are Windows-only and are skipped through `sys_platform` markers in `requirements.txt`. That prevents those packages from being installed on macOS; it does not establish feature parity. Focus tracking still needs the planned macOS accessibility bridge described in the roadmap.
 
 ## Manual install
 
