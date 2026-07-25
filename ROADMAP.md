@@ -61,7 +61,7 @@ External Python packages can register new gesture types, new calibration procedu
 
 These are real ideas, not vapor. None of them have a milestone yet because they need design work or external dependencies. Listed here so the community can vote.
 
-- 💭 **Mobile companion app** (iOS / Android) for the phone-as-second-camera flow
+- 💭 **Native mobile remote controls** beyond the committed phone-as-second-camera workflow
 - 💭 **Webcam-only calibration** using AR markers in the scene (no printed checkerboard)
 - 💭 **Head-tracking companion mode** — use face landmarkers to drive a head-tracked mouse for accessibility
 - 💭 **Cloud calibration sync** (opt-in, end-to-end encrypted) so users with identical rigs can share `calibration.npz`
