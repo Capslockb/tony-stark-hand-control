@@ -22,7 +22,7 @@ The CPU/RAM implementation uses Win32 APIs. On non-Windows systems the label rep
 
 ## Responsiveness preset (Tracking tab)
 
-The responsiveness preset tunes four HandProcessor values together: One-Euro minimum cutoff, One-Euro beta, cursor EMA alpha, smoothing-buffer length, and prediction horizon. The last two are preset-managed and do not have separate sliders.
+The responsiveness preset tunes five HandProcessor values together: One-Euro minimum cutoff, One-Euro beta, cursor EMA alpha, smoothing-buffer length, and prediction horizon. The last two are preset-managed and do not have separate sliders.
 
 | Preset | Internal values | Intended trade-off |
 |---|---|---|
@@ -78,7 +78,7 @@ The cursor path currently uses a hard-coded maximum step equivalent to 10,000 pi
 
 `mediapipe_skip` defaults to 1, meaning the main loop attempts MediaPipe work on every eligible loop iteration. It is an internal value and has no current Tracking-tab control.
 
-Inference is asynchronous and uses a shared pending queue/result path. The skip value gates submission attempts and cached-landmark refreshes; it does not guarantee a particular number of completed inferences per camera or per second. Multi-camera result ownership is tracked separately as a runtime architecture concern.
+Inference is asynchronous and uses a shared pending queue/result path. The skip value gates submission attempts and cached-landmark refreshes; it does not guarantee a particular number of completed inferences per camera or per second. [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7) tracks the missing per-camera ownership boundary for queued frames and completed results.
 
 ## Predictor horizon
 
@@ -119,3 +119,4 @@ Disabling a camera removes it from gesture processing and rendering and clears i
 - [Architecture: HandProcessor](architecture.md#handprocessor) — filtering and inference structure
 - [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3) — current CI validation blocker
 - [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — live stereo convention blocker
+- [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7) — per-camera inference ownership blocker
