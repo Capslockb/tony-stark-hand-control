@@ -96,22 +96,15 @@ python tony_stark_hud_control.py
 
 ## Verifying the install
 
-After install, run the test suite:
+After install, run repository-wide test discovery:
 
 ```bash
 python -m unittest discover tests -v
 ```
 
-You should see **77 tests pass** across:
-- `RoomMap` (12 tests)
-- `HandProcessor` (17 tests)
-- `CameraManager` (11 tests)
-- `StereoCalibrator` (5 tests)
-- `triangulate_point_rays` (2 tests)
-- `OllamaGestureRecognizer` circuit breaker (2 tests)
-- `HandControlApp` construction (28 tests)
+The original core audit in `tests/test_app.py` contains 77 assertions covering RoomMap, HandProcessor, CameraManager, StereoCalibrator, `triangulate_point_rays`, Ollama gesture recognition, and application construction. Repository-wide discovery includes additional regression and benchmark modules, so its total is not fixed.
 
-If any fail, the rest of the docs assume a working baseline.
+Treat the command's final summary and the GitHub Actions run for the exact commit as the source of truth. The CI matrix is currently failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); do not infer a passing installation from an old fixed test count.
 
 ## Next steps
 
