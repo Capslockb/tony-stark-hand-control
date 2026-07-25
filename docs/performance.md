@@ -1,111 +1,121 @@
 # Performance Tuning
 
-The app exposes a handful of knobs that let you trade off CPU usage, latency, and tracking quality. Most users should not need to touch them — the defaults are tuned for a 4-camera RTX 5060 setup — but if you're running on a weaker machine, or want to push the limits, here's what each one does.
+The app exposes several user-facing controls for trading CPU usage, latency, and tracking stability. Other values described below are implementation constants or are managed only by the responsiveness preset; they are not independent Tracking-tab controls. Performance measurements in this repository come from a specific development machine and should not be treated as guaranteed results on other camera drivers, CPUs, GPUs, displays, or operating systems.
 
 ## Live readouts
 
-The **Main** tab shows two real-time readouts updated every ~15 frames:
+The **Main** tab refreshes its performance labels every 15 main-loop iterations:
 
-```
+```text
 loop: 28.3 ms  (35.4 fps)  |  target: 30.0 fps
-cpu:  3.2 %  ram: 195.4 MB  threads: 53
+cpu:  3.2 %  ram: 195.4 MB  threads:  5
 ```
 
-- `loop`: how long one main-loop iteration takes (across all enabled cameras)
-- `target`: the FPS the loop is aiming for (auto-set to the fastest live camera's FPS)
-- `cpu`: this process's CPU usage (per CPU core)
-- `ram`: this process's working-set memory
-- `threads`: number of active Python threads (includes the MediaPipe worker, the matplotlib refresh, the selection overlay refresh, etc.)
+- `loop` is the rolling average of work performed inside one main-loop iteration before the scheduled Tk wait.
+- The parenthesized `fps` value is `1000 / loop_ms`. It is a compute-capacity estimate, not a measurement of delivered camera FPS or complete scheduled-loop frequency, because it excludes the wait before the next Tk callback.
+- `target` is derived from the fastest reported enabled live-camera FPS and clamped to 15–60 FPS. Camera drivers can report inaccurate FPS values.
+- `cpu` is process CPU time expressed relative to one logical CPU. Multi-threaded process activity can therefore exceed 100%.
+- `ram` is the process working-set size.
+- `threads` is `threading.active_count()`: active Python threads only. It does not count every native thread created by MediaPipe, OpenCV, camera drivers, or other libraries.
+
+The CPU/RAM implementation uses Win32 APIs. On non-Windows systems the label reports an error rather than providing equivalent platform telemetry.
 
 ## Responsiveness preset (Tracking tab)
 
-The single most important knob. It tunes the One-Euro filter, the moving-average buffer, and the predictor horizon all at once.
+The responsiveness preset tunes four HandProcessor values together: One-Euro minimum cutoff, One-Euro beta, cursor EMA alpha, smoothing-buffer length, and prediction horizon. The last two are preset-managed and do not have separate sliders.
 
-| Preset | What it does | When to use |
+| Preset | Internal values | Intended trade-off |
 |---|---|---|
-| 1 — Smoothest | Heavy smoothing, large buffer, short predictor horizon | When you want stable cursor even at the cost of latency |
-| 2 | Slightly less smoothing | Still smooth but more responsive |
-| 3 — Default | Balanced | Good for most users |
-| 4 — Recommended | More responsive, smaller buffer, longer predictor | Snappier 1:1 feel, recommended for most users |
-| 5 — 1:1 | Minimal smoothing, smallest buffer, longest predictor | Maximum 1:1 with your hand. Can feel jittery if your hand trembles. |
+| 1 — Smoothest | cutoff 1.0, beta 0.02, EMA 0.30, buffer 10, horizon 0.08 s | Most smoothing and shortest prediction |
+| 2 | cutoff 1.8, beta 0.04, EMA 0.45, buffer 8, horizon 0.11 s | Smoother response |
+| 3 — Default | cutoff 2.5, beta 0.05, EMA 0.55, buffer 6, horizon 0.15 s | Balanced default |
+| 4 — Recommended in the UI | cutoff 3.5, beta 0.08, EMA 0.70, buffer 4, horizon 0.20 s | More responsive, less smoothing |
+| 5 — 1:1 | cutoff 5.0, beta 0.12, EMA 0.85, buffer 3, horizon 0.25 s | Least smoothing and longest prediction |
 
-The preset sets four internal values which are also exposed as individual sliders below. If you change a slider, the preset goes out of sync — re-set the preset to apply the full set.
+The Tracking tab also exposes the One-Euro and cursor-EMA values individually. Changing those sliders overrides the corresponding current values, while selecting a responsiveness preset again reapplies the complete preset, including its buffer length and prediction horizon.
 
 ## Fast Mode (Tracking tab)
 
-When checked, frames are pre-downscaled to 240p before being passed to MediaPipe. This reduces inference time by ~30% at the cost of some accuracy on tiny / far-away hands.
+Fast Mode rescales frames whose height exceeds 240 pixels down to a 240-pixel height, preserving aspect ratio, before MediaPipe submission. It is intended to reduce inference work at the cost of detail for small or distant hands.
 
-For most use cases (hand within 1 m of the camera) the accuracy loss is imperceptible. Turn it on if your CPU is the bottleneck.
+The source comments refer to an approximately 30% inference improvement on the development setup. That figure is not a cross-platform guarantee; measure the effect on the actual camera resolution and host.
 
 ## One-Euro filter parameters (Tracking tab)
 
-The One-Euro filter is a low-pass filter whose cutoff frequency adapts to the speed of the signal. Two parameters:
+The One-Euro-style filter adapts its cutoff to estimated motion speed:
 
-- **min_cutoff** (default 2.5 Hz): the cutoff when the signal is stationary. Higher = less smoothing when at rest. Lower = more smoothing when at rest (cursor feels heavier but jitter is gone).
-- **beta** (default 0.05): the cutoff slope vs speed. Higher = more responsive to fast motion. Lower = more lag during fast motion.
+- **Minimum cutoff** defaults to 2.5. Higher values follow raw movement more closely; lower values smooth stationary jitter more strongly.
+- **Beta** defaults to 0.05. Higher values increase the cutoff more aggressively as estimated speed rises.
 
-The defaults are tuned for "stable at rest, snappy when moving." Increase `beta` to 0.1+ if you find the cursor lagging behind your hand during fast swipes. Decrease to 0.01 if you see jitter.
+These sliders update the HandProcessor values directly. Selecting a responsiveness preset later replaces them with that preset's values.
 
-## Smoothing buffer size (Tracking tab)
+## Smoothing-buffer length
 
-How many frames of history to keep per tip for the moving-average post-filter. Default 6.
+The moving-average buffer is not an independent Tracking-tab control. It is managed by the responsiveness preset:
 
-- **Larger buffer** (10+): smoother, but more lag.
-- **Smaller buffer** (3): snappier, but jitter and noise pass through.
+- preset 1: 10 samples
+- preset 2: 8 samples
+- preset 3: 6 samples
+- preset 4: 4 samples
+- preset 5: 3 samples
+
+Larger buffers generally smooth more but add lag; smaller buffers preserve more immediate motion and noise.
 
 ## Cursor EMA alpha (Tracking tab)
 
-When the screen cursor is enabled (off by default), this controls the exponential moving average between the current raw position and the previous cursor position. Default 0.55.
+When **Enable screen cursor** is on, the cursor EMA blends the new target into the previous cursor position. The default is 0.55.
 
-- **Higher (0.8+):** the cursor follows the raw position more closely (more jitter).
-- **Lower (0.3):** the cursor trails the raw position (smoother but laggier).
+- Higher alpha follows the new target more closely and preserves more jitter.
+- Lower alpha moves more gradually and adds lag.
 
-## Velocity clamp (Tracking tab)
+The screen cursor is off by default; accessibility navigation does not depend on this EMA.
 
-Maximum cursor speed in pixels per second. Default 10000. This caps the per-frame cursor movement to prevent "teleport" artifacts when the hand briefly leaves the frame and re-enters at a new position.
+## Velocity clamp
 
-You probably don't need to change this. If your hand is fast and the cursor seems to lag, increase to 20000. If you see "jumps" when the hand first enters the frame, decrease to 5000.
+The cursor path currently uses a hard-coded maximum step equivalent to 10,000 pixels per second. There is no velocity-clamp slider in the Tracking tab. Changing this value requires a reviewed code change; it should not be presented as an operator-tunable setting.
 
-## MediaPipe skip (Tracking tab)
+## MediaPipe skip
 
-How many frames between MediaPipe inferences. Default 1 (every frame). Set to 2 to run MediaPipe every other frame — halves the CPU cost of inference at the cost of slightly more cursor lag (mitigated by the predictor).
+`mediapipe_skip` defaults to 1, meaning the main loop attempts MediaPipe work on every eligible loop iteration. It is an internal value and has no current Tracking-tab control.
 
-Useful on weak CPUs. With 4 cameras at 30 fps, MediaPipe running every other frame still gives 60 inferences/sec total, which is plenty.
+Inference is asynchronous and uses a shared pending queue/result path. The skip value gates submission attempts and cached-landmark refreshes; it does not guarantee a particular number of completed inferences per camera or per second. Multi-camera result ownership is tracked separately as a runtime architecture concern.
 
-## Predictor max horizon (Tracking tab)
+## Predictor horizon
 
-How far forward the predictor extrapolates the current position. Default 0.15 s (150 ms). The predictor takes the most recent velocity and projects the position forward to "now" with quadratic decay.
+The predictor extrapolates from the latest filtered point using estimated velocity, caps elapsed time at the preset's horizon, and applies quadratic decay toward zero at that cap. The horizon is controlled by the responsiveness preset rather than a separate slider.
 
-If you have lag, increase to 0.25. If you see overshoot (the cursor "leads" your hand during fast stops), decrease to 0.10.
+A longer horizon can preserve apparent responsiveness between completed detections but can also increase overshoot. A shorter horizon limits extrapolation sooner.
 
 ## Swipe parameters (Tracking tab)
 
-- **Swipe min speed** (default 300 px/s): how fast the index finger must move for it to count as a swipe. Increase if accidental swipes fire; decrease if your swipes don't register.
-- **Swipe cooldown** (default 0.8 s): minimum time between swipes. Increase to prevent rapid-fire; decrease to allow back-to-back swipes.
+- **Swipe minimum speed** defaults to 300 screen pixels per second.
+- **Swipe cooldown** defaults to 0.8 seconds.
+
+The detector keeps up to one second of predicted index-finger history, requires more than 0.1 seconds between the oldest and newest samples, and requires one axis to dominate the other by more than 2:1.
 
 ## Click threshold (Tracking tab)
 
-Normalized 2D distance for thumb-to-fingertip click detection. Default 0.05 (5% of screen width).
+The UI labels this control in pixels, but runtime click detection compares normalized landmark distance against:
 
-- **Smaller** (0.03): clicks only fire when the thumb and finger are really touching. More "true" clicks, but you have to be very precise.
-- **Larger** (0.08): clicks fire even when the thumb and finger are close. Easier to trigger, but false positives.
+```text
+normalized_threshold = click_threshold_px / screen_height * 4
+```
 
-## 3D vs Screen cursor (Tracking tab)
+The default slider value is 40. It is therefore not literally a 40-pixel camera-space threshold and is not a fixed percentage of screen width. Its effective normalized value changes with screen height. Higher slider values allow greater thumb-to-fingertip separation and make clicks easier to trigger; lower values require a tighter pinch.
 
-By default, the app does **not** move the mouse cursor. The whole point of the app is accessibility navigation (Tab/Shift+Tab/Arrow), not mouse emulation. But if you want to use it as a fancy mouse, enable **Screen cursor**.
+## 3D vs screen cursor (Tracking tab)
 
-With Screen cursor enabled:
-- The index finger position drives the system mouse cursor
-- The screen cursor uses the EMA + velocity clamp described above
-- All other gestures (clicks, swipes) still work
+By default, the app does **not** move the mouse cursor. Accessibility navigation uses keyboard focus actions instead. Enabling **Screen cursor** makes the predicted index-finger position drive the system cursor through the EMA and hard-coded velocity clamp described above.
 
-## Per-cam enable (Main tab)
+Live stereo coordinates in the 3D view remain experimental while Issue #6 is open. Do not use the current live 3D output for measurements, automation, or safety decisions.
 
-Disable a camera to remove it from the pipeline. Disabled cameras don't run MediaPipe, don't contribute to FPS pacing, and don't appear in the right-side grid.
+## Per-camera enable (Main tab)
 
-Useful when you have a 4-camera rig but only want 1-2 active. The disabled cameras' handles are released, freeing up the webcam driver.
+Disabling a camera removes it from gesture processing and rendering and clears its cached landmarks. The camera handle remains open until the app is stopped or the camera manager is rebuilt; disabling a checkbox does not release that individual device to another application.
 
 ## See also
 
-- [Gestures](gestures.md) — what each gesture does
-- [Architecture: HandProcessor](architecture.md#handprocessor) — the math
+- [Gestures](gestures.md) — gesture behavior and thresholds
+- [Architecture: HandProcessor](architecture.md#handprocessor) — filtering and inference structure
+- [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3) — current CI validation blocker
+- [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — live stereo convention blocker
