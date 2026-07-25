@@ -4,10 +4,10 @@ draw_hud cost and projected CPU utilization at the target frame rate.
 
 Usage: python scripts/multistream_bench.py [path_to_main_script]
 
-The default path is resolved from this repository's directory layout. The
-script does NOT construct the real HandControlApp (it imports cv2 + MediaPipe
-+ tkinter + matplotlib which takes ~6s) -- it uses a minimal FakeApp that has
-just the methods the hot path needs.
+Without an explicit path, the script walks upward from its own location until
+it finds ``tony_stark_hud_control.py``. The script does NOT construct the real
+HandControlApp (it imports cv2 + MediaPipe + tkinter + matplotlib which takes
+~6s) -- it uses a minimal FakeApp that has just the methods the hot path needs.
 
 Reports:
   - per-call draw_hud cost (median, p95)
@@ -19,9 +19,13 @@ Reports:
 Run before/after a draw_hud optimization to quantify the win.
 """
 
-import os, sys, time, importlib.util
-import numpy as np
+import importlib.util
+from pathlib import Path
+import sys
+import time
+
 import cv2
+import numpy as np
 
 # ---- Configurable: change these to match your setup ----
 N_CAMS = 4
@@ -71,15 +75,28 @@ def build_fake_app(m):
     return FakeApp(N_CAMS)
 
 
+def resolve_main_script():
+    """Resolve an explicit target or locate the app in a parent directory."""
+    if len(sys.argv) > 1:
+        return Path(sys.argv[1]).expanduser().resolve()
+
+    for directory in Path(__file__).resolve().parents:
+        candidate = directory / 'tony_stark_hud_control.py'
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def main():
-    script_path = (
-        os.path.abspath(sys.argv[1])
-        if len(sys.argv) > 1
-        else os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', '..', '..', 'tony_stark_hud_control.py'))
-    )
-    if not os.path.exists(script_path):
+    script_path = resolve_main_script()
+    if script_path is None:
+        print('ERROR: could not locate tony_stark_hud_control.py '
+              'while searching parent directories.')
+        print('Pass its path as the first positional argument.')
+        sys.exit(1)
+    if not script_path.is_file():
         print(f'ERROR: script not found: {script_path}')
+        print('Pass a valid path to tony_stark_hud_control.py as the first positional argument.')
         sys.exit(1)
 
     print(f'Loading {script_path}...')
