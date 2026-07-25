@@ -14,7 +14,7 @@ This is a public commitment to where Tony Stark Hand Control is going. Items are
 Right now the app supports one hand. MediaPipe can return up to two. The work is plumbing: two parallel smoothing pipelines, two gesture channels, and a "primary hand" arbitration rule (rightmost by default, configurable).
 
 ### 🎯 Linux & macOS parity
-The Windows path is the one that's been beaten on. Linux needs an equivalent of the GetGUIThreadInfo-based selection overlay (`xdotool`, then a different `WS_EX_LAYERED` equivalent). macOS needs the AXUIElement bridge for focus tracking. Both have working prototypes in `hermes-skills/tony-stark-hand-control/references/` — they need to be promoted to first-class.
+The Windows path is the one that's been beaten on. Linux needs an equivalent of the `GetGUIThreadInfo`-based selection overlay, using X11 focus discovery and a transparent overlay rather than Windows-only window styles. macOS needs an `AXUIElement` bridge for focus tracking. Prototype work exists outside this repository, but it must be imported, reviewed, tested, and documented here before either platform is considered first-class.
 
 ### 🎯 Bundled-model installer
 The `hand_landmarker.task` (~7 MB) is downloaded on first run. For users who want a single `.exe` with no network at all, the install wizard should embed the model. PyInstaller `--add-data` already covers the mechanics.
