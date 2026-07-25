@@ -4,6 +4,8 @@ The Ollama tab adds an optional **second layer** of gesture recognition on top o
 
 **This feature is OFF by default.** If you don't enable it, the app uses the local MediaPipe-only gesture detection described in [gestures.md](gestures.md), which is fast (<1 ms) and works for all built-in gestures (engage, click, swipe).
 
+> **Security notice:** current `main` contains a publicly exposed credential-like value in the Ollama API-key field. Treat it as invalid, do not reuse it, and replace or clear it before enabling the feature. Revocation/rotation and the source fix are tracked in [Issue #5](https://github.com/Capslockb/tony-stark-hand-control/issues/5). This documentation warning does not resolve the embedded-credential defect.
+
 ## When to use Ollama
 
 Use Ollama if you want to:
@@ -30,21 +32,21 @@ Don't use Ollama if:
 
 ## Cloud endpoint (ollama.com)
 
-The default endpoint is `https://ollama.com`. To use it:
+The current source default is the complete generation endpoint `https://ollama.com/api/generate`. To use it:
 
-1. Get an API key from https://ollama.com/settings/keys
+1. Get your own API key from https://ollama.com/settings/keys.
 2. In the **Ollama** tab of the app:
-   - Check "Enable Ollama gesture recognition"
-   - Set Endpoint to `https://ollama.com`
-   - Set Model to a vision model that ollama.com supports (e.g. `qwen2.5vl:3b`)
-   - Paste your API key (click the "Show" checkbox if you want to verify it)
-   - Set Cooldown (default 5 seconds — how often to query the cloud)
-   - Customize the prompt if you want (defaults to a strict set of gesture names)
-   - Click **Save**
+   - Check **Enable Ollama**.
+   - Set Endpoint to `https://ollama.com/api/generate`.
+   - Set Model to a vision model that ollama.com supports (e.g. `qwen2.5vl:3b`).
+   - Clear any prefilled API-key value and paste only your own newly issued key.
+   - Set Query cooldown. The current default is 0.5 seconds and the slider range is 0.1-3.0 seconds.
+   - Customize the prompt if you want (defaults to a strict set of gesture names).
+   - Click **Save (rebuild Ollama worker)**.
 
-The app will start sending frames to the cloud every 5 seconds. Each frame is ~50 KB at 480x360 JPEG.
+The app considers an eligible frame for submission according to both the every-sixth-frame gate and the configured cooldown. The worker uses a one-item queue, so stale frames may be dropped while a request is in flight; the cooldown is not a promise that the provider will receive one frame at every interval.
 
-**Privacy**: the cloud endpoint receives your camera frames. The data is used for inference only and not stored, per ollama.com's privacy policy.
+**Privacy:** a cloud endpoint receives camera-frame snapshots and the configured prompt. Provider retention and processing policies can change; review the provider's current policy before enabling cloud inference. Do not describe frames as unconditionally unstored unless that claim has been verified against the current policy and service configuration.
 
 ## Local endpoint (llama.cpp server)
 
@@ -145,8 +147,8 @@ You can edit this in the Ollama tab. The app's gesture handler maps the response
 
 ## Performance
 
-- **Cloud (ollama.com)**: 5-8 seconds per inference. Too slow for real-time control, but fine for "snap a photo every 5 seconds and decide if the user wants to engage."
-- **Local (llama.cpp)**: 200-400 ms per inference. Fast enough for "every 6th frame" mode (effectively 5 Hz control loop).
+- **Cloud (ollama.com)**: 5-8 seconds per inference in the recorded test environment. The 0.5-second default cooldown does not make a multi-second cloud request real-time; the single-item queue drops stale submissions while work is pending.
+- **Local (llama.cpp)**: 200-400 ms per inference. Fast enough for an every-sixth-frame submission gate in some environments, subject to the configured cooldown.
 - **Ollama cloud circuit breaker**: trips after 3 failures, stays tripped for 30 seconds. Prevents burning the queue during outages.
 
 ## Disabling
