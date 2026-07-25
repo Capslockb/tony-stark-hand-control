@@ -2,7 +2,7 @@
 
 How the pieces of the Tony Stark Hand Control app fit together.
 
-![architecture](images/architecture.svg)
+![architecture](https://raw.githubusercontent.com/Capslockb/tony-stark-hand-control/main/docs/images/architecture.svg)
 
 ## Top-level structure
 
@@ -21,7 +21,7 @@ tony_stark_hud_control.py
 Plus:
 - `install_wizard.py` — pre-flight check + dependency install
 - `start_windows.bat` — Windows launcher
-- `tests/test_app.py` — 77-test regression suite
+- `tests/test_app.py` — core regression audit; repository-wide discovery includes additional modules
 - `docs/` — user documentation
 - `hermes-skills/` — associated Hermes Agent skills
 - `.github/workflows/` — CI + release automation
