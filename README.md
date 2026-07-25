@@ -2,12 +2,12 @@
 
 **Multi-camera, GPU-friendly hand tracking for PC control — in the spirit of the Iron Man HUD.**
 
-A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation, thumb-to-finger taps become clicks, and the whole rig reconstructs your hand in 3D space. No cloud. No telemetry. No mouse required.
+A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation, thumb-to-finger taps become clicks, and the whole rig reconstructs your hand in 3D space. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama cloud inference is off by default. No mouse required.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB.svg)](https://www.python.org)
-[![Platform: Windows / Linux / macOS](https://img.shields.io/badge/platform-Win%20%7C%20Linux%20%7C%20macOS-999)](#quick-start)
-[![Local-only](https://img.shields.io/badge/privacy-100%25%20local-success)](#privacy)
+[![Platform: Windows primary](https://img.shields.io/badge/platform-Windows%20primary-999)](#quick-start)
+[![Privacy: local-first](https://img.shields.io/badge/privacy-local--first-success)](#privacy)
 [![CI](https://github.com/Capslockb/tony-stark-hand-control/actions/workflows/ci.yml/badge.svg)](https://github.com/Capslockb/tony-stark-hand-control/actions/workflows/ci.yml)
 
 > 🌐 **Live site:** [**capslockb.github.io/tony-stark-hand-control**](https://capslockb.github.io/tony-stark-hand-control/) — install in 60 seconds, no clone required.
@@ -41,9 +41,9 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 | **Engage / disengage** | Open palm held ~0.6 s = engaged (cursor / click enabled). Lower hand = disengaged (system idle) |
 | **Live performance readout** | Per-loop ms, target FPS, app CPU%, RAM, thread count, all on the Main tab |
 | **Single-instance lock** | One app at a time. Second launch focuses the existing window instead of stuttering |
-| **Local-only** | Everything runs on your CPU/GPU. No cloud, no telemetry, no API keys required |
+| **Local-first core** | Camera capture, MediaPipe tracking, gesture detection, and PC-control actions run locally with no telemetry |
 | **Optional LLM gestures** | Drop in Ollama (cloud or local llama.cpp) to add custom gestures the local detector doesn't know. Off by default. |
-| **Multi-platform binaries** | Prebuilt `.exe` for Windows and `tar.gz` for Linux x86_64. No build tools needed. |
+| **Platform status** | Windows is the primary tested path; Linux and macOS parity remain roadmap work |
 
 ---
 
@@ -99,8 +99,8 @@ python3 tony_stark_hud_control.py
    - **Swipe down** → `↓`
    - **Thumb to index** → `Enter` (activate focused element)
    - **Thumb to middle** → right-click / context menu
-   - **Thumb to ring** → scroll up
-   - **Thumb to pinky** → scroll down
+   - **Thumb to ring** → `↑`
+   - **Thumb to pinky** → `↓`
 5. **Disengage** by lowering your hand out of the frame.
 
 The **persistent green selection border** always shows which UI element is currently focused.
@@ -176,7 +176,7 @@ MIT — see [`LICENSE`](LICENSE).
 
 ## Privacy
 
-The app is **100% local**. No network calls are made by the hand-tracking pipeline. The optional Ollama tab can be configured to use a cloud endpoint, but it is **off by default** and requires explicit user configuration. See `SECURITY.md` for the full disclosure policy.
+The core camera, MediaPipe, gesture-detection, and PC-control pipeline runs locally and sends no telemetry. The optional Ollama feature can be configured to send camera-frame snapshots and prompts to a remote endpoint; it is off by default. Review the endpoint provider's current retention policy before enabling cloud inference. Do not reuse the exposed credential-like default tracked in [Issue #5](https://github.com/Capslockb/tony-stark-hand-control/issues/5). See `SECURITY.md` for the disclosure policy.
 
 ## Acknowledgments
 
