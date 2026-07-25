@@ -8,7 +8,7 @@ A local-first, accessibility-focused hand-tracking system. Point one (or up to f
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB.svg)](https://www.python.org)
 [![Platform: Windows / Linux / macOS](https://img.shields.io/badge/platform-Win%20%7C%20Linux%20%7C%20macOS-999)](#quick-start)
 [![Local-only](https://img.shields.io/badge/privacy-100%25%20local-success)](#privacy)
-[![Tests: 81/81](https://img.shields.io/badge/tests-81%2F81%20passing-brightgreen)](#tests)
+[![CI](https://github.com/Capslockb/tony-stark-hand-control/actions/workflows/ci.yml/badge.svg)](https://github.com/Capslockb/tony-stark-hand-control/actions/workflows/ci.yml)
 
 > 🌐 **Live site:** [**capslockb.github.io/tony-stark-hand-control**](https://capslockb.github.io/tony-stark-hand-control/) — install in 60 seconds, no clone required.
 > 📱 **On your phone?** Open the mobile install page: [**capslockb.github.io/tony-stark-hand-control/mobile**](https://capslockb.github.io/tony-stark-hand-control/mobile/)
@@ -145,10 +145,12 @@ See `docs/performance.md` for the full benchmark.
 ## Tests
 
 ```bash
-python -m unittest discover tests
+python -m unittest discover tests -v
 ```
 
-The test suite covers: RoomMap, HandProcessor, CameraManager, StereoCalibrator, triangulate_point_rays, OllamaGestureRecognizer circuit breaker, and full HandControlApp construction. Current status: **81/81 passing** (77 main + 4 v1.0.1 hotfix).
+The suite covers RoomMap, HandProcessor, CameraManager, StereoCalibrator, `triangulate_point_rays`, Ollama gesture recognition, application construction, and focused regression and benchmark modules. The original core audit contains 77 assertions, but repository-wide discovery includes additional modules and its total can change.
+
+Treat the command's final summary and the GitHub Actions run for the exact commit as the source of truth. The current CI matrix is failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); a fixed passing count should not be claimed until an exact-head run is green.
 
 ---
 
