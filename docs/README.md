@@ -6,7 +6,7 @@ User-facing documentation for Tony Stark Hand Control.
 
 | File | What it covers |
 |---|---|
-| [installation.md](installation.md) | Quick install for Windows / Linux / macOS, manual install, verifying the install |
+| [installation.md](installation.md) | Platform status and setup: Windows primary, with experimental Linux/macOS source-install guidance |
 | [calibration.md](calibration.md) | How to print the checkerboard, run the calibration, interpret the numbers |
 | [gestures.md](gestures.md) | Full gesture reference with diagrams — engage, click, swipe |
 | [3d_room_mapping.md](3d_room_mapping.md) | Interactive 3D room mapping, anchor placement, save/load |
@@ -14,7 +14,7 @@ User-facing documentation for Tony Stark Hand Control.
 | [troubleshooting.md](troubleshooting.md) | Common issues + fixes |
 | [architecture.md](architecture.md) | How the code is organized, data flow, performance characteristics |
 | [ollama_integration.md](ollama_integration.md) | Optional cloud / local LLM gesture recognition |
-| [test_results.md](test_results.md) | Live test results captured at the v1.0.0 release |
+| [test_results.md](test_results.md) | Historical test results captured for the v1.0.0 release |
 
 ## Diagrams
 
