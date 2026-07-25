@@ -4,6 +4,8 @@ How the pieces of the Tony Stark Hand Control app fit together.
 
 ![architecture](images/architecture.svg)
 
+> **3D validation status:** Manual room anchors and JSON persistence are available, but live stereo reconstruction is experimental. Calibration stores OpenCV world-to-camera `R, t`; the current reconstruction path interprets `t` as a camera center, and one helper also mixes normalized landmarks with a pixel-coordinate API. Until [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) is corrected and validated end to end, do not use live 3D coordinates for measurement, automation, or safety decisions.
+
 ## Top-level structure
 
 ```
@@ -116,25 +118,27 @@ Two-phase calibration. Saves to `calibration.npz`.
 
 **Phase B (shared extrinsics)**:
 - For each pair of cameras, run `cv2.stereoCalibrate` with the corresponding image points
-- This gives a single shared world frame with camera 0 at the origin (R=I, t=0)
-- All other cameras' R, t are in this shared frame
+- The intended shared frame places camera 0 at the origin (`R=I`, `t=0`)
+- Other cameras' stored `R, t` follow OpenCV's world-to-camera convention: `X_cam = R @ X_world + t`
 
 **Projection matrices**:
 - For each camera, `P = K @ [R | t]` (3x4)
 - These are saved to `calibration.npz` for later use in 3D reconstruction
 
-**3D reconstruction**:
-For each 2D landmark `(x, y)` in camera `i`:
+**Intended 3D reconstruction convention**:
+For each 2D pixel landmark `(x, y)` in camera `i`:
 
-1. **Undistort**: `(x', y') = cv2.undistortPoints((x, y), K_i, dist_i)`
-2. **Normalize**: `(xn, yn) = K_i^-1 @ (x', y', 1)` — unit ray in camera frame
-3. **World ray**: `ray_world = R_i^T @ (xn, yn, 1)` — same ray in world frame
+1. **Undistort and normalize**: `cv2.undistortPoints((x, y), K_i, dist_i, P=None)` returns `(xn, yn)` in the normalized camera plane
+2. **Camera ray**: `ray_camera = (xn, yn, 1)`
+3. **World ray**: `ray_world = R_i^T @ ray_camera`
 4. **Camera origin in world**: `O_i = -R_i^T @ t_i`
 
-Then `triangulate_point_rays(origins, rays)` returns the 3D point.
+Then `triangulate_point_rays(origins, rays)` returns the 3D point closest to all rays.
+
+The current runtime does not apply this convention consistently: `reconstruct_3d()` uses `origin = t`, while `reconstruct_fingertips()` passes normalized landmarks to a path that expects pixel coordinates. Existing synthetic checks use the same camera-center interpretation as the runtime rather than the convention emitted by `cv2.stereoCalibrate()`. Issue #6 tracks the focused implementation and regression-test correction.
 
 **Reprojection error**:
-After reconstructing, reproject each 3D point back to each camera and measure the distance to the original 2D landmark. The mean (in pixels) is the calibration quality metric. < 1 px is good, < 0.5 px is excellent.
+Calibration reprojection error measures how well known checkerboard points project back into calibration images. It can help assess calibration fit, but it does not validate the separate runtime triangulation convention. Live 3D correctness requires an end-to-end test that begins with OpenCV-compatible `R, t`, projects known 3D points, and reconstructs them within a defined tolerance.
 
 ### HandControlApp
 
@@ -158,7 +162,7 @@ The main loop runs at the fastest live camera's FPS. Each iteration:
 
 The selection overlay refreshes at 10 Hz via `root.after(100, ...)`. It uses `win32gui.GetGUIThreadInfo` to find the focused UI element and draws a green border around it.
 
-The 3D / Room tab uses `matplotlib.backends.backend_tkagg.FigureCanvasTkAgg` to embed a 3D matplotlib viewport. Click events are unprojected to 3D world rays and intersected with a horizontal plane to place anchors.
+The 3D / Room tab uses `matplotlib.backends.backend_tkagg.FigureCanvasTkAgg` to embed a 3D matplotlib viewport. Click events are unprojected to 3D world rays and intersected with a horizontal plane to place anchors. Manual anchor placement and room-map persistence are separate from the unvalidated live stereo-coordinate path.
 
 ### Single-instance lock
 
@@ -186,7 +190,7 @@ cameras (1-4)
   → (if engaged) gesture detection (thumb-finger distance, swipe velocity)
   → keyboard / mouse events (via pyautogui or ctypes for accessibility)
   → HUD overlay on each camera display
-  → 3D / Room tab: triangulated 3D position of all 5 fingertips
+  → 3D / Room tab: experimental fingertip triangulation; correctness blocked by Issue #6
   → selection overlay: 10 Hz refresh of focused UI element border
 ```
 
@@ -201,7 +205,7 @@ On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480x360 / 30
 | is_palm_open | <0.1 ms | 4 × math.hypot |
 | Gesture detection (when engaged) | ~0.5 ms | 4 × math.hypot + 4 × ring buffer ops |
 | HUD overlay per cam | 0.2 ms | Static base cached, np.maximum blit |
-| 3D reconstruction (5 tips × N cams) | ~5 ms | 5 × undistort + K^-1 + R^T + triangulate |
+| 3D reconstruction (5 tips × N cams) | ~5 ms | Timing only; live-coordinate correctness remains unvalidated under Issue #6 |
 | Canvas redraw | 15 ms throttled | Tk Canvas + ImageTk.PhotoImage |
 | 3D view redraw | throttled to 5 Hz | matplotlib |
 | Selection overlay refresh | <1 ms at 10 Hz | win32 GetGUIThreadInfo + Toplevel.move |
@@ -212,5 +216,7 @@ Total main loop: **28-35 ms ≈ 28-35 fps** on a typical desktop. CPU usage: **3
 
 - [Performance tuning](performance.md) — what the GUI knobs do
 - [Calibration](calibration.md) — the calibration procedure
+- [3D Room Mapping](3d_room_mapping.md) — operator-facing status and limitations
 - [Gestures](gestures.md) — what each gesture does
+- [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — stereo convention and validation blocker
 - The 7 audit passes in `hermes-skills/tony-stark-hand-control/references/`
