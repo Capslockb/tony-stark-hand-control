@@ -62,12 +62,14 @@ start_windows.bat
 2. Download `tony_stark_hud_control.exe`
 3. Double-click to run. The app will download the MediaPipe model on first launch.
 
-**Option C — Linux prebuilt** (x86_64):
+**Option C — experimental Linux prebuilt** (x86_64):
 ```bash
 # Download from releases page
 tar -xzf tony_stark_hud_control-linux-x86_64.tar.gz
 ./tony_stark_hud_control.sh
 ```
+
+The Linux package is provided for evaluation, not as a feature-parity claim. Focus discovery and the persistent selection overlay still require platform-specific work tracked in the roadmap.
 
 The install wizard will:
 1. Verify Python ≥ 3.10
@@ -76,7 +78,7 @@ The install wizard will:
 4. Create a desktop shortcut
 5. Launch the app
 
-## Quick start (Linux / WSL)
+## Experimental source install (native Linux)
 
 ```bash
 git clone https://github.com/Capslockb/tony-stark-hand-control.git
@@ -84,6 +86,8 @@ cd tony-stark-hand-control
 python3 install_wizard.py
 python3 tony_stark_hud_control.py
 ```
+
+This is a source-install path, not a claim of feature parity with Windows. WSL is not equivalent to a native Linux desktop for this camera-and-GUI application; use the native Windows build unless you have deliberately configured GUI and webcam forwarding.
 
 ---
 
