@@ -64,7 +64,7 @@ The app probes indices 0-3 with three backends. If you have 4 cameras and only 2
 
 ### Camera detection takes 30+ seconds
 
-The app has a 1.5-second timeout per `cap.open()` and an 0.8-second timeout per `cap.read()`. With 4 indices × 3 backends, the worst case is ~30 seconds. This is normal on slow webcam drivers.
+The app has a 1.5-second timeout per `cap.open()` and a 0.8-second timeout per `cap.read()`. With 4 indices × 3 backends, the worst case is ~30 seconds. This is normal on slow webcam drivers.
 
 If it's worse, the issue is probably **another app holding the camera**. Close other apps and retry.
 
@@ -114,15 +114,17 @@ CPU inference is ~30 ms per frame on a modern desktop CPU, which is fast enough 
 
 ### Ollama cloud endpoint times out
 
-The cloud endpoint (`https://ollama.com`) is slow (~8 seconds per inference). If you have it enabled, the app will feel laggy when trying to use cloud LLM gesture recognition.
+The current source default is the complete generation endpoint `https://ollama.com/api/generate`. Cloud latency varies; the recorded test environment took roughly 5-8 seconds per inference. The Ollama worker is asynchronous and keeps only one queued frame, so slow requests delay optional model-recognized gestures and drop stale submissions rather than changing the local MediaPipe gesture path.
 
-**Fix**: disable the Ollama tab (uncheck "Enable Ollama gesture recognition") and rely on the local MediaPipe-based gesture detection. The local detector is fast (<1 ms) and works for all the built-in gestures.
+1. Confirm the endpoint includes `/api/generate`, the selected model is available, and you are using your own API key. Do not reuse the exposed credential-like default tracked in [Issue #5](https://github.com/Capslockb/tony-stark-hand-control/issues/5), and do not paste credentials into issue reports or logs.
+2. Increase **Query cooldown** if you want fewer remote submission attempts. The current control defaults to 0.5 seconds and supports 0.1-3.0 seconds; this setting does not make a multi-second provider response real-time.
+3. If remote inference is unnecessary, uncheck **Enable Ollama**, click **Save (rebuild Ollama worker)**, and continue with the local MediaPipe detector. All built-in engage, click, and swipe gestures remain available without Ollama.
 
 ### Ollama circuit breaker keeps tripping
 
-The circuit breaker trips after 3 consecutive failures and stays tripped for 30 seconds. If the cloud endpoint is down, you'll see the breaker in the GUI's Ollama tab.
+The circuit breaker trips after 3 consecutive failures and stays tripped for 30 seconds. Repeated trips usually indicate an invalid endpoint, unavailable model, rejected credential, network failure, or provider outage.
 
-**Fix**: either fix the network issue (check if ollama.com is up), or disable the Ollama tab.
+**Fix**: verify the complete endpoint and model, use your own valid credential when the endpoint requires one, or disable Ollama and rebuild the worker. The circuit breaker recovering does not prove that the next request will be accepted.
 
 ## Single-instance lock issues
 
