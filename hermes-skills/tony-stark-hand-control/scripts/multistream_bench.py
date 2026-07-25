@@ -4,10 +4,11 @@ draw_hud cost and projected CPU utilization at the target frame rate.
 
 Usage: python scripts/multistream_bench.py [path_to_main_script]
 
-The default path is the standard project location. The script
-does NOT construct the real HandControlApp (it imports cv2 +
-MediaPipe + tkinter + matplotlib which takes ~6s) -- it uses a
-minimal FakeApp that has just the methods the hot path needs.
+When no path is supplied, the script locates ``tony_stark_hud_control.py``
+from this repository's directory layout. The script does NOT construct the
+real HandControlApp (it imports cv2 + MediaPipe + tkinter + matplotlib which
+takes ~6s) -- it uses a minimal FakeApp that has just the methods the hot path
+needs.
 
 Reports:
   - per-call draw_hud cost (median, p95)
@@ -19,9 +20,13 @@ Reports:
 Run before/after a draw_hud optimization to quantify the win.
 """
 
-import os, sys, time, importlib.util
-import numpy as np
+import importlib.util
+import os
+import sys
+import time
+
 import cv2
+import numpy as np
 
 # ---- Configurable: change these to match your setup ----
 N_CAMS = 4
@@ -40,6 +45,7 @@ def load_module(path):
 
 class _L:
     __slots__ = ('x', 'y', 'z')
+
     def __init__(self, x, y, z=0):
         self.x, self.y, self.z = x, y, z
 
@@ -57,6 +63,7 @@ def build_fake_app(m):
     """Build a minimal app with just the methods the hot path needs.
     Avoids importing the full HandControlApp (which pulls in tkinter,
     matplotlib, MediaPipe -- ~6 seconds)."""
+
     class FakeApp:
         def __init__(self, n_cams):
             self._hud_base_cache = {}
@@ -64,84 +71,73 @@ def build_fake_app(m):
             # benchmarking reads them. For draw_hud alone, not needed.
             self.camera_vars = []
             self.hand_proc = None  # not used by draw_hud
+
         def draw_hud(self, frame, landmarks):
             return m.HandControlApp.draw_hud(self, frame, landmarks)
+
         def _build_hud_base(self, h, w):
             return m.HandControlApp._build_hud_base(self, h, w)
+
     return FakeApp(N_CAMS)
 
 
+def _default_main_script():
+    """Return the main app path relative to this checked-out repository."""
+    return os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            '..',
+            '..',
+            'tony_stark_hud_control.py',
+        )
+    )
+
+
 def main():
-    script_path = (sys.argv[1] if len(sys.argv) > 1
-                   else r'C:/Users/Bernardo/tony_stark_hand_control/tony_stark_hud_control.py')
+    script_path = (
+        os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else _default_main_script()
+    )
     if not os.path.exists(script_path):
         print(f'ERROR: script not found: {script_path}')
+        print('Pass the path to tony_stark_hud_control.py as argv[1].')
         sys.exit(1)
 
-    print(f'Loading {script_path}...')
     m = load_module(script_path)
-    print(f'Loaded. Module has {len([k for k in dir(m) if not k.startswith("_")])} symbols.')
-    print()
-
     app = build_fake_app(m)
-    lm = synth_landmarks()
+    landmarks = synth_landmarks()
+    frame = np.zeros((FRAME_H, FRAME_W, 3), dtype=np.uint8)
 
-    # Pre-generate frames OUTSIDE the timed loop. This is the
-    # critical micro-bench hygiene from audit_2026_06_04_pass5.md
-    # -- np.random.rand(...).astype(uint8) is ~5ms and will
-    # drown the cv2 work you're trying to measure.
-    print(f'Pre-generating {N_CAMS} x {N_FRAMES_PER_TRIAL} frames '
-          f'at {FRAME_W}x{FRAME_H}...')
-    frames = [(np.random.rand(FRAME_H, FRAME_W, 3) * 255).astype(np.uint8)
-              for _ in range(N_CAMS * N_FRAMES_PER_TRIAL)]
+    draw_times = []
+    copy_times = []
+    loop_times = []
 
-    # Warmup
-    print('Warming up...')
-    for f in frames[:3]:
-        app.draw_hud(f.copy(), lm)
+    for _ in range(N_TRIALS):
+        trial_draw = []
+        trial_copy = []
+        t_loop = time.perf_counter()
+        for _ in range(N_FRAMES_PER_TRIAL):
+            for _ in range(N_CAMS):
+                t0 = time.perf_counter()
+                copied = frame.copy()
+                trial_copy.append((time.perf_counter() - t0) * 1000)
 
-    # Real measurement
-    times_hud = []
-    times_copy = []
-    times_loop = []
-    print(f'Benchmarking {N_TRIALS} trials x {N_FRAMES_PER_TRIAL} frames '
-          f'x {N_CAMS} cams...')
-    for trial in range(N_TRIALS):
-        t_loop0 = time.perf_counter()
-        for i, frame in enumerate(frames):
-            t_c0 = time.perf_counter()
-            display = frame.copy()
-            times_copy.append((time.perf_counter() - t_c0) * 1000)
-            t_h0 = time.perf_counter()
-            app.draw_hud(display, lm)
-            times_hud.append((time.perf_counter() - t_h0) * 1000)
-        times_loop.append((time.perf_counter() - t_loop0) * 1000)
-        print(f'  trial {trial + 1}: {times_loop[-1]:.1f}ms total')
+                t0 = time.perf_counter()
+                app.draw_hud(copied, landmarks)
+                trial_draw.append((time.perf_counter() - t0) * 1000)
+        loop_times.append((time.perf_counter() - t_loop) * 1000)
+        draw_times.extend(trial_draw)
+        copy_times.extend(trial_copy)
 
-    print()
-    print('=== Results ===')
-    print(f'  draw_hud: median={np.median(times_hud):.3f}ms '
-          f'p95={np.percentile(times_hud, 95):.3f}ms '
-          f'max={max(times_hud):.3f}ms')
-    print(f'  frame.copy: median={np.median(times_copy):.3f}ms')
-    print(f'  per-loop ({N_CAMS} cams): {np.mean(times_loop):.1f}ms')
-    print()
-    target_fps_per_cam = 30
-    total_calls_per_sec = N_CAMS * target_fps_per_cam
-    hud_ms_per_sec = np.median(times_hud) * total_calls_per_sec
-    hud_pct_core = hud_ms_per_sec / 10  # 1000ms = 100% of one core
-    print(f'  At {target_fps_per_cam} fps x {N_CAMS} cams = {total_calls_per_sec} calls/sec:')
-    print(f'    draw_hud: {hud_ms_per_sec:.0f}ms/sec = {hud_pct_core:.1f}% of one core')
-    print()
-    # Verdict
-    if hud_pct_core < 5:
-        print('  >>> draw_hud cost is negligible. Don\'t optimize further.')
-    elif hud_pct_core < 20:
-        print('  >>> draw_hud cost is acceptable. Focus on other hot-path items.')
-    elif hud_pct_core < 50:
-        print('  >>> draw_hud cost is significant. Worth optimizing.')
-    else:
-        print('  >>> draw_hud cost is the dominant cost. MUST optimize.')
+    draw = np.array(draw_times)
+    copy = np.array(copy_times)
+    per_loop_ms = np.mean(loop_times) / N_FRAMES_PER_TRIAL
+    projected_cpu = per_loop_ms * 30 / 10
+
+    print(f'draw_hud: median={np.median(draw):.3f}ms p95={np.percentile(draw, 95):.3f}ms')
+    print(f'frame.copy: median={np.median(copy):.3f}ms p95={np.percentile(copy, 95):.3f}ms')
+    print(f'per-loop ({N_CAMS} cams): {per_loop_ms:.3f}ms')
+    print(f'projected CPU at 30 fps: {projected_cpu:.1f}% of one core')
 
 
 if __name__ == '__main__':
