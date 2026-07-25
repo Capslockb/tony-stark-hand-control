@@ -24,16 +24,16 @@ If the app didn't distinguish engaged from disengaged, every movement of your ha
 
 ## Click gestures
 
-When engaged, the following thumb-to-fingertip gestures fire actions. The detection uses **normalized 2D distance** (not pixels), so the click threshold is camera-resolution-independent.
+When engaged, the following thumb-to-fingertip gestures fire actions. The detection uses **normalized 2D distance** (not camera pixels), so the comparison is independent of camera resolution.
 
-| Gesture | Action | Threshold (normalized) |
+| Gesture | Action | Trigger |
 |---|---|---|
-| Thumb to **index** | `Enter` (activates focused element) | < 0.05 |
-| Thumb to **middle** | Right-click / Apps key (context menu) | < 0.05 |
-| Thumb to **ring** | `↑` (arrow up) | < 0.05 |
-| Thumb to **pinky** | `↓` (arrow down) | < 0.05 |
+| Thumb to **index** | `Enter` (activates focused element) | Distance below the configured threshold |
+| Thumb to **middle** | Right-click / Apps key (context menu) | Distance below the configured threshold |
+| Thumb to **ring** | `↑` (arrow up) | Distance below the configured threshold |
+| Thumb to **pinky** | `↓` (arrow down) | Distance below the configured threshold |
 
-The 0.05 normalized distance corresponds to about 5% of the screen width on a 1080p display. If you find the click too sensitive (fires when you don't want it), open the **Tracking** tab and increase the **Click threshold** slider. If it never fires, decrease it.
+The **Click threshold (px)** slider defaults to 40. The runtime converts that screen-pixel-style value into normalized distance before comparing fingertips, so there is no single fixed normalized threshold such as 0.05 for every display. Raising the slider allows more separation and makes gestures easier to trigger (more sensitive). Lowering it requires the fingertips to be closer and reduces accidental triggers (less sensitive).
 
 ## Swipe gestures
 
