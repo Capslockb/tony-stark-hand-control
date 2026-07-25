@@ -2,7 +2,7 @@
 
 **Multi-camera, GPU-friendly hand tracking for PC control — in the spirit of the Iron Man HUD.**
 
-A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation, thumb-to-finger taps become clicks, and the whole rig reconstructs your hand in 3D space. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama cloud inference is off by default. No mouse required.
+A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation and thumb-to-finger taps become clicks. The Room tab also includes an experimental stereo 3D view, but its live coordinates are not yet validated for measurement or automation. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama cloud inference is off by default. No mouse required.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB.svg)](https://www.python.org)
@@ -25,7 +25,7 @@ Most webcam hand-tracking demos do **mouse emulation** — they hand you a virtu
 
 Tony Stark Hand Control takes a different approach: **accessibility navigation**. Swipes send `Tab` / `Shift+Tab` / `↑` / `↓`, thumb-touches fire `Enter` and the context-menu key, and a **persistent green border** tracks the focused UI element so you always know what will activate. It's the same paradigm every operating system already uses for keyboard navigation — we just drive it with a hand.
 
-For the people who want a mouse anyway, screen-cursor mode is one checkbox away. For the people who want to **see** what their hand is doing in 3D space, the Room tab triangulates your fingertips across cameras and renders them in a live matplotlib viewport with anchored walls, zones, and hotspots.
+For the people who want a mouse anyway, screen-cursor mode is one checkbox away. The Room tab can also render experimental multi-camera fingertip triangulation alongside manually placed walls, zones, and hotspots. Live stereo coordinates are currently unvalidated because the calibration and reconstruction paths use incompatible extrinsic conventions; see [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6).
 
 ---
 
@@ -34,7 +34,7 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 | | |
 |---|---|
 | **Multi-camera fusion** | Auto-detects up to 4 cameras (DSHOW → MSMF → ANY), runs MediaPipe on each in parallel |
-| **3D room mapping** | Interactive matplotlib 3D viewport with camera frustums, live hand tracking, and click-to-place anchors (wall / zone / hotspot / furniture / custom) |
+| **3D room mapping** | Manual anchors and JSON persistence are available; live stereo hand coordinates remain experimental pending Issue #6 |
 | **1:1 hand tracking** | Async MediaPipe worker thread + One-Euro filter + velocity-based predictor for sub-frame latency |
 | **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index clicks. **No mouse required.** |
 | **Persistent selection overlay** | Green border tracks the currently-focused UI element at 10 Hz so you always know what will activate |
@@ -117,7 +117,7 @@ All configuration lives in the GUI tabs:
 - **Ollama** — optional cloud or local LLM gesture recognition (advanced, see `docs/ollama_integration.md`)
 - **Tracking** — Responsiveness preset (1=smooth … 5=1:1), Fast Mode (240p pre-downscale), One-Euro filter params
 - **Accessibility** — Navigation mode (Tab vs Arrow), selection overlay settings
-- **3D / Room** — Interactive 3D viewport, click to place anchors, save/load room map
+- **3D / Room** — manual room anchors and an experimental live stereo viewport; do not treat current live coordinates as measured ground truth
 - **Cameras** — Per-camera list with Test buttons and live-feed status
 
 ## Documentation
@@ -125,7 +125,7 @@ All configuration lives in the GUI tabs:
 - **[Installation](docs/installation.md)** — detailed setup, dependencies, troubleshooting
 - **[Calibration](docs/calibration.md)** — how to print the checkerboard, run the calibration, and what the reprojection error means
 - **[Gestures](docs/gestures.md)** — full gesture reference with diagrams
-- **[3D Room Mapping](docs/3d_room_mapping.md)** — building a map of your room for the live hand tracker
+- **[3D Room Mapping](docs/3d_room_mapping.md)** — manual anchors plus the current validation boundary for live stereo coordinates
 - **[Performance tuning](docs/performance.md)** — what each slider does, how to trade quality for speed
 - **[Troubleshooting](docs/troubleshooting.md)** — common issues and how to fix them
 - **[Architecture](docs/architecture.md)** — how the pieces fit together
