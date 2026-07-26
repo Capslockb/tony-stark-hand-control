@@ -23,7 +23,7 @@ A local-first, accessibility-focused hand-tracking system. Point one (or up to f
 
 Most webcam hand-tracking demos do **mouse emulation** — they hand you a virtual mouse and call it a day. That's broken for real use: clicking the wrong thing is one pixel of slop away, every menu fights you, and the cursor is always exactly where you don't want it.
 
-Tony Stark Hand Control takes a different approach: **accessibility navigation**. Swipes send `Tab` / `Shift+Tab` / `↑` / `↓`, thumb-touches fire `Enter` and the context-menu key, and a **persistent green border** tracks the focused UI element so you always know what will activate. It's the same paradigm every operating system already uses for keyboard navigation — we just drive it with a hand.
+Tony Stark Hand Control takes a different approach: **accessibility navigation**. Swipes send `Tab` / `Shift+Tab` / `↑` / `↓`, thumb-touches fire `Enter` and the context-menu key, and on the primary Windows path a **persistent green border** tracks the focused UI element so you always know what will activate. It's the same paradigm every operating system already uses for keyboard navigation — we just drive it with a hand.
 
 For the people who want a mouse anyway, screen-cursor mode is one checkbox away. The Room tab can also render experimental multi-camera fingertip triangulation alongside manually placed walls, zones, and hotspots. Live stereo coordinates are currently unvalidated because the calibration and reconstruction paths use incompatible extrinsic conventions; see [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6).
 
@@ -37,7 +37,7 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 | **3D room mapping** | Manual anchors and JSON persistence are available; live stereo hand coordinates remain experimental pending Issue #6 |
 | **1:1 hand tracking** | Shared async MediaPipe worker thread + One-Euro filter + velocity-based predictor for sub-frame latency |
 | **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index clicks. **No mouse required.** |
-| **Persistent selection overlay** | Green border tracks the currently-focused UI element at 10 Hz so you always know what will activate |
+| **Persistent selection overlay** | On Windows, a green border polls the focused UI element at 10 Hz. Linux and macOS focus-discovery and overlay parity remain roadmap work. |
 | **Engage / disengage** | Open palm held ~0.6 s = engaged (cursor / click enabled). Lower hand = disengaged (system idle) |
 | **Live performance readout** | Per-loop ms and target FPS on all platforms; app CPU%, RAM, and thread count are Windows-specific telemetry |
 | **Single-instance lock** | One app at a time. Second launch focuses the existing window instead of stuttering |
@@ -109,7 +109,7 @@ This is a source-install path, not a claim of feature parity with Windows. WSL i
    - **Thumb to pinky** → `↓`
 5. **Disengage** by lowering your hand out of the frame.
 
-The **persistent green selection border** always shows which UI element is currently focused.
+On Windows, the **persistent green selection border** shows which UI element is currently focused. Linux and macOS focus-overlay parity is still planned in the roadmap.
 
 ## Configuration
 
@@ -118,7 +118,7 @@ All configuration lives in the GUI tabs:
 - **Main** — Start/Stop/Calibrate, per-camera enable, performance readouts
 - **Ollama** — optional gesture recognition through an Ollama API-compatible endpoint; OpenAI-compatible llama.cpp servers require an adapter (advanced, see `docs/ollama_integration.md`)
 - **Tracking** — Responsiveness preset (1=smooth … 5=1:1), Fast Mode (240p pre-downscale), One-Euro filter params
-- **Accessibility** — Navigation mode (Tab vs Arrow), selection overlay settings
+- **Accessibility** — Navigation mode (Tab vs Arrow), selection overlay settings; focused-element discovery is currently Windows-specific
 - **3D / Room** — manual room anchors and an experimental live stereo viewport; do not treat current live coordinates as measured ground truth
 - **Cameras** — Per-camera list with Test buttons and live-feed status
 
