@@ -18,19 +18,13 @@ User-facing documentation for Tony Stark Hand Control.
 
 ## Diagrams
 
-All diagrams are auto-generated SVG (dark theme, no external assets):
+The repository currently ships these SVG assets:
 
 - [images/architecture.svg](images/architecture.svg) — overall system architecture
 - [images/gestures.svg](images/gestures.svg) — gesture reference with stylized hands
 - [images/3d_room.svg](images/3d_room.svg) — example of the 3D room view
 
-Regenerate them after a refactor:
-
-```bash
-python docs/generate_architecture.py
-python docs/generate_gestures.py
-python docs/generate_3d_room.py
-```
+The previously documented `docs/generate_architecture.py`, `docs/generate_gestures.py`, and `docs/generate_3d_room.py` commands are not present in the current tree. The diagrams therefore cannot currently be regenerated from committed source scripts. Any future diagram change should include a reviewable source or reproducible generation step before the assets are described as auto-generated.
 
 ## For contributors
 
