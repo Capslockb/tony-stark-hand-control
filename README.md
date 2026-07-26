@@ -163,7 +163,7 @@ Treat the command's final summary and the GitHub Actions run for the exact commi
 A real roadmap of public features is in [`ROADMAP.md`](ROADMAP.md). Highlights:
 
 - **v1.1.0 (Q3 2026)** — two-hand tracking, Linux & macOS focus-overlay parity, bundled-model installer, per-gesture hooks, CLI flags
-- **v1.2.0 (Q4 2026)** — monocular depth from MediaPipe z, phone-as-second-camera companion app, room-map gesture zoning
+- **v1.2.0 (Q4 2026)** — experimental monocular relative-depth or pose view, phone-as-second-camera companion app, room-map gesture zoning
 - **v2.0.0 (Q1 2027)** — "OK Jarvis" wake word, sign-language dictionary, third-party plugin SDK
 
 These are publicly promised, not "maybe someday" bullet points. The roadmap is binding intent. If something moves, the doc updates.
