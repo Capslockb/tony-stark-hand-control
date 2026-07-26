@@ -31,12 +31,12 @@ start_windows.bat
 
 The install wizard will:
 1. Verify Python ≥ 3.10
-2. `pip install -r requirements.txt` (opencv-python, mediapipe, matplotlib, pyautogui, pywin32, winshell, Pillow)
-3. Download `hand_landmarker.task` (~7 MB) from the MediaPipe model registry
-4. Create a desktop shortcut
-5. Verify all imports work
+2. Run `python -m pip install -r requirements.txt --upgrade`
+3. Smoke-test required imports
+4. Download `hand_landmarker.task` (~7 MB) from the MediaPipe model registry
+5. Create a desktop shortcut on Windows, or skip that step on other platforms
 
-If the install wizard fails at any step, fix the issue and re-run. Each step is independent.
+The wizard stops at the first failing step. After all five steps succeed, it prints the appropriate launch command; it does not start the app automatically.
 
 ## Experimental source install (Linux)
 
