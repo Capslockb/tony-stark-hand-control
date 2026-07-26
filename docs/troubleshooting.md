@@ -74,7 +74,7 @@ If it's worse, the issue is probably **another app holding the camera**. Close o
 
 This is **expected** on this build of MediaPipe for Windows. The GPU delegate doesn't work with the official MediaPipe pip wheel on Windows. The app falls back to CPU automatically — you'll see a log line `HandProcessor: GPU delegate unavailable -> CPU`.
 
-CPU inference is ~30 ms per frame on a modern desktop CPU, which is fast enough for 30 fps with one camera. With 4 cameras, the model runs ~30 fps each (it parallelizes across cameras because of the worker thread).
+CPU inference measured roughly 30 ms per submitted frame on the recorded development machine. The current app uses one shared asynchronous MediaPipe worker; it does **not** run an independent 30 fps inference stream for every enabled camera. Cameras contend for that shared submission/result path, and completed results are not yet owned per camera. Treat throughput as aggregate and host-dependent; see [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7).
 
 ### Hand detection is jittery
 
@@ -92,17 +92,17 @@ CPU inference is ~30 ms per frame on a modern desktop CPU, which is fast enough 
 
 ### App uses 100% CPU
 
-1. Check the **Performance** readout in the Main tab. If `loop` is consistently > 50 ms, the bottleneck is MediaPipe.
-2. Enable **Fast Mode** in the Tracking tab — 240p pre-downscale reduces MediaPipe time by ~30%.
-3. Increase **MediaPipe skip** to 2 — run inference every other frame.
-4. Disable some cameras (per-cam enable in the Main tab) to reduce the work.
-5. Check that the **Responsiveness** preset is 1-3, not 5. Preset 5 keeps less history, which can be more expensive in some cases.
+1. Check the **Performance** readout in the Main tab. A `loop` value consistently above 50 ms means the measured work exceeds a 20 fps budget, but it does not identify MediaPipe as the sole cause. Profile camera capture, vision work, rendering, and optional integrations before attributing the load.
+2. Enable **Fast Mode** in the Tracking tab. The 240p pre-downscale may reduce MediaPipe work; the approximately 30% improvement cited in source comments is specific to the development setup, not a guarantee.
+3. Disable unused cameras in the Main tab to reduce capture, rendering, and shared-worker contention.
+4. `mediapipe_skip` is an internal value and has no Tracking-tab control. Changing it requires a reviewed code change and does not correct the per-camera result-ownership problem tracked in [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7).
+5. The **Responsiveness** preset tunes smoothing and prediction behavior; it is not a supported CPU-limit control and does not create independent per-camera inference workers.
 
 ### Cursor lags behind hand by 100+ ms
 
 1. Increase the **Responsiveness** preset to 4 or 5 in the Tracking tab.
 2. If the loop is slow, see "App uses 100% CPU" above.
-3. Check the **Predictor max horizon** in the Tracking tab. Increase to 0.25 s.
+3. The predictor horizon has no independent Tracking-tab control. It is managed by the responsiveness preset; preset 5 selects the longest current horizon (0.25 s).
 
 ### Selection border doesn't appear
 
