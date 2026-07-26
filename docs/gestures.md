@@ -37,6 +37,8 @@ When engaged, the following thumb-to-fingertip gestures fire actions. The detect
 | Thumb to **ring** | `↑` (arrow up) | Distance below the configured threshold |
 | Thumb to **pinky** | `↓` (arrow down) | Distance below the configured threshold |
 
+**Current limitation:** fingertip contacts are level-triggered. On every processed frame while the app is engaged, each fingertip inside the threshold fires its mapped action; there is no release latch, debounce, or single-winner arbitration. Holding a contact can repeat the same key, and multiple qualifying fingertips can issue multiple actions during one frame. Use brief, isolated taps until [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13) is resolved.
+
 The **Click threshold (px)** slider defaults to 40. The runtime converts that screen-pixel-style value into normalized distance before comparing fingertips, so there is no single fixed normalized threshold such as 0.05 for every display. Raising the slider allows more separation and makes gestures easier to trigger (more sensitive). Lowering it requires the fingertips to be closer and reduces accidental triggers (less sensitive).
 
 ## Swipe gestures
