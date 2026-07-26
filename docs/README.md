@@ -9,7 +9,7 @@ User-facing documentation for Tony Stark Hand Control.
 | [installation.md](installation.md) | Platform status and setup: Windows primary, with experimental Linux/macOS source-install guidance |
 | [calibration.md](calibration.md) | How to print the checkerboard, run the calibration, interpret the numbers |
 | [gestures.md](gestures.md) | Full gesture reference with diagrams — engage, click, swipe |
-| [3d_room_mapping.md](3d_room_mapping.md) | Interactive 3D room mapping, anchor placement, save/load |
+| [3d_room_mapping.md](3d_room_mapping.md) | Manual room anchors and JSON persistence; experimental live stereo coordinates remain unvalidated pending Issue #6 |
 | [performance.md](performance.md) | Every GUI knob explained, with trade-offs |
 | [troubleshooting.md](troubleshooting.md) | Common issues + fixes |
 | [architecture.md](architecture.md) | How the code is organized, data flow, performance characteristics |
