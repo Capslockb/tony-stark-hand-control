@@ -38,7 +38,7 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 | **1:1 hand tracking** | Shared async MediaPipe worker thread + One-Euro filter + velocity-based predictor for sub-frame latency |
 | **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index clicks. **No mouse required.** |
 | **Persistent selection overlay** | On Windows, a green border polls the focused UI element at 10 Hz. Linux and macOS focus-discovery and overlay parity remain roadmap work. |
-| **Engage / disengage** | Open palm held ~0.6 s = engaged (cursor / click enabled). Lower hand = disengaged (system idle) |
+| **Engage / disengage** | Open-palm detections are averaged over the last 10 loop samples. After the average exceeds 0.6, it must remain active for the configured hold duration (0.6 s by default); lowering the hand or closing the palm disengages. |
 | **Live performance readout** | Per-loop ms and target FPS on all platforms; app CPU%, RAM, and thread count are Windows-specific telemetry |
 | **Single-instance lock** | One app at a time. Second launch focuses the existing window instead of stuttering |
 | **Local-first core** | Camera capture, MediaPipe tracking, gesture detection, and PC-control actions run locally with no telemetry |
@@ -97,7 +97,7 @@ This is a source-install path, not a claim of feature parity with Windows. WSL i
 
 1. **Start the app** — GUI window opens with the camera feeds on the right and controls on the left.
 2. **Press `Start`** — cameras are detected, feeds appear, MediaPipe starts running.
-3. **Engage**: hold an **open palm** toward any camera for ~0.6 seconds. The status indicator changes from "Disengaged" to "Engaged".
+3. **Engage**: hold an **open palm** toward any camera. The app averages the last 10 open-palm detections; once that average exceeds 0.6, keep it active for the configured hold duration (0.6 seconds by default). The status indicator then changes from "Disengaged" to "Engaged".
 4. **Navigate**:
    - **Swipe right** → `Tab` (next focusable element)
    - **Swipe left** → `Shift+Tab` (previous)
