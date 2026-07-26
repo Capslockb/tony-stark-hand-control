@@ -23,7 +23,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libegl1 libgles2
+          sudo apt-get install -y libegl1 libgles2 xvfb
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -37,8 +37,13 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
 
       - name: Run unit tests
+        shell: bash
         run: |
-          python -m unittest discover tests -v
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            xvfb-run python -m unittest discover tests -v
+          else
+            python -m unittest discover tests -v
+          fi
 
       - name: Install wizard smoke test
         shell: bash
