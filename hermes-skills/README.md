@@ -27,7 +27,7 @@ hermes-skills/
     │   ├── smoothing_and_aspect.md
     │   └── stream_cut_fallback.md
     └── scripts/
-        ├── audit_app.py            # 77-test regression harness
+        ├── audit_app.py            # host-dependent live audit; 77 assertions
         ├── create_desktop_shortcut.ps1
         ├── multistream_bench.py     # cv2 micro-benchmark utility
         └── synthetic_stereo_test.py # synthetic 3D reconstruction test
@@ -42,9 +42,21 @@ The `SKILL.md` is the entry point. It has a "Reference map" section that lists e
 ### As a skill for Hermes Agent (re-runnable)
 
 If you have Hermes Agent installed, the `SKILL.md` is a real skill that the agent can use to:
-- Run `scripts/audit_app.py` against the current `tony_stark_hud_control.py` to verify the 77-test regression suite
+- Run `scripts/audit_app.py` as a host-dependent live audit of `tony_stark_hud_control.py`. The harness contains 77 assertions, but it is not the repository-wide deterministic CI suite.
 - Run `scripts/multistream_bench.py` to benchmark the multi-cam hot path
 - Apply the audit fixes in pass2-pass7 if they regress
+
+Until [Issue #2](https://github.com/Capslockb/tony-stark-hand-control/issues/2) corrects the helper's default locator, pass the application path explicitly from the repository root:
+
+```bash
+python hermes-skills/tony-stark-hand-control/scripts/audit_app.py ./tony_stark_hud_control.py
+```
+
+For the repository-wide deterministic test entry point, use:
+
+```bash
+python -m unittest discover tests -v
+```
 
 To install the skill:
 
