@@ -40,9 +40,21 @@ jobs:
         shell: bash
         run: |
           if [ "$RUNNER_OS" = "Linux" ]; then
-            xvfb-run python -m unittest discover tests -v
+            timeout 180 xvfb-run python -m unittest discover tests -v || {
+              code=$?
+              if [ $code -eq 124 ]; then
+                echo "::error::Tests timed out after 180 seconds"
+              fi
+              exit $code
+            }
           else
-            python -m unittest discover tests -v
+            timeout 180 python -m unittest discover tests -v || {
+              code=$?
+              if [ $code -eq 124 ]; then
+                echo "::error::Tests timed out after 180 seconds"
+              fi
+              exit $code
+            }
           fi
 
       - name: Install wizard smoke test
