@@ -4,7 +4,7 @@ The 3D / Room tab lets you build a map of your physical environment for the live
 
 > **Current validation status:** Anchor editing, manual coordinates, and JSON persistence are available, but live stereo coordinates must be treated as experimental. The calibration path stores OpenCV world-to-camera `R, t`, while the current reconstruction path treats `t` as a camera center; the synthetic fixtures validate that second convention rather than values emitted by `cv2.stereoCalibrate`. This mismatch is tracked in [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6). Do not use live 3D output for measurements, automation, or safety decisions until the convention is corrected and validated end to end.
 
-![3d room](images/3d_room.svg)
+![3d room](https://raw.githubusercontent.com/Capslockb/tony-stark-hand-control/main/docs/images/3d_room.svg)
 
 ## Why would I want this?
 
