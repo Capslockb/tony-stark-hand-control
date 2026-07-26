@@ -35,27 +35,28 @@ Plus:
 Wraps `cv2.VideoCapture` for one or more cameras. On construction:
 
 1. Probes indices 0-3 with three backends: DSHOW, MSMF, ANY.
-2. For each (index, backend), opens the camera, sets resolution and FPS, reads 3 frames, and keeps it if the last frame is "live" (not black/uniform).
+2. For each (index, backend), opens the camera, sets resolution and FPS, reads 3 frames, and keeps it if at least one of those frames passes the live-feed check.
 3. Returns the list of opened cameras. Each is a `cv2.VideoCapture` instance.
 
-`is_feed_live()` checks std-dev and mean brightness of a BGR frame. Cached at 10 Hz by the main loop to avoid per-frame work.
+`is_feed_live()` checks std-dev and mean brightness of a BGR frame. The main loop refreshes the cached result every 10th iteration, so the effective check rate follows the loop rate rather than a fixed 10 Hz timer.
 
 `release()` is idempotent — safe to call multiple times. Closes all camera handles and clears the list.
 
 ### HandProcessor
 
-This is the heart of the app. It runs MediaPipe in a **background worker thread** so the GUI never blocks on inference.
+This is the heart of the app. It runs MediaPipe in a **background worker thread** so the GUI does not wait for inference to finish.
 
 #### Async worker
 
 The worker thread is started in `__init__`. It maintains:
-- `_infer_queue`: maxlen=1 queue of (frame, timestamp_ms) submissions
-- `_result_lock`: guards `_last_result` (the latest HandLandmarkerResult)
-- `_last_result`: the most recent result, available to the main thread without blocking
+- `_infer_q`: a `queue.Queue(maxsize=2)` carrying preprocessed RGB frames and millisecond timestamps
+- `_inference_pending`: a submission gate that prevents another request while the current request is outstanding
+- `_result_lock`: guards `_last_result` (the latest `HandLandmarkerResult`)
+- `_last_result`: the most recent completed result, available to the main thread without waiting
 
-`detect(frame)` is the public API. It submits the frame to the queue (non-blocking) and returns the cached `_last_result` immediately. The next call to `detect()` may or may not have a new result, depending on inference speed.
+`detect(frame)` is the public API. When no request is pending, it preprocesses and enqueues the frame, then returns the cached `_last_result` immediately. While a request remains pending, later calls return the same cached result without submitting another frame. The next completed result is therefore not guaranteed to correspond to the camera making the current call; [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7) tracks the missing per-camera ownership boundary.
 
-The worker is a daemon thread — it dies when the process exits, no cleanup needed.
+The worker uses a daemon thread, but normal application shutdown also sets `_stop_worker = True`. The current shutdown path does not join the worker; the queue wait can take up to 0.5 seconds to observe the stop flag, and process exit remains the final fallback.
 
 #### Smoothing
 
@@ -146,7 +147,7 @@ The Tkinter GUI. Six tabs:
 
 1. **Main** — Start/Stop/Calibrate, per-camera enable, status, performance readouts
 2. **Ollama** — optional cloud or local LLM gesture recognition
-3. **Tracking** — Responsiveness preset, One-Euro params, Fast Mode, MediaPipe skip
+3. **Tracking** — responsiveness, Fast Mode, engage/click/swipe tuning, filter controls, focus-highlight settings, and 3D/cursor toggles
 4. **Accessibility** — Navigation mode (Tab vs Arrow), selection overlay
 5. **3D / Room** — interactive matplotlib 3D viewport
 6. **Cameras** — per-camera list with Test buttons
@@ -155,7 +156,7 @@ The main loop runs at the fastest live camera's FPS. Each iteration:
 1. Reads frames from all enabled cameras
 2. Updates cached live-feed status (every 10th frame)
 3. Updates cached FPS (every 30th frame)
-4. Submits frames to the HandProcessor worker (every Nth frame, configurable)
+4. Attempts a shared HandProcessor submission every `mediapipe_skip`th iteration; `mediapipe_skip` is currently an internal value rather than a GUI control
 5. Draws the HUD on each camera's display
 6. Stitches together a multi-cam aggregate decision for engage/disengage
 7. Fires gestures if engaged
@@ -219,4 +220,5 @@ Total main loop: **28-35 ms ≈ 28-35 fps** on a typical desktop. CPU usage: **3
 - [3D Room Mapping](3d_room_mapping.md) — operator-facing status and limitations
 - [Gestures](gestures.md) — what each gesture does
 - [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — stereo convention and validation blocker
+- [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7) — per-camera inference ownership blocker
 - The 7 audit passes in `hermes-skills/tony-stark-hand-control/references/`
