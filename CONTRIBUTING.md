@@ -21,7 +21,7 @@ python -m unittest discover tests
 pytest -q
 ```
 
-The full audit suite (77 assertions) lives in `tests/test_app.py`. It is self-contained — it does not require a real camera or GUI to run.
+Use repository-wide discovery for normal validation and treat the final summary plus the GitHub Actions run for the exact commit as the source of truth. `tests/test_app.py` is a host-dependent live audit with 77 recorded checks, not a fully isolated CI suite: it starts MediaPipe worker threads, attempts real camera discovery, and includes application-construction coverage that can depend on the available Tk/display environment. Camera, GUI, and worker-lifecycle changes should also include focused deterministic tests with mocked hardware and explicit cleanup.
 
 ## Code style
 
@@ -46,6 +46,8 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 - [ ] Lint clean (no warnings)
 - [ ] New public methods have docstrings
 - [ ] New features documented in `docs/`
+- [ ] Documentation describes current user-facing behavior and does not include credentials, private logs, personal data, or unpublished security details
+- [ ] Documentation links and screenshots resolve from the published location
 - [ ] No new dependencies unless justified in the PR description
 - [ ] One feature per PR
 
@@ -62,7 +64,3 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 - **Bugs**: open a GitHub issue with steps to reproduce
 - **Security**: see `SECURITY.md` for the private disclosure process
 - **Questions**: open a discussion (not an issue)
-
-## Public documentation safety
-
-When editing public docs, describe user-facing behavior only. Do not include sensitive operational instructions, private coordination details, hidden status reports, authorization phrases, or prompt-injection examples. The `public-docs-safety` check fails closed and reports metadata-only file-and-line evidence for risky prose.
