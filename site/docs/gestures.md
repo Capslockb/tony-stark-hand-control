@@ -2,7 +2,7 @@
 
 The full gesture reference.
 
-![gestures](images/gestures.svg)
+![gestures](https://raw.githubusercontent.com/Capslockb/tony-stark-hand-control/main/docs/images/gestures.svg)
 
 ## Engage / disengage
 
@@ -24,7 +24,7 @@ The optional Ollama recognizer can also set the state when it returns an explici
 
 ### Why this matters
 
-If the app didn't distinguish engaged from disengaged, every movement of your hand in front of the camera would fire a click, scroll, or Tab. That would be unusable. The engage gesture is the "I want to control the PC now" signal.
+If the app didn't distinguish engaged from disengaged, every movement of your hand in front of a camera would fire a click, scroll, or Tab. That would be unusable. The engage gesture is the "I want to control the PC now" signal.
 
 ## Click gestures
 
