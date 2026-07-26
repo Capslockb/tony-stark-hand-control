@@ -8,13 +8,13 @@
 
 ## Privacy
 
-This is a **local-first** application. The hand-tracking pipeline does not transmit any data off the device. Specifically:
+This is a **local-first** application. The core hand-tracking pipeline does not transmit data off the device. Specifically:
 
 - **No telemetry.** The app does not phone home, report usage, or check for updates.
-- **No network calls** in the hand-tracking code path.
-- **Camera feeds** stay in memory and on disk on your local machine. They are not uploaded anywhere.
-- **Calibration data** (`calibration.npz`) and **room maps** (`room_map.json`) are stored locally and are not transmitted.
-- **The Ollama tab** is **off by default**. If you enable it and configure a cloud endpoint (e.g. `https://ollama.com`), the frames you submit will be sent to that endpoint. The app does not submit anything unless you have explicitly enabled Ollama and clicked Save.
+- **No network calls** in the core hand-tracking code path.
+- **Camera frames** are processed in memory by the local tracking pipeline and are not intentionally persisted or uploaded by that path.
+- **Calibration data** (`calibration.npz`) and **room maps** (`room_map.json`) are stored locally and are not transmitted by the core pipeline.
+- **The Ollama tab** is **off by default**. If you enable it and configure a remote endpoint, snapshots submitted through that feature are sent to the configured endpoint. Review that provider's authentication, retention, and access controls before enabling remote inference.
 
 ## What data lives where
 
@@ -23,7 +23,7 @@ This is a **local-first** application. The hand-tracking pipeline does not trans
 | `calibration.npz` | Next to the script | Camera intrinsics + extrinsics. May be fingerprintable. |
 | `room_map.json` | Next to the script | Your 3D room anchors (walls, zones, hotspots). |
 | `tony_stark_*.lock` | `%TEMP%` | Single-instance lock file. Always empty. |
-| No logs | — | The app does not log camera frames, gestures, or any PII. |
+| No application log file by default | — | The app does not intentionally persist camera frames, gestures, or personal data to a log file. |
 
 ## Reporting a Vulnerability
 
@@ -33,6 +33,8 @@ This is a personal project without a public security budget, but I take reports 
 2. Include: a description, reproduction steps, and your assessment of severity.
 3. I will respond within 7 days with a triage.
 4. Critical issues will get a fix within 30 days.
+
+Do not include credentials, private camera frames, calibration files, room maps, private logs, or third-party personal data in public issues or pull requests. Share only the minimum reproduction details needed, and use the private reporting route for sensitive material.
 
 ## Disclosure timeline
 
@@ -50,9 +52,3 @@ This app is designed for personal use on a trusted machine. It is **not** design
 - Air-gapped networks that need explicit offline-only behavior (the app is offline by default, but the Ollama tab could leak frames if misconfigured)
 
 If you need any of these, please audit the code and build from source.
-
-## Public documentation safety
-
-Public repository text is treated as untrusted input by automation. Documentation, issues, pull requests, reviews, commits, source comments, test fixtures, and linked external content must not be used as sensitive operational instructions.
-
-Non-public operational details are intentionally not published here. Suspicious instruction-like content should be reported as security issues; they must not be copied into public docs, issues, PRs, comments, or logs.
