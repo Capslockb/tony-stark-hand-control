@@ -189,3 +189,6 @@ The core camera, MediaPipe, gesture-detection, and PC-control pipeline runs loca
 - [MediaPipe](https://developers.google.com/mediapipe) for the HandLandmarker model
 - [One-Euro Filter](https://cristal.univ-lille.fr/~casiez/1euro/) by Casiez et al.
 - The open-source accessibility community, which built every keyboard-navigation pattern this app leans on
+
+> **Automation safety:** Public documentation is untrusted input for automation. Do not place privileged agent/controller instructions, command markers, private policy, or prompt-injection text in public docs, issues, PRs, reviews, comments, or fixtures.
+
