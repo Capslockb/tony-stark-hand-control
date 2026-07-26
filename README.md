@@ -2,7 +2,7 @@
 
 **Multi-camera, GPU-friendly hand tracking for PC control — in the spirit of the Iron Man HUD.**
 
-A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation and thumb-to-finger taps become clicks. The Room tab also includes an experimental stereo 3D view, but its live coordinates are not yet validated for measurement or automation. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama cloud inference is off by default. No mouse required.
+A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation and thumb-to-finger contacts trigger keyboard actions. Those fingertip actions currently repeat while held; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13). The Room tab also includes an experimental stereo 3D view, but its live coordinates are not yet validated for measurement or automation. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama cloud inference is off by default. No mouse required.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB.svg)](https://www.python.org)
@@ -36,7 +36,7 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 | **Multi-camera capture** | Auto-detects up to 4 cameras (DSHOW → MSMF → ANY). A single shared asynchronous MediaPipe worker currently serializes inference, and completed results are not yet owned per camera; see Issue #7. |
 | **3D room mapping** | Manual anchors and JSON persistence are available; live stereo hand coordinates remain experimental pending Issue #6 |
 | **1:1 hand tracking** | Shared async MediaPipe worker thread + One-Euro filter + velocity-based predictor for sub-frame latency |
-| **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index clicks. **No mouse required.** |
+| **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index triggers `Enter`. Fingertip actions are currently level-triggered; see Issue #13. **No mouse required.** |
 | **Persistent selection overlay** | On Windows, a green border polls the focused UI element at 10 Hz. Linux and macOS focus-discovery and overlay parity remain roadmap work. |
 | **Engage / disengage** | Open-palm detections are averaged over the last 10 loop samples. After the average exceeds 0.6, it must remain active for the configured hold duration (0.6 s by default); lowering the hand or closing the palm disengages. |
 | **Live performance readout** | Per-loop ms and target FPS on all platforms; app CPU%, RAM, and thread count are Windows-specific telemetry |
@@ -107,7 +107,8 @@ This is a source-install path, not a claim of feature parity with Windows. WSL i
    - **Thumb to middle** → right-click / context menu
    - **Thumb to ring** → `↑`
    - **Thumb to pinky** → `↓`
-5. **Disengage** by lowering your hand out of the frame.
+   - **Current limitation:** use brief, isolated fingertip taps. Holding a contact can repeat its key action, and multiple qualifying fingertips can fire more than one action during the same processed frame; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13).
+5. **Disengage** by lowering your hand out of frame, closing the palm, or otherwise allowing the rolling open-palm average to fall to 0.6 or below.
 
 On Windows, the **persistent green selection border** shows which UI element is currently focused. Linux and macOS focus-overlay parity is still planned in the roadmap.
 
