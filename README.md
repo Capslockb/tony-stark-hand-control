@@ -74,9 +74,11 @@ The Linux package is provided for evaluation, not as a feature-parity claim. Foc
 The install wizard will:
 1. Verify Python ≥ 3.10
 2. Install dependencies from `requirements.txt`
-3. Download the MediaPipe hand-landmark model (`hand_landmarker.task`, ~7 MB)
-4. Create a desktop shortcut
-5. Launch the app
+3. Smoke-test required imports
+4. Download the MediaPipe hand-landmark model (`hand_landmarker.task`, ~7 MB)
+5. Create a desktop shortcut on Windows (or skip that step on other platforms)
+
+It then prints the appropriate launch command; it does not start the app automatically.
 
 ## Experimental source install (native Linux)
 
