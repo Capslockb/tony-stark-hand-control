@@ -33,13 +33,13 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 
 | | |
 |---|---|
-| **Multi-camera fusion** | Auto-detects up to 4 cameras (DSHOW → MSMF → ANY), runs MediaPipe on each in parallel |
+| **Multi-camera capture** | Auto-detects up to 4 cameras (DSHOW → MSMF → ANY). A single shared asynchronous MediaPipe worker currently serializes inference, and completed results are not yet owned per camera; see Issue #7. |
 | **3D room mapping** | Manual anchors and JSON persistence are available; live stereo hand coordinates remain experimental pending Issue #6 |
-| **1:1 hand tracking** | Async MediaPipe worker thread + One-Euro filter + velocity-based predictor for sub-frame latency |
+| **1:1 hand tracking** | Shared async MediaPipe worker thread + One-Euro filter + velocity-based predictor for sub-frame latency |
 | **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index clicks. **No mouse required.** |
 | **Persistent selection overlay** | Green border tracks the currently-focused UI element at 10 Hz so you always know what will activate |
 | **Engage / disengage** | Open palm held ~0.6 s = engaged (cursor / click enabled). Lower hand = disengaged (system idle) |
-| **Live performance readout** | Per-loop ms, target FPS, app CPU%, RAM, thread count, all on the Main tab |
+| **Live performance readout** | Per-loop ms and target FPS on all platforms; app CPU%, RAM, and thread count are Windows-specific telemetry |
 | **Single-instance lock** | One app at a time. Second launch focuses the existing window instead of stuttering |
 | **Local-first core** | Camera capture, MediaPipe tracking, gesture detection, and PC-control actions run locally with no telemetry |
 | **Optional LLM gestures** | Drop in Ollama (cloud or local llama.cpp) to add custom gestures the local detector doesn't know. Off by default. |
