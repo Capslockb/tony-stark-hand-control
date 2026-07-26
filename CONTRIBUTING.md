@@ -21,7 +21,7 @@ python -m unittest discover tests
 pytest -q
 ```
 
-The full audit suite (77 assertions) lives in `tests/test_app.py`. It is self-contained — it does not require a real camera or GUI to run.
+Use repository-wide discovery for normal validation and treat the final summary plus the GitHub Actions run for the exact commit as the source of truth. `tests/test_app.py` is a host-dependent live audit with 77 recorded checks, not a fully isolated CI suite: it starts MediaPipe worker threads, attempts real camera discovery, and includes application-construction coverage that can depend on the available Tk/display environment. Camera, GUI, and worker-lifecycle changes should also include focused deterministic tests with mocked hardware and explicit cleanup.
 
 ## Code style
 
