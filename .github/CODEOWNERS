@@ -6,3 +6,4 @@ CONTRIBUTING.md @Capslockb
 .github/CODEOWNERS @Capslockb
 .github/workflows/public-docs-safety.yml @Capslockb
 scripts/public_docs_safety.py @Capslockb
+tests/test_public_docs_safety.py @Capslockb
