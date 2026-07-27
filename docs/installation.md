@@ -34,9 +34,9 @@ The install wizard will:
 2. Run `python -m pip install -r requirements.txt --upgrade`
 3. Smoke-test required imports
 4. Download `hand_landmarker.task` (~7 MB) from the MediaPipe model registry
-5. Create a desktop shortcut on Windows, or skip that step on other platforms
+5. Attempt to create a desktop shortcut on Windows, or skip that step on other platforms
 
-The wizard stops at the first failing step. After all five steps succeed, it prints the appropriate launch command; it does not start the app automatically.
+The wizard stops at the first failing required step: Python validation, dependency installation, import smoke testing, or model download. A Windows shortcut-creation failure is warning-only; the wizard still reports installation complete and prints the appropriate launch commands. It does not start the app automatically.
 
 ## Experimental source install (Linux)
 
