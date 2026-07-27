@@ -44,7 +44,7 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 | **Live performance readout** | Per-loop ms and target FPS on all platforms; app CPU%, RAM, and thread count are Windows-specific telemetry |
 | **Single-instance lock** | One app at a time. Second launch focuses the existing window instead of stuttering |
 | **Local-first core** | Camera capture, MediaPipe tracking, gesture detection, and PC-control actions run locally with no telemetry |
-| **Optional LLM gestures** | Send snapshots to an Ollama API-compatible endpoint for custom gesture labels. Off by default; OpenAI-compatible llama.cpp servers require an adapter. |
+| **Optional LLM gestures** | Send snapshots to an Ollama API-compatible endpoint for classification within the fixed built-in `GESTURE_KEYS` vocabulary. Unknown labels become `none`; prompt edits alone do not add actions. Off by default; OpenAI-compatible llama.cpp servers require an adapter. |
 | **Platform status** | Windows is the primary tested path; Linux and macOS parity remain roadmap work |
 
 ---
@@ -134,7 +134,7 @@ All configuration lives in the GUI tabs:
 - **[Performance tuning](docs/performance.md)** — user-facing controls, internal pacing values, and performance trade-offs
 - **[Troubleshooting](docs/troubleshooting.md)** — common issues and how to fix them
 - **[Architecture](docs/architecture.md)** — how the pieces fit together
-- **[Ollama integration](docs/ollama_integration.md)** — adding optional cloud / local LLM gesture recognition
+- **[Ollama integration](docs/ollama_integration.md)** — configuring optional snapshot classification through Ollama-compatible endpoints
 
 ---
 
