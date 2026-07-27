@@ -111,7 +111,7 @@ Treat the command's final summary and the GitHub Actions run for the exact commi
 
 - **[Calibration](calibration.md)** — print the checkerboard and run calibration for 3D room mapping
 - **[Gestures](gestures.md)** — what each gesture does
-- **[Performance tuning](performance.md)** — what each slider in the GUI controls
+- **[Performance tuning](performance.md)** — user-facing controls, internal pacing values, and performance trade-offs
 
 ## Troubleshooting
 
