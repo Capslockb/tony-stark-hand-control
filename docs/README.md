@@ -13,7 +13,7 @@ User-facing documentation for Tony Stark Hand Control.
 | [performance.md](performance.md) | User-facing performance controls, internal pacing values, and their trade-offs |
 | [troubleshooting.md](troubleshooting.md) | Common issues + fixes |
 | [architecture.md](architecture.md) | How the code is organized, data flow, performance characteristics |
-| [ollama_integration.md](ollama_integration.md) | Optional cloud / local LLM gesture recognition |
+| [ollama_integration.md](ollama_integration.md) | Optional snapshot classification through Ollama-compatible endpoints; results are limited to the built-in `GESTURE_KEYS` vocabulary |
 | [test_results.md](test_results.md) | Historical test results captured for the v1.0.0 release |
 
 ## Diagrams
