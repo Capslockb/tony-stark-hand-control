@@ -208,10 +208,10 @@ On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480x360 / 30
 | HUD overlay per cam | 0.2 ms | Static base cached, np.maximum blit |
 | 3D reconstruction (5 tips × N cams) | ~5 ms | Timing only; live-coordinate correctness remains unvalidated under Issue #6 |
 | Canvas redraw | 15 ms throttled | Tk Canvas + ImageTk.PhotoImage |
-| 3D view redraw | throttled to 5 Hz | matplotlib |
+| 3D view redraw | coalesced, up to ~30 fps | Scheduled with `root.after(33, ...)`; actual rate follows redraw requests and Tk scheduling |
 | Selection overlay refresh | <1 ms at 10 Hz | win32 GetGUIThreadInfo + Toplevel.move |
 
-Total main loop: **28-35 ms ≈ 28-35 fps** on a typical desktop. CPU usage: **3-5% of one core** with 4 cameras.
+On the cited development machine, reported main-loop work was **28-35 ms**, corresponding to a **28-35 fps compute-capacity estimate before the scheduled Tk wait**. Process CPU telemetry reported **3-5% of one logical CPU** with 4 cameras. These measurements are not cross-platform guarantees.
 
 ## See also
 
