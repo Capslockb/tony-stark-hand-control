@@ -10,13 +10,14 @@ The Ollama tab adds an optional **second layer** of gesture recognition on top o
 
 Use Ollama if you want to:
 
-- **Add new gestures** that aren't in the local detector (e.g. "peace sign", "thumbs up")
-- **Get semantic descriptions** of what your hand is doing ("looks like the user is reaching toward the lamp")
-- **Use sign language** or custom gesture vocabularies
+- **Experiment with snapshot-based classification** for the app's existing fixed gesture vocabulary
+- **Compare a VLM result with the local detector** when evaluating the existing gesture labels
 
 Don't use Ollama if:
 
 - You're happy with the built-in gestures
+- You want to add new action names without changing the source: responses outside `GESTURE_KEYS` are converted to `none`
+- You need sign-language recognition or other temporal/two-hand gestures: the current path classifies independent snapshots and does not implement sequence recognition
 - You're on a slow network or no network at all
 - You need the lowest possible latency (Ollama adds 1-8 seconds per inference)
 
@@ -94,7 +95,7 @@ Performance on RTX 5060: ~14 tok/sec for image+text generation, ~2.2 seconds per
 In the **Ollama** tab:
 - Set Endpoint to `http://127.0.0.1:8080`
 - Set Model to the same name you used with `-m` (or any string — the server doesn't check)
-- Leave the API key blank
+- The current GUI requires a non-empty API-key field. If your local adapter ignores `Authorization`, enter a non-secret placeholder such as `local-only`; do not reuse a real credential.
 - Click Save
 
 **Note**: the current `OllamaGestureRecognizer` in the app uses the **Ollama API format** (`/api/generate` with multipart image). A local llama-server uses the **OpenAI-compatible format** (`/v1/chat/completions` with image_url in messages). The two are not directly compatible. To use the local server, you'll need a small adapter — see the "Adapting to OpenAI format" section below.
@@ -143,7 +144,7 @@ The default prompt is:
 What hand gesture is being shown? Choose from: left_click, right_click, scroll_up, scroll_down, swipe_left, swipe_right, swipe_up, swipe_down, move_cursor, engage, disengage, none. Respond with only the gesture name.
 ```
 
-You can edit this in the Ollama tab. The app's gesture handler maps the response string to a key in the `GESTURE_KEYS` list at the top of the source file. If your model returns a different gesture name, you'll need to add it to the mapping.
+You can edit this in the Ollama tab, but the runtime still filters the response through the fixed `GESTURE_KEYS` list. A response that does not contain one of those labels becomes `none`. Supporting a genuinely new gesture name therefore requires a reviewed source change to the vocabulary and its action mapping; changing the prompt alone is not enough.
 
 ## Performance
 
