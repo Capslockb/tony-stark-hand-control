@@ -85,7 +85,7 @@ pip install -r requirements.txt
 # Method A: via the wizard
 python install_wizard.py
 # Method B: manually
-curl -L -o hand_landmarker.task https://storage.googleapis.com/mediapi-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task
+curl -L -o hand_landmarker.task https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task
 # Method C: let the app do it on first launch
 python tony_stark_hud_control.py
 # The app will download it if missing.
