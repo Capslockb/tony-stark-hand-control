@@ -2,14 +2,16 @@
 
 Detailed setup instructions for Tony Stark Hand Control.
 
+> **Current `main` runtime status:** installation can complete even though live processing is presently blocked by the loop-rescheduling regression tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16). A source checkout may show the first processed frame and then stop updating after **Start**. Successful installation or import smoke testing does not validate the camera and gesture runtime until a reviewed fix lands.
+
 ## Requirements
 
 ### Hardware
 
 - **CPU / architecture**: prebuilt releases target 64-bit Windows (`x64`) and Linux (`x86_64`). Source installs on other architectures, including Apple Silicon, are not currently validated.
 - **RAM**: 4 GB minimum, 8 GB recommended (the app itself uses ~200 MB; the rest is for OS + browser)
-- **GPU**: optional. The app runs on CPU. A CUDA-capable GPU helps only with the *optional* Ollama/LLM gesture recognition.
-- **Camera**: any USB webcam or built-in laptop camera. Multiple cameras recommended for 3D reconstruction.
+- **GPU**: optional. The documented Windows MediaPipe path runs on CPU. A GPU can help only when a separately configured local model server uses it; a remote Ollama-compatible endpoint does not use your local GPU.
+- **Camera**: a USB webcam or built-in laptop camera supported by the operating system and OpenCV. At least two overlapping camera views are required for the experimental stereo path, whose live coordinates remain unvalidated while [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) is open.
 - **Disk**: 500 MB (Python + dependencies + the MediaPipe model)
 
 ### Software and platform status
