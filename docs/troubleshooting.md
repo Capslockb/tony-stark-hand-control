@@ -68,6 +68,12 @@ The app has a 1.5-second timeout per `cap.open()` and a 0.8-second timeout per `
 
 If it's worse, the issue is probably **another app holding the camera**. Close other apps and retry.
 
+### Camera preview updates once and then freezes
+
+The current source line has a known main-loop scheduling regression tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16). After **Start**, camera capture and gesture processing can complete one loop iteration and then stop while the last rendered frame remains visible.
+
+This is not fixed by changing camera backends, frame-rate settings, responsiveness presets, or restarting calibration. There is no supported configuration workaround. Treat recurring live camera and gesture processing as unavailable until a reviewed runtime fix lands; use Issue #16 for the exact implementation and validation status.
+
 ## MediaPipe issues
 
 ### `GPU processing is disabled in build flags`
