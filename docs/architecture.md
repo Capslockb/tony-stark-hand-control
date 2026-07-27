@@ -94,10 +94,11 @@ If the tip has never been seen (`predict()` called before any `smooth()`), the p
 
 ```
 for each non-thumb finger:
-    distance(tip, wrist) > distance(pip, wrist) + threshold
+    distance(tip, wrist) > distance(pip, wrist) * 1.15
+    and distance(pip, wrist) > distance(mcp, wrist) * 0.95
 ```
 
-A finger is extended if its tip is further from the wrist than its PIP joint is. The threshold is 0.05 normalized units. Count of extended >= 3 → palm is open.
+A finger counts as extended only when both ratio checks pass. If at least 3 of the 4 non-thumb fingers qualify, the palm is considered open. There is no fixed `0.05` normalized-distance threshold in this detector.
 
 ### triangulate_point_rays
 
@@ -166,7 +167,7 @@ The intended main loop is paced against the fastest live camera's FPS. Once Issu
 
 On the current `main` branch, step 8 does not complete: redraw requests are queued, but the next-loop scheduling block is inside `_redraw_canvas()` and is unreachable after a normal canvas match. That regression is tracked in Issue #16.
 
-The selection overlay refreshes at 10 Hz via `root.after(100, ...)`. It uses `win32gui.GetGUIThreadInfo` to find the focused UI element and draws a green border around it.
+The selection overlay refreshes at 10 Hz via `root.after(100, ...)`. On Windows, it calls `ctypes.windll.user32.GetGUIThreadInfo` to identify the focused control and `GetWindowRect` to obtain its bounds before positioning a green Tk border around it.
 
 The 3D / Room tab uses `matplotlib.backends.backend_tkagg.FigureCanvasTkAgg` to embed a 3D matplotlib viewport. Click events are unprojected to 3D world rays and intersected with a horizontal plane to place anchors. Manual anchor placement and room-map persistence are separate from the unvalidated live stereo-coordinate path.
 
@@ -210,13 +211,13 @@ On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480x360 / 30
 |---|---|---|
 | CameraManager.read_all | ~10 ms | 4 × cv2.VideoCapture.read with small buffer |
 | HandProcessor.detect | <1 ms (returns cached) | Real MediaPipe cost is ~30 ms on the worker |
-| is_palm_open | <0.1 ms | 4 × math.hypot |
+| is_palm_open | <0.1 ms | 12 wrist-relative distance evaluations (`math.hypot`) |
 | Gesture detection (when engaged) | ~0.5 ms | 4 × math.hypot + 4 × ring buffer ops |
 | HUD overlay per cam | 0.2 ms | Static base cached, np.maximum blit |
 | 3D reconstruction (5 tips × N cams) | ~5 ms | Timing only; live-coordinate correctness remains unvalidated under Issue #6 |
 | Canvas redraw request | `after(15, ...)` with one pending callback per canvas | A 15 ms scheduling delay is not a measured redraw cost or delivered frame rate |
 | 3D view redraw | user actions: 33 ms coalescing; live reconstruction: 200 ms scheduling | Nominal request ceilings are ~30 Hz and ~5 Hz respectively; delivered rate has not been benchmarked |
-| Selection overlay refresh | <1 ms at 10 Hz | win32 GetGUIThreadInfo + Toplevel.move |
+| Selection overlay refresh | <1 ms at 10 Hz | `GetGUIThreadInfo` + `GetWindowRect` + Tk geometry update |
 
 On the cited development machine, reported main-loop work was **28-35 ms**, corresponding to a **28-35 fps compute-capacity estimate before the scheduled Tk wait**. Process CPU telemetry reported **3-5% of one logical CPU** with 4 cameras. These measurements are not cross-platform guarantees, do not establish the delivered 3D-view frame rate, and are not current runtime validation while Issue #16 blocks loop rescheduling.
 
