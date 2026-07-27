@@ -6,7 +6,7 @@ Detailed setup instructions for Tony Stark Hand Control.
 
 ### Hardware
 
-- **CPU**: any modern x86-64 (Intel or AMD)
+- **CPU / architecture**: prebuilt releases target 64-bit Windows (`x64`) and Linux (`x86_64`). Source installs on other architectures, including Apple Silicon, are not currently validated.
 - **RAM**: 4 GB minimum, 8 GB recommended (the app itself uses ~200 MB; the rest is for OS + browser)
 - **GPU**: optional. The app runs on CPU. A CUDA-capable GPU helps only with the *optional* Ollama/LLM gesture recognition.
 - **Camera**: any USB webcam or built-in laptop camera. Multiple cameras recommended for 3D reconstruction.
