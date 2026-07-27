@@ -5,6 +5,8 @@ How the pieces of the Tony Stark Hand Control app fit together.
 ![architecture](images/architecture.svg)
 
 > **3D validation status:** Manual room anchors and JSON persistence are available, but live stereo reconstruction is experimental. Calibration stores OpenCV world-to-camera `R, t`; the current reconstruction path interprets `t` as a camera center, and one helper also mixes normalized landmarks with a pixel-coordinate API. Until [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) is corrected and validated end to end, do not use live 3D coordinates for measurement, automation, or safety decisions.
+>
+> **Main-loop status:** The flow described below is the intended design, not the behavior of the current `main` branch. The adaptive pacing and next-iteration scheduling block is misplaced inside `_redraw_canvas()`, after its normal return path, so Start currently processes one iteration and does not schedule the next. See [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16).
 
 ## Top-level structure
 
@@ -152,14 +154,17 @@ The Tkinter GUI. Six tabs:
 5. **3D / Room** — interactive matplotlib 3D viewport
 6. **Cameras** — per-camera list with Test buttons
 
-The main loop runs at the fastest live camera's FPS. Each iteration:
-1. Reads frames from all enabled cameras
-2. Updates cached live-feed status (every 10th frame)
-3. Updates cached FPS (every 30th frame)
-4. Attempts a shared HandProcessor submission every `mediapipe_skip`th iteration; `mediapipe_skip` is currently an internal value rather than a GUI control
-5. Draws the HUD on each camera's display
-6. Stitches together a multi-cam aggregate decision for engage/disengage
-7. Fires gestures if engaged
+The intended main loop is paced against the fastest live camera's FPS. Once Issue #16 is corrected, each iteration should:
+1. Read frames from all enabled cameras
+2. Update cached live-feed status (every 10th frame)
+3. Update cached FPS (every 30th frame)
+4. Attempt a shared HandProcessor submission every `mediapipe_skip`th iteration; `mediapipe_skip` is currently an internal value rather than a GUI control
+5. Draw the HUD on each camera's display
+6. Stitch together a multi-cam aggregate decision for engage/disengage
+7. Fire gestures if engaged
+8. Queue at most one deferred redraw per camera and schedule the next loop iteration
+
+On the current `main` branch, step 8 does not complete: redraw requests are queued, but the next-loop scheduling block is inside `_redraw_canvas()` and is unreachable after a normal canvas match. That regression is tracked in Issue #16.
 
 The selection overlay refreshes at 10 Hz via `root.after(100, ...)`. It uses `win32gui.GetGUIThreadInfo` to find the focused UI element and draws a green border around it.
 
@@ -169,16 +174,16 @@ User-initiated redraw requests—initial drawing, resize events, anchor changes,
 
 ### Single-instance lock
 
-A `_SingleInstance` class ensures only one copy of the app runs at a time. Two layers:
+A `_SingleInstance` class prevents a second copy of the app from continuing when the lock mechanisms are available:
 
-1. **Windows named mutex** (`Global\TonyStarkHandControl_v1`) — kernel-level, robust
-2. **File lock** on `%TEMP%\tony_stark_hud.lock` using `msvcrt.locking` — belt and suspenders
+1. **Windows named mutex** (`Global\TonyStarkHandControl_v1`) — used on Windows through `ctypes.WinDLL`
+2. **Temporary-file lock** on `tony_stark_hud.lock` — `msvcrt.locking` on Windows and `fcntl.flock` on Linux/macOS
 
-The lock is acquired BEFORE importing tkinter or cv2 (so a second launch is fast even if the first is fully loaded).
+The module currently imports OpenCV, MediaPipe, and Tkinter before reaching the `__main__` entry point. The lock is therefore acquired before constructing the Tk root and `HandControlApp`, but not before those heavyweight imports. Lock infrastructure errors are handled as best-effort and allow startup to continue.
 
-On conflict, the second launch enumerates top-level windows looking for one with "Tony Stark" or "Hand Control" in the title, and calls `SetForegroundWindow` to bring it to the front. If no window is found, a tkinter message box says "already running."
+On conflict, the second launch attempts to enumerate Windows top-level windows looking for one with "Tony Stark" or "Hand Control" in the title and calls `SetForegroundWindow`. If that path is unavailable or no window is found, it falls back to a Tk message box and then a stderr message if no GUI can be created.
 
-On `WM_DELETE_WINDOW` (user clicks X), the lock is released. Also in a `finally:` block for crash safety.
+On `WM_DELETE_WINDOW` (user clicks X), the lock is released. It is also released from a `finally:` block.
 
 ## Data flow
 
@@ -209,11 +214,11 @@ On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480x360 / 30
 | Gesture detection (when engaged) | ~0.5 ms | 4 × math.hypot + 4 × ring buffer ops |
 | HUD overlay per cam | 0.2 ms | Static base cached, np.maximum blit |
 | 3D reconstruction (5 tips × N cams) | ~5 ms | Timing only; live-coordinate correctness remains unvalidated under Issue #6 |
-| Canvas redraw | 15 ms throttled | Tk Canvas + ImageTk.PhotoImage |
+| Canvas redraw request | `after(15, ...)` with one pending callback per canvas | A 15 ms scheduling delay is not a measured redraw cost or delivered frame rate |
 | 3D view redraw | user actions: 33 ms coalescing; live reconstruction: 200 ms scheduling | Nominal request ceilings are ~30 Hz and ~5 Hz respectively; delivered rate has not been benchmarked |
 | Selection overlay refresh | <1 ms at 10 Hz | win32 GetGUIThreadInfo + Toplevel.move |
 
-On the cited development machine, reported main-loop work was **28-35 ms**, corresponding to a **28-35 fps compute-capacity estimate before the scheduled Tk wait**. Process CPU telemetry reported **3-5% of one logical CPU** with 4 cameras. These measurements are not cross-platform guarantees and do not establish the delivered 3D-view frame rate.
+On the cited development machine, reported main-loop work was **28-35 ms**, corresponding to a **28-35 fps compute-capacity estimate before the scheduled Tk wait**. Process CPU telemetry reported **3-5% of one logical CPU** with 4 cameras. These measurements are not cross-platform guarantees, do not establish the delivered 3D-view frame rate, and are not current runtime validation while Issue #16 blocks loop rescheduling.
 
 ## See also
 
@@ -223,4 +228,5 @@ On the cited development machine, reported main-loop work was **28-35 ms**, corr
 - [Gestures](gestures.md) — what each gesture does
 - [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — stereo convention and validation blocker
 - [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7) — per-camera inference ownership blocker
+- [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16) — main-loop rescheduling blocker
 - The 7 audit passes in `hermes-skills/tony-stark-hand-control/references/`
