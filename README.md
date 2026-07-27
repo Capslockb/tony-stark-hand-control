@@ -1,6 +1,6 @@
 # Tony Stark Hand Control
 
-**Multi-camera, GPU-friendly hand tracking for PC control — in the spirit of the Iron Man HUD.**
+**Performance-oriented multi-camera hand tracking for PC control — in the spirit of the Iron Man HUD.**
 
 A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation and thumb-to-finger contacts trigger keyboard actions. Those fingertip actions currently repeat while held; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13). The Room tab also includes an experimental stereo 3D view, but its live coordinates are not yet validated for measurement or automation. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama cloud inference is off by default. No mouse required.
 
