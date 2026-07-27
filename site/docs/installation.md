@@ -2,14 +2,16 @@
 
 Detailed setup instructions for Tony Stark Hand Control.
 
+> **Current `main` runtime status:** installation can complete even though live processing is presently blocked by the loop-rescheduling regression tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16). A source checkout may show the first processed frame and then stop updating after **Start**. Successful installation or import smoke testing does not validate the camera and gesture runtime until a reviewed fix lands.
+
 ## Requirements
 
 ### Hardware
 
-- **CPU**: any modern x86-64 (Intel or AMD)
+- **CPU / architecture**: prebuilt releases target 64-bit Windows (`x64`) and Linux (`x86_64`). Source installs on other architectures, including Apple Silicon, are not currently validated.
 - **RAM**: 4 GB minimum, 8 GB recommended (the app itself uses ~200 MB; the rest is for OS + browser)
-- **GPU**: optional. The app runs on CPU. A CUDA-capable GPU helps only with the *optional* Ollama/LLM gesture recognition.
-- **Camera**: any USB webcam or built-in laptop camera. Multiple cameras recommended for 3D reconstruction.
+- **GPU**: optional. The documented Windows MediaPipe path runs on CPU. A GPU can help only when a separately configured local model server uses it; a remote Ollama-compatible endpoint does not use your local GPU.
+- **Camera**: a USB webcam or built-in laptop camera supported by the operating system and OpenCV. At least two overlapping camera views are required for the experimental stereo path, whose live coordinates remain unvalidated while [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) is open.
 - **Disk**: 500 MB (Python + dependencies + the MediaPipe model)
 
 ### Software and platform status
@@ -31,12 +33,12 @@ start_windows.bat
 
 The install wizard will:
 1. Verify Python ≥ 3.10
-2. `pip install -r requirements.txt` (opencv-python, mediapipe, matplotlib, pyautogui, pywin32, winshell, Pillow)
-3. Download `hand_landmarker.task` (~7 MB) from the MediaPipe model registry
-4. Create a desktop shortcut
-5. Verify all imports work
+2. Run `python -m pip install -r requirements.txt --upgrade`
+3. Smoke-test required imports
+4. Download `hand_landmarker.task` (~7 MB) from the MediaPipe model registry
+5. Attempt to create a desktop shortcut on Windows, or skip that step on other platforms
 
-If the install wizard fails at any step, fix the issue and re-run. Each step is independent.
+The wizard stops at the first failing required step: Python validation, dependency installation, import smoke testing, or model download. A Windows shortcut-creation failure is warning-only; the wizard still reports installation complete and prints the appropriate launch commands. It does not start the app automatically.
 
 ## Experimental source install (Linux)
 
@@ -83,7 +85,7 @@ pip install -r requirements.txt
 # Method A: via the wizard
 python install_wizard.py
 # Method B: manually
-curl -L -o hand_landmarker.task https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task
+curl -L -o hand_landmarker.task https://storage.googleapis.com/mediapi-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task
 # Method C: let the app do it on first launch
 python tony_stark_hud_control.py
 # The app will download it if missing.
@@ -111,7 +113,7 @@ Treat the command's final summary and the GitHub Actions run for the exact commi
 
 - **[Calibration](calibration.md)** — print the checkerboard and run calibration for 3D room mapping
 - **[Gestures](gestures.md)** — what each gesture does
-- **[Performance tuning](performance.md)** — what each slider in the GUI controls
+- **[Performance tuning](performance.md)** — user-facing controls, internal pacing values, and performance trade-offs
 
 ## Troubleshooting
 
