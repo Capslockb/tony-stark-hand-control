@@ -2,9 +2,11 @@
 
 The app exposes several user-facing controls for trading CPU usage, latency, and tracking stability. Other values described below are implementation constants or are managed only by the responsiveness preset; they are not independent Tracking-tab controls. Performance measurements in this repository come from a specific development machine and should not be treated as guaranteed results on other camera drivers, CPUs, GPUs, displays, or operating systems.
 
+> **Current `main` regression:** after **Start**, only the first processing iteration is currently scheduled. The live performance labels therefore do not continue refreshing on `main`; see [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16). The descriptions and development-host measurements below document the intended recurring loop and prior observations, not current runtime validation.
+
 ## Live readouts
 
-The **Main** tab refreshes its performance labels every 15 main-loop iterations:
+When recurring main-loop scheduling is functioning, the **Main** tab refreshes its performance labels every 15 main-loop iterations:
 
 ```text
 loop: 28.3 ms  (35.4 fps)  |  target: 30.0 fps
