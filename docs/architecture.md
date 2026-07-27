@@ -165,6 +165,8 @@ The selection overlay refreshes at 10 Hz via `root.after(100, ...)`. It uses `wi
 
 The 3D / Room tab uses `matplotlib.backends.backend_tkagg.FigureCanvasTkAgg` to embed a 3D matplotlib viewport. Click events are unprojected to 3D world rays and intersected with a horizontal plane to place anchors. Manual anchor placement and room-map persistence are separate from the unvalidated live stereo-coordinate path.
 
+User-initiated redraw requests—initial drawing, resize events, anchor changes, and view controls—go through `_schedule_3d_redraw()` and are coalesced with `root.after(33, ...)`, which gives that request path a nominal ceiling near 30 Hz. Live fingertip reconstruction uses a separate pending flag and schedules `_redraw_3d_view()` with `root.after(200, ...)`, so live 3D updates are requested at about 5 Hz. These are scheduling intervals, not measured delivered frame rates; actual rendering also depends on Tk and matplotlib work.
+
 ### Single-instance lock
 
 A `_SingleInstance` class ensures only one copy of the app runs at a time. Two layers:
@@ -208,10 +210,10 @@ On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480x360 / 30
 | HUD overlay per cam | 0.2 ms | Static base cached, np.maximum blit |
 | 3D reconstruction (5 tips × N cams) | ~5 ms | Timing only; live-coordinate correctness remains unvalidated under Issue #6 |
 | Canvas redraw | 15 ms throttled | Tk Canvas + ImageTk.PhotoImage |
-| 3D view redraw | coalesced, up to ~30 fps | Scheduled with `root.after(33, ...)`; actual rate follows redraw requests and Tk scheduling |
+| 3D view redraw | user actions: 33 ms coalescing; live reconstruction: 200 ms scheduling | Nominal request ceilings are ~30 Hz and ~5 Hz respectively; delivered rate has not been benchmarked |
 | Selection overlay refresh | <1 ms at 10 Hz | win32 GetGUIThreadInfo + Toplevel.move |
 
-On the cited development machine, reported main-loop work was **28-35 ms**, corresponding to a **28-35 fps compute-capacity estimate before the scheduled Tk wait**. Process CPU telemetry reported **3-5% of one logical CPU** with 4 cameras. These measurements are not cross-platform guarantees.
+On the cited development machine, reported main-loop work was **28-35 ms**, corresponding to a **28-35 fps compute-capacity estimate before the scheduled Tk wait**. Process CPU telemetry reported **3-5% of one logical CPU** with 4 cameras. These measurements are not cross-platform guarantees and do not establish the delivered 3D-view frame rate.
 
 ## See also
 
