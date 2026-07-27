@@ -12,6 +12,8 @@ A local-first, accessibility-focused hand-tracking system. Point one (or up to f
 
 > 🌐 **Live site:** [**capslockb.github.io/tony-stark-hand-control**](https://capslockb.github.io/tony-stark-hand-control/) — install in 60 seconds, no clone required.
 > 📱 **On your phone?** Open the mobile install page: [**capslockb.github.io/tony-stark-hand-control/mobile**](https://capslockb.github.io/tony-stark-hand-control/mobile/)
+>
+> ⚠️ **Current `main` regression:** after Start, the application currently schedules the first processing iteration but not the next one. Live camera and gesture behavior on `main` is blocked by [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16). Do not treat the runtime or performance claims below as current validation until a reviewed fix lands.
 
 <p align="center">
   <img src="docs/images/architecture.svg" alt="Architecture overview" width="720">
@@ -145,7 +147,7 @@ On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480×360 / 3
 | MediaPipe per inference | ~30 ms | CPU (XNNPACK); GPU delegate unavailable on this Windows build |
 | One-Euro filter + predictor | 0.1 ms per tip | Cached buffer, 6-frame history |
 | HUD overlay (4 cams) | 24 ms/sec = 2.4% of one core | Static base cached, only animated parts redrawn |
-| Total main loop | 28-35 ms ≈ 28-35 fps | Adaptive pacing to fastest live camera |
+| Main-loop work estimate | 28–35 ms before the scheduled Tk wait | Development-host compute timing only; it is not delivered FPS, and current `main` is blocked by Issue #16 |
 
 See `docs/performance.md` for the full benchmark.
 
