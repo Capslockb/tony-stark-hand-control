@@ -10,7 +10,7 @@ A local-first, accessibility-focused hand-tracking system. Point one (or up to f
 [![Privacy: local-first](https://img.shields.io/badge/privacy-local--first-success)](#privacy)
 [![CI](https://github.com/Capslockb/tony-stark-hand-control/actions/workflows/ci.yml/badge.svg)](https://github.com/Capslockb/tony-stark-hand-control/actions/workflows/ci.yml)
 
-> 🌐 **Live site:** [**capslockb.github.io/tony-stark-hand-control**](https://capslockb.github.io/tony-stark-hand-control/) — install in 60 seconds, no clone required.
+> 🌐 **Live site:** [**capslockb.github.io/tony-stark-hand-control**](https://capslockb.github.io/tony-stark-hand-control/) — guided install flow, no clone required.
 > 📱 **On your phone?** Open the mobile install page: [**capslockb.github.io/tony-stark-hand-control/mobile**](https://capslockb.github.io/tony-stark-hand-control/mobile/)
 >
 > ⚠️ **Current `main` regression:** after Start, the application currently schedules the first processing iteration but not the next one. Live camera and gesture behavior on `main` is blocked by [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16). Do not treat the runtime or performance claims below as current validation until a reviewed fix lands.
@@ -131,7 +131,7 @@ All configuration lives in the GUI tabs:
 - **[Calibration](docs/calibration.md)** — how to print the checkerboard, run the calibration, and what the reprojection error means
 - **[Gestures](docs/gestures.md)** — full gesture reference with diagrams
 - **[3D Room Mapping](docs/3d_room_mapping.md)** — manual anchors plus the current validation boundary for live stereo coordinates
-- **[Performance tuning](docs/performance.md)** — what each slider does, how to trade quality for speed
+- **[Performance tuning](docs/performance.md)** — user-facing controls, internal pacing values, and performance trade-offs
 - **[Troubleshooting](docs/troubleshooting.md)** — common issues and how to fix them
 - **[Architecture](docs/architecture.md)** — how the pieces fit together
 - **[Ollama integration](docs/ollama_integration.md)** — adding optional cloud / local LLM gesture recognition
