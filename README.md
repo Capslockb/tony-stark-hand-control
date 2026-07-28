@@ -120,7 +120,7 @@ All configuration lives in the GUI tabs:
 
 - **Main** — Start/Stop/Calibrate, per-camera enable, performance readouts
 - **Ollama** — optional snapshot classification through an Ollama API-compatible endpoint, restricted to the built-in `GESTURE_KEYS` vocabulary; OpenAI-compatible llama.cpp servers require an adapter (advanced, see `docs/ollama_integration.md`)
-- **Tracking** — Responsiveness preset (1=smooth … 5=1:1), Fast Mode (240p pre-downscale), One-Euro filter params
+- **Tracking** — Responsiveness preset (1 = smoothest; 5 = least smoothing and longest prediction—the UI's “1:1” wording is a preset label, not a measured latency guarantee), Fast Mode (240p pre-downscale), One-Euro filter params
 - **Accessibility** — Navigation mode (Tab vs Arrow), selection overlay settings; focused-element discovery is currently Windows-specific
 - **3D / Room** — manual room anchors and an experimental live stereo viewport; do not treat current live coordinates as measured ground truth
 - **Cameras** — Per-camera list with Test buttons and live-feed status
