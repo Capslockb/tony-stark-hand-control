@@ -18,15 +18,16 @@ This is a **pagefile exhaustion** problem, not a RAM problem. Something is using
 
 Free up the swap and re-run the app.
 
-### `pip install mediapipe` fails on Python 3.13
+### `pip install mediapipe` fails
 
-MediaPipe 0.10.14+ supports Python 3.13. If you have an older version:
+MediaPipe wheel availability varies by MediaPipe release, Python version, operating system, and CPU architecture. The repository allows `mediapipe>=0.10.14,<0.11`, but that range does not mean every release in it provides a compatible wheel for every interpreter and platform.
 
 ```bash
-pip install --upgrade mediapipe
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-If that doesn't work, use Python 3.12 (the most-tested version).
+If pip reports that no matching distribution is available, include the exact Python version, OS, architecture, and complete pip error in the issue report. Python 3.12 on Windows x64 is the primary fallback path. The configured CI matrix covers Python 3.11–3.13, but it is currently red—including Windows dependency installation—under [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3), so it is not a green compatibility guarantee.
 
 ### `tkinter` not found (Linux)
 
