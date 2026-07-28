@@ -18,15 +18,16 @@ This is a **pagefile exhaustion** problem, not a RAM problem. Something is using
 
 Free up the swap and re-run the app.
 
-### `pip install mediapipe` fails on Python 3.13
+### `pip install mediapipe` fails
 
-MediaPipe 0.10.14+ supports Python 3.13. If you have an older version:
+MediaPipe wheel availability varies by MediaPipe release, Python version, operating system, and CPU architecture. The repository allows `mediapipe>=0.10.14,<0.11`, but that range does not mean every release in it provides a compatible wheel for every interpreter and platform.
 
 ```bash
-pip install --upgrade mediapipe
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-If that doesn't work, use Python 3.12 (the most-tested version).
+If pip reports that no matching distribution is available, include the exact Python version, OS, architecture, and complete pip error in the issue report. Python 3.12 on Windows x64 is the primary fallback path. The configured CI matrix covers Python 3.11–3.13, but it is currently red—including Windows dependency installation—under [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3), so it is not a green compatibility guarantee.
 
 ### `tkinter` not found (Linux)
 
@@ -67,6 +68,12 @@ The app probes indices 0-3 with three backends. If you have 4 cameras and only 2
 The app has a 1.5-second timeout per `cap.open()` and a 0.8-second timeout per `cap.read()`. With 4 indices × 3 backends, the worst case is ~30 seconds. This is normal on slow webcam drivers.
 
 If it's worse, the issue is probably **another app holding the camera**. Close other apps and retry.
+
+### Camera preview updates once and then freezes
+
+The current source line has a known main-loop scheduling regression tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16). After **Start**, camera capture and gesture processing can complete one loop iteration and then stop while the last rendered frame remains visible.
+
+This is not fixed by changing camera backends, frame-rate settings, responsiveness presets, or restarting calibration. There is no supported configuration workaround. Treat recurring live camera and gesture processing as unavailable until a reviewed runtime fix lands; use Issue #16 for the exact implementation and validation status.
 
 ## MediaPipe issues
 
