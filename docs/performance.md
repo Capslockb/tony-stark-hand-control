@@ -32,7 +32,9 @@ The responsiveness preset tunes five HandProcessor values together: One-Euro min
 | 2 | cutoff 1.8, beta 0.04, EMA 0.45, buffer 8, horizon 0.11 s | Smoother response |
 | 3 — Default | cutoff 2.5, beta 0.05, EMA 0.55, buffer 6, horizon 0.15 s | Balanced default |
 | 4 — Recommended in the UI | cutoff 3.5, beta 0.08, EMA 0.70, buffer 4, horizon 0.20 s | More responsive, less smoothing |
-| 5 — 1:1 | cutoff 5.0, beta 0.12, EMA 0.85, buffer 3, horizon 0.25 s | Least smoothing and longest prediction |
+| 5 — “1:1” UI label | cutoff 5.0, beta 0.12, EMA 0.85, buffer 3, horizon 0.25 s | Least smoothing and longest prediction; not validated one-to-one tracking |
+
+The source and GUI currently call preset 5 “1:1.” That is a qualitative preset label, not evidence of one-to-one spatial mapping, zero latency, sub-frame delivery, or measured tracking fidelity. Preset 5 reduces smoothing while extending the prediction horizon, which can also increase overshoot.
 
 The Tracking tab also exposes the One-Euro and cursor-EMA values individually. Changing those sliders overrides the corresponding current values, while selecting a responsiveness preset again reapplies the complete preset, including its buffer length and prediction horizon.
 
