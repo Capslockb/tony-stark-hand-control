@@ -37,7 +37,7 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 |---|---|
 | **Multi-camera capture** | Auto-detects up to 4 cameras (DSHOW → MSMF → ANY). A single shared asynchronous MediaPipe worker currently serializes inference, and completed results are not yet owned per camera; see [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7). |
 | **3D room mapping** | Manual anchors and JSON persistence are available; live stereo hand coordinates remain experimental pending [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6). |
-| **1:1 hand tracking** | Shared async MediaPipe worker thread + One-Euro filter + velocity-based predictor for sub-frame latency |
+| **Tracking pipeline** | Shared asynchronous MediaPipe worker, One-Euro filtering, and a velocity-based predictor. Recurring delivery is currently blocked by [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16), and per-camera result ownership by [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7). |
 | **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index triggers `Enter`. Fingertip actions are currently level-triggered; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13). **No mouse required.** |
 | **Persistent selection overlay** | On Windows, a green border polls the focused UI element at 10 Hz. Linux and macOS focus-discovery and overlay parity remain roadmap work. |
 | **Engage / disengage** | Open-palm detections are averaged over the last 10 loop samples. After the average exceeds 0.6, it must remain active for the configured hold duration (0.6 s by default); lowering the hand or closing the palm disengages. |
