@@ -2,7 +2,7 @@
 
 **Performance-oriented multi-camera hand tracking for PC control — in the spirit of the Iron Man HUD.**
 
-A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation and thumb-to-finger contacts trigger keyboard actions. Those fingertip actions currently repeat while held; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13). The Room tab also includes an experimental stereo 3D view, but its live coordinates are not yet validated for measurement or automation. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama-compatible snapshot inference is off by default and can target a local or remote endpoint. No mouse required.
+A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation and thumb-to-finger contacts trigger keyboard actions. Those fingertip actions currently repeat while held; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13). The Room tab also includes an experimental stereo 3D view, but its live coordinates are not yet validated for measurement or automation. Camera-frame processing stays on-device in the core path; however, MediaPipe's current privacy notice states that its Tasks APIs may send performance and utilization metrics to Google. Optional Ollama-compatible snapshot inference is off by default and can target a local or remote endpoint. No mouse required.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB.svg)](https://www.python.org)
@@ -43,7 +43,7 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 | **Engage / disengage** | Open-palm detections are averaged over the last 10 loop samples. After the average exceeds 0.6, it must remain active for the configured hold duration (0.6 s by default); lowering the hand or closing the palm disengages. |
 | **Live performance readout** | Per-loop ms and target FPS on all platforms; app CPU%, RAM, and thread count are Windows-specific telemetry |
 | **Single-instance lock** | One app at a time. Second launch focuses the existing window instead of stuttering |
-| **Local-first core** | Camera capture, MediaPipe tracking, gesture detection, and PC-control actions run locally with no telemetry |
+| **Local-first core** | Camera input and hand-processing data stay on-device. MediaPipe may send API performance and utilization metrics under its current privacy notice; the repository does not add its own application telemetry. |
 | **Optional snapshot classifier** | Send snapshots to an Ollama API-compatible endpoint for classification within the fixed built-in `GESTURE_KEYS` vocabulary. Unknown labels become `none`; prompt edits alone do not add actions. Off by default; OpenAI-compatible llama.cpp servers require an adapter. |
 | **Platform status** | Windows is the primary tested path; Linux and macOS parity remain roadmap work |
 
@@ -185,7 +185,7 @@ MIT — see [`LICENSE`](LICENSE).
 
 ## Privacy
 
-The core camera, MediaPipe, gesture-detection, and PC-control pipeline runs locally and sends no telemetry. The optional Ollama feature can be configured to send camera-frame snapshots and prompts to a remote endpoint; it is off by default. Review the endpoint provider's current retention policy before enabling cloud inference. Do not reuse the exposed credential-like default tracked in [Issue #5](https://github.com/Capslockb/tony-stark-hand-control/issues/5). See `SECURITY.md` for the disclosure policy.
+Camera-frame input is processed on-device by the core application. MediaPipe's current privacy notice says that Tasks API input data is not sent to Google, while API performance and utilization metrics may be sent to Google; the repository does not add its own application telemetry. The optional Ollama feature can be configured to send camera-frame snapshots and prompts to a remote endpoint and is off by default. Review the current MediaPipe and endpoint-provider privacy policies before use. Do not reuse the exposed credential-like default tracked in [Issue #5](https://github.com/Capslockb/tony-stark-hand-control/issues/5). See `SECURITY.md` for the disclosure policy.
 
 ## Acknowledgments
 
