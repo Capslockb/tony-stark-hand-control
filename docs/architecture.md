@@ -14,7 +14,7 @@ How the pieces of the Tony Stark Hand Control app fit together.
 tony_stark_hud_control.py
 ├── Constants & helpers
 ├── RoomMap                 (3D anchor list, JSON persistence)
-├── OllamaGestureRecognizer (optional LLM, with circuit breaker)
+├── OllamaGestureRecognizer (optional fixed-vocabulary snapshot classifier)
 ├── CameraManager           (multi-cam probe, live-feed check, release)
 ├── HandProcessor           (MediaPipe worker, smoothing, predictor)
 ├── triangulate_point_rays  (ray-based 3D triangulation)
@@ -149,7 +149,7 @@ Calibration reprojection error measures how well known checkerboard points proje
 The Tkinter GUI. Six tabs:
 
 1. **Main** — Start/Stop/Calibrate, per-camera enable, status, performance readouts
-2. **Ollama** — optional cloud or local LLM gesture recognition
+2. **Ollama** — optional fixed-vocabulary snapshot classification through a local or remote Ollama-compatible endpoint
 3. **Tracking** — responsiveness, Fast Mode, engage/click/swipe tuning, filter controls, focus-highlight settings, and 3D/cursor toggles
 4. **Accessibility** — Navigation mode (Tab vs Arrow), selection overlay
 5. **3D / Room** — interactive matplotlib 3D viewport
