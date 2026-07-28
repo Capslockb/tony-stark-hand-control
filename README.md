@@ -171,7 +171,7 @@ A real roadmap of public features is in [`ROADMAP.md`](ROADMAP.md). Highlights:
 - **v1.2.0 (Q4 2026)** — experimental monocular relative-depth or pose view, phone-as-second-camera companion app, room-map gesture zoning
 - **v2.0.0 (Q1 2027)** — "OK Jarvis" wake word, sign-language dictionary, third-party plugin SDK
 
-These are publicly promised, not "maybe someday" bullet points. The roadmap is binding intent. If something moves, the doc updates.
+These are planned milestones rather than shipping guarantees. The roadmap records current intent and should be revised when scope, timing, validation, or priorities change.
 
 ---
 
