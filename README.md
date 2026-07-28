@@ -2,7 +2,7 @@
 
 **Performance-oriented multi-camera hand tracking for PC control — in the spirit of the Iron Man HUD.**
 
-A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation and thumb-to-finger contacts trigger keyboard actions. Those fingertip actions currently repeat while held; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13). The Room tab also includes an experimental stereo 3D view, but its live coordinates are not yet validated for measurement or automation. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama cloud inference is off by default. No mouse required.
+A local-first, accessibility-focused hand-tracking system. Point one (or up to four) webcams at yourself, hold up an open palm, and your hand becomes a controller — swipes drive keyboard navigation and thumb-to-finger contacts trigger keyboard actions. Those fingertip actions currently repeat while held; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13). The Room tab also includes an experimental stereo 3D view, but its live coordinates are not yet validated for measurement or automation. The core hand-tracking pipeline runs locally with no telemetry; optional Ollama-compatible snapshot inference is off by default and can target a local or remote endpoint. No mouse required.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB.svg)](https://www.python.org)
@@ -44,7 +44,7 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 | **Live performance readout** | Per-loop ms and target FPS on all platforms; app CPU%, RAM, and thread count are Windows-specific telemetry |
 | **Single-instance lock** | One app at a time. Second launch focuses the existing window instead of stuttering |
 | **Local-first core** | Camera capture, MediaPipe tracking, gesture detection, and PC-control actions run locally with no telemetry |
-| **Optional LLM gestures** | Send snapshots to an Ollama API-compatible endpoint for classification within the fixed built-in `GESTURE_KEYS` vocabulary. Unknown labels become `none`; prompt edits alone do not add actions. Off by default; OpenAI-compatible llama.cpp servers require an adapter. |
+| **Optional snapshot classifier** | Send snapshots to an Ollama API-compatible endpoint for classification within the fixed built-in `GESTURE_KEYS` vocabulary. Unknown labels become `none`; prompt edits alone do not add actions. Off by default; OpenAI-compatible llama.cpp servers require an adapter. |
 | **Platform status** | Windows is the primary tested path; Linux and macOS parity remain roadmap work |
 
 ---
