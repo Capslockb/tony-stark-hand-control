@@ -8,10 +8,10 @@
 
 ## Privacy
 
-This is a **local-first** application. The core hand-tracking pipeline does not transmit data off the device. Specifically:
+This is a **local-first** application. Camera-frame input is processed on-device by the core hand-tracking pipeline. MediaPipe's current privacy notice says that Tasks API input data is not sent to Google, while API performance and utilization metrics may be sent to Google. Specifically:
 
-- **No telemetry.** The app does not phone home, report usage, or check for updates.
-- **No network calls** in the core hand-tracking code path.
+- **No repository-added application telemetry.** This project does not add its own usage reporting, analytics, or update checker. Third-party libraries may have separate current privacy behavior; review their policies before deployment.
+- **Network boundaries are explicit.** The application may download the MediaPipe model when it is missing, MediaPipe Tasks may send performance and utilization metrics under Google's current notice, and the optional Ollama feature sends snapshots to the endpoint you configure.
 - **Camera frames** are processed in memory by the local tracking pipeline and are not intentionally persisted or uploaded by that path.
 - **Calibration data** (`calibration.npz`) and **room maps** (`room_map.json`) are stored locally and are not transmitted by the core pipeline.
 - **The Ollama tab** is **off by default**. If you enable it and configure a remote endpoint, snapshots submitted through that feature are sent to the configured endpoint. Review that provider's authentication, retention, and access controls before enabling remote inference.
@@ -49,6 +49,6 @@ This app is designed for personal use on a trusted machine. It is **not** design
 
 - Multi-user shared systems where camera feeds could be a privacy concern
 - Hostile environments where a malicious actor could install a modified version
-- Air-gapped networks that need explicit offline-only behavior (the app is offline by default, but the Ollama tab could leak frames if misconfigured)
+- Air-gapped networks that require verified offline-only behavior; first-run model download, MediaPipe metrics behavior, and optional remote Ollama inference must all be reviewed or disabled for that environment
 
 If you need any of these, please audit the code and build from source.
