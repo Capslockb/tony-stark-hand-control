@@ -35,10 +35,10 @@ For the people who want a mouse anyway, screen-cursor mode is one checkbox away.
 
 | | |
 |---|---|
-| **Multi-camera capture** | Auto-detects up to 4 cameras (DSHOW → MSMF → ANY). A single shared asynchronous MediaPipe worker currently serializes inference, and completed results are not yet owned per camera; see Issue #7. |
-| **3D room mapping** | Manual anchors and JSON persistence are available; live stereo hand coordinates remain experimental pending Issue #6 |
+| **Multi-camera capture** | Auto-detects up to 4 cameras (DSHOW → MSMF → ANY). A single shared asynchronous MediaPipe worker currently serializes inference, and completed results are not yet owned per camera; see [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7). |
+| **3D room mapping** | Manual anchors and JSON persistence are available; live stereo hand coordinates remain experimental pending [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6). |
 | **1:1 hand tracking** | Shared async MediaPipe worker thread + One-Euro filter + velocity-based predictor for sub-frame latency |
-| **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index triggers `Enter`. Fingertip actions are currently level-triggered; see Issue #13. **No mouse required.** |
+| **Accessibility-first** | Swipes send Tab / Shift+Tab / Arrow keys, palm-hold engages, thumb+index triggers `Enter`. Fingertip actions are currently level-triggered; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13). **No mouse required.** |
 | **Persistent selection overlay** | On Windows, a green border polls the focused UI element at 10 Hz. Linux and macOS focus-discovery and overlay parity remain roadmap work. |
 | **Engage / disengage** | Open-palm detections are averaged over the last 10 loop samples. After the average exceeds 0.6, it must remain active for the configured hold duration (0.6 s by default); lowering the hand or closing the palm disengages. |
 | **Live performance readout** | Per-loop ms and target FPS on all platforms; app CPU%, RAM, and thread count are Windows-specific telemetry |
@@ -98,7 +98,7 @@ This is a source-install path, not a claim of feature parity with Windows. WSL i
 ## Usage
 
 1. **Start the app** — GUI window opens with the camera feeds on the right and controls on the left.
-2. **Press `Start`** — cameras are detected, feeds appear, MediaPipe starts running.
+2. **Press `Start`** — on a healthy build, cameras are detected, feeds update, and MediaPipe continues processing. Current `main` instead stops after its first processing iteration because of [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16).
 3. **Engage**: hold an **open palm** toward any camera. The app averages the last 10 open-palm detections; once that average exceeds 0.6, keep it active for the configured hold duration (0.6 seconds by default). The status indicator then changes from "Disengaged" to "Engaged".
 4. **Navigate**:
    - **Swipe right** → `Tab` (next focusable element)
@@ -119,7 +119,7 @@ On Windows, the **persistent green selection border** shows which UI element is 
 All configuration lives in the GUI tabs:
 
 - **Main** — Start/Stop/Calibrate, per-camera enable, performance readouts
-- **Ollama** — optional gesture recognition through an Ollama API-compatible endpoint; OpenAI-compatible llama.cpp servers require an adapter (advanced, see `docs/ollama_integration.md`)
+- **Ollama** — optional snapshot classification through an Ollama API-compatible endpoint, restricted to the built-in `GESTURE_KEYS` vocabulary; OpenAI-compatible llama.cpp servers require an adapter (advanced, see `docs/ollama_integration.md`)
 - **Tracking** — Responsiveness preset (1=smooth … 5=1:1), Fast Mode (240p pre-downscale), One-Euro filter params
 - **Accessibility** — Navigation mode (Tab vs Arrow), selection overlay settings; focused-element discovery is currently Windows-specific
 - **3D / Room** — manual room anchors and an experimental live stereo viewport; do not treat current live coordinates as measured ground truth
