@@ -2,7 +2,9 @@
 
 The Ollama tab adds an optional **second layer** of gesture recognition on top of the local MediaPipe-based detector. It uses a vision-language model (VLM) — either a cloud service or a local server — to look at a snapshot of the camera feed and classify the gesture.
 
-**This feature is OFF by default.** If you don't enable it, the app uses the local MediaPipe-only gesture detection described in [gestures.md](gestures.md), which is fast (<1 ms) and works for all built-in gestures (engage, click, swipe).
+**This feature is OFF by default.** If you don't enable it, the app uses the local MediaPipe-only gesture detection described in [gestures.md](gestures.md), which provides the built-in gesture vocabulary without sending camera snapshots to an inference endpoint.
+
+> **Current runtime caveat:** on current `main`, [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16) prevents the processing loop from rescheduling after its first iteration. Repeated MediaPipe gesture processing and repeated Ollama snapshot submission therefore do not continue after **Start**. The flow below describes the intended behavior once that runtime defect is fixed.
 
 > **Security notice:** current `main` contains a publicly exposed credential-like value in the Ollama API-key field. Treat it as invalid, do not reuse it, and replace or clear it before enabling the feature. Revocation/rotation and the source fix are tracked in [Issue #5](https://github.com/Capslockb/tony-stark-hand-control/issues/5). This documentation warning does not resolve the embedded-credential defect.
 
@@ -159,7 +161,7 @@ To turn off Ollama completely:
 2. **Uncheck** "Enable Ollama gesture recognition"
 3. Click Save
 
-The Ollama worker thread will exit cleanly. The local MediaPipe-based detector continues to work for all built-in gestures.
+The Ollama worker thread will exit cleanly and the local MediaPipe detector remains selected. On current `main`, recurring local processing remains blocked by [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16).
 
 ## See also
 
