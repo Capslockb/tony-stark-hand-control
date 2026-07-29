@@ -140,7 +140,7 @@ All configuration lives in the GUI tabs:
 
 ## Performance
 
-On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480×360 / 30 fps:
+On an RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480×360 / 30 fps:
 
 | Stage | Cost | Notes |
 |---|---|---|
