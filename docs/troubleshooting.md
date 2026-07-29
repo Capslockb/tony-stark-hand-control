@@ -65,9 +65,9 @@ The app probes indices 0-3 with three backends. If you have 4 cameras and only 2
 
 ### Camera detection takes 30+ seconds
 
-The app has a 1.5-second timeout per `cap.open()` and a 0.8-second timeout per `cap.read()`. With 4 indices × 3 backends, the worst case is ~30 seconds. This is normal on slow webcam drivers.
+The app requests a 1.5-second open timeout and a 0.8-second read timeout from OpenCV, but the current probe constructs `cv2.VideoCapture(idx, backend)` before setting those properties. A backend or driver can therefore block during the constructor, and some backends may ignore the timeout properties entirely. There is no reliable end-to-end 30-second cap in the current implementation.
 
-If it's worse, the issue is probably **another app holding the camera**. Close other apps and retry.
+Close applications that may hold a camera, disconnect unused capture devices, and retry. If one index or backend consistently stalls, include the console output, OpenCV version, camera model, and operating system in the issue report. Correcting the probe order or moving camera discovery off the GUI thread requires a separately reviewed camera-runtime PR.
 
 ### Camera preview updates once and then freezes
 
