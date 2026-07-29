@@ -7,7 +7,7 @@ User-facing documentation for Tony Stark Hand Control.
 | File | What it covers |
 |---|---|
 | [installation.md](installation.md) | Platform status and setup: Windows primary, with experimental Linux/macOS source-install guidance |
-| [calibration.md](calibration.md) | How to print the checkerboard, run the calibration, interpret the numbers |
+| [calibration.md](calibration.md) | Checkerboard requirements, printing and measurement, calibration workflow, and result interpretation |
 | [gestures.md](gestures.md) | Full gesture reference with diagrams — engage, click, swipe |
 | [3d_room_mapping.md](3d_room_mapping.md) | Manual room anchors and JSON persistence; experimental live stereo coordinates remain unvalidated pending Issue #6 |
 | [performance.md](performance.md) | User-facing performance controls, internal pacing values, and their trade-offs |
