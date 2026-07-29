@@ -205,7 +205,7 @@ cameras (1-4)
 
 ## Performance characteristics
 
-On a RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480x360 / 30 fps:
+On an RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480x360 / 30 fps:
 
 | Stage | Cost | Notes |
 |---|---|---|
