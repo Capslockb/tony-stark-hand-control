@@ -18,7 +18,7 @@ You do **not** need to recalibrate merely because you:
 
 ## What you need
 
-- The included checkerboard pattern, printed on flat, stiff paper
+- A printed checkerboard with 9 × 6 internal corners (10 × 7 squares), printed so each square measures 25 mm
 - A flat backing such as cardboard, a book, or a clipboard
 - At least two active cameras able to see the full checkerboard at the same time
 
@@ -26,7 +26,7 @@ For rigs with more than two active cameras, every camera must detect the same ch
 
 ## Printing the checkerboard
 
-1. The install wizard places a `checkerboard_A4_9x6.pdf` on your desktop. If you do not have it, the pattern is:
+1. The current repository and install wizard do not include or generate `checkerboard_A4_9x6.pdf`. Create or obtain a checkerboard with:
    - 9 columns × 6 rows of internal corners (10 × 7 squares)
    - 25 mm square size
 2. **Print at 100% scale**; do not use “fit to page.”
