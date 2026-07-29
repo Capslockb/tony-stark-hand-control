@@ -8,15 +8,14 @@ Common issues and how to fix them. If your issue isn't here, open a GitHub issue
 
 ## Installation issues
 
-### `import cv2` fails with `WinError 1455` (pagefile too small)
+### `import cv2` fails with `WinError 1455` (paging file too small)
 
-This is a **pagefile exhaustion** problem, not a RAM problem. Something is using your swap file. Common culprits:
+This error means Windows could not reserve more committed memory. The system commit limit is backed by physical RAM and page files, so the cause can be a nearly exhausted commit limit, a paging file that is too small or slow to grow, insufficient free disk space for paging-file growth, or a process reserving unusually large amounts of memory. It is not proof that the physical RAM is defective, and a process's CPU time or working-set size alone does not prove that it is hung.
 
-1. **Orphan `llama-server.exe` processes** — check with `tasklist | findstr llama`. Each one uses 1-2 GB of swap. Kill them with `taskkill /F /IM llama-server.exe`.
-2. **Orphan `ollama` processes** — same idea. `taskkill /F /IM ollama.exe`.
-3. **A hung Python process** — `Get-Process python | Format-Table Id, CPU, WS`. If `CPU` is in the thousands and `WS` (working set) is small but the process has been running for hours, it's stuck. Kill it.
-
-Free up the swap and re-run the app.
+1. Open Task Manager → **Performance** → **Memory** and check **Committed**. If the first value is close to the limit, close applications you recognize and retry.
+2. Check likely background servers with `tasklist | findstr /I "llama ollama python"`. Confirm the PID and owner before terminating an abandoned process; use `taskkill /PID <PID> /F` rather than killing every process with that executable name.
+3. Ensure the Windows paging file is enabled—preferably **System managed**—and that its drive has enough free space. If Windows cannot grow it quickly enough, set a larger initial size, restart, and retry. See [Microsoft's page-file guidance](https://learn.microsoft.com/en-us/troubleshoot/windows-client/performance/how-to-determine-the-appropriate-page-file-size-for-64-bit-versions-of-windows).
+4. If the error persists, include the Task Manager **Committed** values, paging-file setting, free disk space, and exact error in the issue report. Never post API keys or other credentials.
 
 ### `pip install mediapipe` fails
 
