@@ -46,6 +46,8 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 - [ ] Lint clean (no warnings)
 - [ ] New public methods have docstrings
 - [ ] New features documented in `docs/`
+- [ ] Documentation describes current user-facing behavior and does not include credentials, private logs, personal data, or unpublished security details
+- [ ] Documentation links and screenshots resolve from the published location
 - [ ] No new dependencies unless justified in the PR description
 - [ ] One feature per PR
 
