@@ -91,7 +91,7 @@ In the **Ollama** tab:
 - The current GUI requires a non-empty API-key field. If your local adapter ignores `Authorization`, enter a non-secret placeholder such as `local-only`; do not reuse a real credential.
 - Click Save
 
-**Note**: the current `OllamaGestureRecognizer` in the app uses the **Ollama API format** (`/api/generate` with multipart image). A local llama-server uses the **OpenAI-compatible format** (`/v1/chat/completions` with image_url in messages). The two are not directly compatible. To use the local server, you'll need a small adapter — see the "Adapting to OpenAI format" section below.
+**Note**: the current `OllamaGestureRecognizer` in the app uses the **Ollama API format** (a JSON request to `/api/generate` with a base64-encoded JPEG in the `images` array). A local llama-server uses the **OpenAI-compatible format** (`/v1/chat/completions` with image_url in messages). The two are not directly compatible. To use the local server, you'll need a small adapter — see the "Adapting to OpenAI format" section below.
 
 ## Ollama API format vs OpenAI format
 
