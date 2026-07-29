@@ -1,6 +1,6 @@
 # End-to-End Test Results
 
-This document captures the live test results recorded for the Tony Stark Hand Control v1.0.0 release. It is a historical result, not a statement about the current `main` branch.
+This document captures environment-specific live test results recorded for the Tony Stark Hand Control v1.0.0 release. It is a historical result, not a statement about the current `main` branch.
 
 ## Environment
 
@@ -9,7 +9,7 @@ This document captures the live test results recorded for the Tony Stark Hand Co
 | Host | `WIN-XXX` (Windows 10, 64-bit) |
 | CPU | AMD Ryzen 7 5700X (8 cores) |
 | RAM | 32 GB |
-| GPU | NVIDIA RTX 5060 8GB (Blackwell sm_120) — *not used by MediaPipe (CPU only on Windows)* |
+| GPU | NVIDIA RTX 5060 8GB (Blackwell sm_120) — *the MediaPipe GPU delegate was unavailable in this recorded run, so inference fell back to CPU* |
 | Python | 3.14.0 |
 | Cams | 4 webcams via DSHOW (indices 0-3) at 480x360 / 30 fps |
 | Disk free | ~16 GB |
@@ -53,7 +53,7 @@ End-to-end benchmark (60 calls, sleep 50ms between = ~20 calls/s effective):
 60 calls in 3.53s (17.0 detect calls/s sustained)
 ```
 
-The async MediaPipe worker means `detect()` is non-blocking on the GUI thread.
+In this historical benchmark, the asynchronous MediaPipe worker made the `detect()` submission call non-blocking. That does not guarantee that the GUI thread can never block or that current `main` delivers recurring frames; the current loop-rescheduling regression is tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16).
 
 ```
 $ python tests/test_multistream_bench.py
@@ -66,22 +66,22 @@ If 30 fps x 4 cams = 120 frames/sec, draw_hud alone uses:
   25ms/sec = 2.5% of one core
 ```
 
-The HUD is the dominant per-frame cost in multi-cam. After the audit-pass-5 optimization (cache the static base, blit with `np.maximum`, only redraw the animated parts), it's down to 0.2ms per cam per frame.
+On this host and test configuration, the HUD was the dominant measured per-frame cost. After the audit-pass-5 optimization (cache the static base, blit with `np.maximum`, only redraw the animated parts), the recorded cost was about 0.2 ms per camera frame.
 
 ## Live process behavior
 
-The app, when started, holds:
+In this recorded run, the started application held:
 - ~200 MB working-set memory
 - 50-55 threads (Tk, MediaPipe worker, matplotlib refresh, selection overlay, Ollama worker if enabled, plus the Python runtime)
 - ~3-5% of one CPU core at 4 cams × 30 fps with hand visible
-- The MediaPipe inference itself is on a worker thread, so the GUI thread is never blocked
+- MediaPipe inference was submitted to a worker thread; this measurement does not establish end-to-end GUI responsiveness
 
 ## Known limitations observed during testing
 
-1. **MediaPipe GPU delegate unavailable on this Windows build.** The build flags disable GPU processing. Falls back to CPU (XNNPACK). ~30ms per inference.
-2. **llama.cpp b9505+ is broken on the RTX 5060 Blackwell** for multimodal models (garbled first inference). The Ollama tab is off by default for this reason; users can enable it once a fix is upstream.
-3. **MSMF backend returns black frames for the first few reads** while the sensor warms up. The auto-detect probe handles this by reading 5 frames and accepting on the last live frame.
-4. **No GPU acceleration for OpenCV operations** on this host. All cv2 work is CPU. (PyTorch and onnxruntime-gpu are installed for future use; not currently exercised.)
+1. **MediaPipe GPU delegate unavailable in this recorded Windows environment.** MediaPipe fell back to CPU (XNNPACK), with about 30 ms measured per inference. This is a host-specific observation, not a general Windows capability boundary.
+2. **A June 2026 llama.cpp b9505+ run on the RTX 5060 Blackwell produced a garbled first multimodal inference.** Treat this as an environment-specific historical observation and verify current upstream behavior before relying on it.
+3. **MSMF returned black frames for the first few reads on the tested cameras** while the sensors warmed up. The auto-detect probe handled this run by reading 5 frames and accepting the last live frame.
+4. **No GPU acceleration was observed for OpenCV operations in this run.** Other installed acceleration runtimes were not exercised by this benchmark.
 
 ## Reproducing on the current branch
 
