@@ -136,19 +136,14 @@ The circuit breaker trips after 3 consecutive failures and stays tripped for 30 
 
 ### "Another instance is already running" but the app isn't running
 
-The lock file is stale. The app uses two locks for safety:
-1. `%TEMP%\tony_stark_hud.lock` (msvcrt file lock)
-2. `Global\TonyStarkHandControl_v1` (Windows named mutex)
+The app uses two process-owned locks: a Windows named mutex (`Global\TonyStarkHandControl_v1`) and an advisory lock on `%TEMP%\tony_stark_hud.lock`. The operating system releases both locks when the owning process exits, including after a crash. The zero-byte lock file may remain in `%TEMP%`, but its presence alone does not mean another instance is running, and deleting it does not release a lock held by a live process.
 
-If the app crashed without releasing either, the locks persist. To clear:
+1. Check Task Manager for the packaged app, `python.exe`, or `pythonw.exe`. Confirm the process owner and command line before closing anything; another Python application may be unrelated.
+2. Because the mutex uses the Windows `Global\` namespace, check other signed-in desktop sessions for a running copy of the app.
+3. Close a verified existing instance normally. Use **End task** only for a verified unresponsive copy.
+4. If no instance exists in any session but the warning persists, restart Windows and report the exact launch method, app version or commit, process list, and message. Do not include credentials or unrelated environment data.
 
-```cmd
-del "%TEMP%\tony_stark_hud.lock"
-```
-
-The named mutex is released automatically when the process exits, even on crash. So if the file lock is cleared, the next launch should work.
-
-If it still says "already running" after deleting the file, restart the computer (releases the named mutex).
+A leftover `%TEMP%\tony_stark_hud.lock` file can be ignored. Do not treat deleting the file as the primary fix, and do not delete it while a verified instance is running.
 
 ## GitHub / build issues
 
