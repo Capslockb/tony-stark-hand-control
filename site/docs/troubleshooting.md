@@ -79,7 +79,7 @@ This is not fixed by changing camera backends, frame-rate settings, responsivene
 
 ### `GPU processing is disabled in build flags`
 
-This is **expected** on this build of MediaPipe for Windows. The GPU delegate doesn't work with the official MediaPipe pip wheel on Windows. The app falls back to CPU automatically — you'll see a log line `HandProcessor: GPU delegate unavailable -> CPU`.
+This message means the installed MediaPipe build and current environment could not initialize the GPU delegate for Hand Landmarker. The application attempts the GPU delegate at startup and falls back to CPU when delegate creation fails. Do not infer from this log that every official Windows wheel is universally CPU-only; delegate availability depends on the installed build, platform, runtime, driver, and model compatibility.
 
 CPU inference measured roughly 30 ms per submitted frame on the recorded development machine. The current app uses one shared asynchronous MediaPipe worker; it does **not** run an independent 30 fps inference stream for every enabled camera. Cameras contend for that shared submission/result path, and completed results are not yet owned per camera. Treat throughput as aggregate and host-dependent; see [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7).
 
