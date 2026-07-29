@@ -154,11 +154,9 @@ If it still says "already running" after deleting the file, restart the computer
 
 ### `gh auth status` shows not authenticated
 
-Run `gh auth login` and follow the prompts. Or use a personal access token:
-```cmd
-set GITHUB_TOKEN=ghp_xxxxx
-gh auth login --with-token < token.txt
-```
+Run [`gh auth login --web`](https://cli.github.com/manual/gh_auth_login) and complete the browser flow. GitHub CLI normally stores the resulting token in the system credential store when one is available. Do not use `--insecure-storage`, paste tokens into shell history, include them in logs or issue reports, or commit token files.
+
+For non-interactive automation, inject a narrowly scoped `GH_TOKEN` through the runner or host secret store rather than a command-line argument, committed `.env` file, script, or persistent plaintext token file. See the [GitHub CLI environment-variable reference](https://cli.github.com/manual/gh_help_environment), then verify the active account with `gh auth status` while keeping token values redacted.
 
 ### Release workflow fails with "no PyInstaller spec"
 
