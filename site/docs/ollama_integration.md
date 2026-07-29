@@ -51,9 +51,9 @@ The app considers an eligible frame for submission according to both the every-s
 
 **Privacy:** a cloud endpoint receives camera-frame snapshots and the configured prompt. Provider retention and processing policies can change; review the provider's current policy before enabling cloud inference. Do not describe frames as unconditionally unstored unless that claim has been verified against the current policy and service configuration.
 
-## Local endpoint (llama.cpp server)
+## Local endpoint (llama.cpp through an adapter)
 
-For privacy and speed, you can run a local vision-language model server and point the app at it. The repository's recorded setup used **llama.cpp** with the **Qwen2.5-VL-3B** model on a CUDA-capable GPU.
+For privacy and speed, you can run a local vision-language model server. The repository's recorded setup used **llama.cpp** with the **Qwen2.5-VL-3B** model on a CUDA-capable GPU. The current app cannot send requests directly to a raw llama-server endpoint: it posts Ollama-format JSON to the exact Endpoint URL configured in the GUI. Use an Ollama-to-OpenAI adapter, or implement and review native OpenAI-format support before connecting the app.
 
 ### Historical test note: llama.cpp on RTX 5060 Blackwell
 
@@ -83,15 +83,16 @@ huggingface-cli download Qwen/Qwen2.5-VL-3B-Instruct-GGUF \
 
 The recorded RTX 5060 environment produced about 14 tokens/second for image-and-text generation, about 2.2 seconds for a 30-token response, and about 250 ms for a one-token label. Treat these as historical measurements from one setup, not current performance guarantees.
 
-### Wiring the app to the local server
+### Wiring the app through an adapter
 
-In the **Ollama** tab:
-- Set Endpoint to `http://127.0.0.1:8080`
-- Set Model to the same name you used with `-m` (or any string — the server doesn't check)
-- The current GUI requires a non-empty API-key field. If your local adapter ignores `Authorization`, enter a non-secret placeholder such as `local-only`; do not reuse a real credential.
-- Click Save
+1. Start an Ollama-to-OpenAI adapter in front of the local llama-server.
+2. In the **Ollama** tab:
+   - Set Endpoint to the adapter's complete Ollama-compatible generation URL, for example `http://127.0.0.1:<adapter-port>/api/generate`. The app posts to the exact string entered and does not append `/api/generate` automatically.
+   - Set Model to the model name expected by the adapter.
+   - The current GUI requires a non-empty API-key field. If the local adapter ignores `Authorization`, enter a non-secret placeholder such as `local-only`; do not reuse a real credential.
+   - Click Save.
 
-**Note**: the current `OllamaGestureRecognizer` in the app uses the **Ollama API format** (a JSON request to `/api/generate` with a base64-encoded JPEG in the `images` array). A local llama-server uses the **OpenAI-compatible format** (`/v1/chat/completions` with image_url in messages). The two are not directly compatible. To use the local server, you'll need a small adapter — see the "Adapting to OpenAI format" section below.
+A raw llama-server uses the **OpenAI-compatible format** (`/v1/chat/completions` with `image_url` in messages), while `OllamaGestureRecognizer` sends Ollama-format JSON with a base64-encoded JPEG in the `images` array. Pointing the app at `http://127.0.0.1:8080` or directly at llama-server's `/v1/chat/completions` endpoint will not translate between these formats.
 
 ## Ollama API format vs OpenAI format
 
