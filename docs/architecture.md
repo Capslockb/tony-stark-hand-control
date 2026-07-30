@@ -121,7 +121,7 @@ Two-phase calibration. Saves to `calibration.npz`.
 - Run `cv2.calibrateCamera` on each camera independently to get `K`, `dist`, and per-frame `rvec`, `tvec`
 
 **Phase B (shared extrinsics)**:
-- For each pair of cameras, run `cv2.stereoCalibrate` with the corresponding image points
+- For each camera after camera 0, run `cv2.stereoCalibrate` against camera 0 using the corresponding image points
 - The intended shared frame places camera 0 at the origin (`R=I`, `t=0`)
 - Other cameras' stored `R, t` follow OpenCV's world-to-camera convention: `X_cam = R @ X_world + t`
 
