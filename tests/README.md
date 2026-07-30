@@ -2,13 +2,13 @@
 
 Regression, smoke, and micro-benchmark coverage for Tony Stark Hand Control.
 
-The original core audit in `test_app.py` contains 77 assertions. Repository-wide discovery also runs focused regression modules, so **77 is not the current total for the entire `tests/` directory**.
+`tests/test_app.py` is the original core audit. Repository-wide discovery also runs focused regression modules, so use the command's final summary and the exact-commit GitHub Actions result rather than treating a recorded assertion count as a permanent suite total.
 
 ## What's tested
 
 | File | What | Notes |
 |---|---|---|
-| `test_app.py` | 77-assertion core audit: RoomMap, HandProcessor, CameraManager, StereoCalibrator, triangulate_point_rays, OllamaGestureRecognizer, HandControlApp construction | Uses synthetic inputs for the core subsystems and does not require a real camera for the main audit path. |
+| `test_app.py` | Core audit: RoomMap, HandProcessor, CameraManager, StereoCalibrator, triangulate_point_rays, OllamaGestureRecognizer, HandControlApp construction | Uses synthetic inputs for the core subsystems and does not require a real camera for the main audit path. |
 | `test_v100_hotfix.py` | Regression coverage for numpy scalar room anchors and Tk color normalization | Covers the v1.0.1 fixes. |
 | `test_predict_smoke.py` | Predictor sanity: stationary vs moving landmarks, prediction horizon, decay curve | |
 | `test_palm.py` | `is_palm_open()` correctness: open, closed, partial, Y-flipped | Proves the Y-flip fix from audit pass 2. |
