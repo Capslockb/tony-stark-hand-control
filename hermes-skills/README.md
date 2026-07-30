@@ -29,7 +29,7 @@ hermes-skills/
     │   ├── smoothing_and_aspect.md
     │   └── stream_cut_fallback.md
     └── scripts/
-        ├── audit_app.py            # host-dependent live audit; 77 assertions
+        ├── audit_app.py            # host-dependent live audit helper
         ├── create_desktop_shortcut.ps1
         ├── multistream_bench.py     # OpenCV micro-benchmark utility
         └── synthetic_stereo_test.py # synthetic 3D reconstruction test
