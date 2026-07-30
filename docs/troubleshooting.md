@@ -80,7 +80,7 @@ This is not fixed by changing camera backends, frame-rate settings, responsivene
 
 This message means the installed MediaPipe build and current environment could not initialize the GPU delegate for Hand Landmarker. The application attempts the GPU delegate at startup and falls back to CPU when delegate creation fails. Do not infer from this log that every official Windows wheel is universally CPU-only; delegate availability depends on the installed build, platform, runtime, driver, and model compatibility.
 
-CPU inference measured roughly 30 ms per submitted frame on the recorded development machine. The current app uses one shared asynchronous MediaPipe worker; it does **not** run an independent 30 fps inference stream for every enabled camera. Cameras contend for that shared submission/result path, and completed results are not yet owned per camera. Treat throughput as aggregate and host-dependent; see [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7).
+Inference latency and throughput vary with the host, MediaPipe build, delegate, camera mix, and submission cadence. The current app uses one shared asynchronous MediaPipe worker; it does **not** run an independent inference stream for every enabled camera. Cameras contend for that shared submission/result path, and completed results are not yet owned per camera. Treat throughput as aggregate and environment-dependent; see [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7).
 
 ### Hand detection is jittery
 
@@ -120,7 +120,7 @@ CPU inference measured roughly 30 ms per submitted frame on the recorded develop
 
 ### Ollama cloud endpoint times out
 
-The current source default is the complete generation endpoint `https://ollama.com/api/generate`. Cloud latency varies; the recorded test environment took roughly 5-8 seconds per inference. The Ollama worker is asynchronous and keeps only one queued frame, so slow requests delay optional model-recognized gestures and drop stale submissions rather than changing the local MediaPipe gesture path.
+The current source default is the complete generation endpoint `https://ollama.com/api/generate`. Remote latency varies with the provider, model, request size, network path, and current load. The Ollama worker is asynchronous and keeps only one queued frame, so slow requests delay optional model-recognized gestures and drop stale submissions rather than changing the local MediaPipe gesture path.
 
 1. Confirm the endpoint includes `/api/generate`, the selected model is available, and you are using your own API key. Do not reuse the exposed credential-like default tracked in [Issue #5](https://github.com/Capslockb/tony-stark-hand-control/issues/5), and do not paste credentials into issue reports or logs.
 2. Increase **Query cooldown** if you want fewer remote submission attempts. The current control defaults to 0.5 seconds and supports 0.1-3.0 seconds; this setting does not make a multi-second provider response real-time.
