@@ -12,7 +12,7 @@ Detailed setup instructions for Tony Stark Hand Control.
 - **Memory**: no repository-wide minimum has been validated. Runtime use varies with camera count and resolution, display tabs, backend buffering, and optional local model services. Leave enough headroom for the operating system and other applications, and monitor the app's live RAM readout on the Windows path.
 - **GPU**: optional. At startup, the application first attempts MediaPipe's GPU delegate when it is supported by the installed MediaPipe build and platform, and falls back to CPU if delegate initialization fails. A separately configured local Ollama-compatible model server may also use its own GPU; a remote endpoint uses the remote server's hardware, not your local GPU.
 - **Camera**: a USB webcam or built-in laptop camera supported by the operating system and OpenCV. At least two overlapping camera views are required for the experimental stereo path, whose live coordinates remain unvalidated while [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) is open.
-- **Disk**: allow space for the Python environment, platform-specific wheels, the MediaPipe model, and pip's download cache. The total varies by platform and dependency versions; the model itself is approximately 7 MB.
+- **Disk**: allow space for the Python environment, platform-specific wheels, the MediaPipe model, and pip's download cache. The total varies by platform and dependency versions. The wizard downloads MediaPipe's current `latest` float16 model, so its exact size is not a stable repository requirement.
 
 ### Software and platform status
 
@@ -35,7 +35,7 @@ The install wizard will:
 1. Verify Python ≥ 3.10
 2. Run `python -m pip install -r requirements.txt --upgrade`
 3. Smoke-test required imports
-4. Download `hand_landmarker.task` (~7 MB) from the MediaPipe model registry
+4. Download `hand_landmarker.task` from MediaPipe's current float16 model URL
 5. Attempt to create a desktop shortcut on Windows, or skip that step on other platforms
 
 The wizard stops at the first failing required step: Python validation, dependency installation, import smoke testing, or model download. A Windows shortcut-creation failure is warning-only; the wizard still reports installation complete and prints the appropriate launch commands. It does not start the app automatically.
