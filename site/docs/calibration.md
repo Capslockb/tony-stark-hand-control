@@ -3,6 +3,8 @@
 Calibration estimates the geometry of the active camera rig: each camera's intrinsics and lens distortion, plus pairwise extrinsics relative to camera 0. The result is saved for later sessions.
 
 > **Current validation status:** calibration can complete and persist its parameters, but successful calibration does not currently prove that live stereo coordinates are correct. The reconstruction path interprets the stored OpenCV extrinsics inconsistently, and the synthetic fixture does not exercise values emitted by `cv2.stereoCalibrate()`. This is tracked in [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6). Treat the live 3D view as experimental and do not use it for measurements, automation, or safety decisions.
+>
+> **Current dialog wording:** the calibration dialog on `main` still says to use an A4 PDF on the Desktop, but the repository and install wizard do not bundle or create that file. Follow the printing requirements below instead. The focused executable-dialog correction is tracked in [Issue #20](https://github.com/Capslockb/tony-stark-hand-control/issues/20).
 
 ## When to calibrate
 
@@ -122,3 +124,4 @@ The current synthetic tests construct calibration data directly; they do not yet
 - [3D Room Mapping](3d_room_mapping.md) — manual anchors and the live-3D validation boundary
 - [Architecture: StereoCalibrator](architecture.md#stereocalibrator) — intended coordinate convention
 - [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — extrinsic-convention and regression-test blocker
+- [Issue #20](https://github.com/Capslockb/tony-stark-hand-control/issues/20) — stale in-app checkerboard-PDF wording
