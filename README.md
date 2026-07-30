@@ -77,7 +77,7 @@ The install wizard will:
 1. Verify Python ≥ 3.10
 2. Install dependencies from `requirements.txt`
 3. Smoke-test required imports
-4. Download the MediaPipe hand-landmark model (`hand_landmarker.task`, ~7 MB)
+4. Download the MediaPipe hand-landmark model (`hand_landmarker.task`; exact size may vary because the installer currently uses MediaPipe's mutable `latest` model URL)
 5. Create a desktop shortcut on Windows (or skip that step on other platforms)
 
 It then prints the appropriate launch command; it does not start the app automatically.
