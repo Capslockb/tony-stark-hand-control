@@ -1,26 +1,26 @@
 # Contributor Audit Materials
 
-This directory preserves historical audit notes and optional maintenance utilities used while developing and reviewing Tony Stark Hand Control. It is not required to install or run the application.
+This directory contains dated design notes and optional contributor utilities created while Tony Stark Hand Control was being developed and reviewed. The application does not require these files at installation or runtime.
 
-Treat the current source, tests, and user documentation as authoritative. The reference notes are historical snapshots and may describe behavior, assumptions, or fixes that have since changed.
+The current source tree, repository tests, and user documentation are authoritative. Material under this directory is archival context and may describe behavior or assumptions that have since changed.
 
-## What's in here
+## Contents
 
-```
+```text
 hermes-skills/
 └── tony-stark-hand-control/
-    ├── SKILL.md                  # legacy reference index
-    ├── references/               # historical design and audit notes
+    ├── SKILL.md                  # historical reference index
+    ├── references/               # dated design and audit notes
     │   ├── 3d_reconstruction.md
     │   ├── accessibility_overlay.md
     │   ├── adaptive_pacing_and_gpu.md
-    │   ├── audit_2026_06.md              # audit pass 1
-    │   ├── audit_2026_06_04_pass2.md     # audit pass 2
-    │   ├── audit_2026_06_04_pass3.md     # audit pass 3
-    │   ├── audit_2026_06_04_pass4.md     # audit pass 4
-    │   ├── audit_2026_06_04_pass5.md     # audit pass 5
-    │   ├── audit_2026_06_04_pass6.md     # audit pass 6
-    │   ├── audit_2026_06_04_pass7.md     # audit pass 7
+    │   ├── audit_2026_06.md
+    │   ├── audit_2026_06_04_pass2.md
+    │   ├── audit_2026_06_04_pass3.md
+    │   ├── audit_2026_06_04_pass4.md
+    │   ├── audit_2026_06_04_pass5.md
+    │   ├── audit_2026_06_04_pass6.md
+    │   ├── audit_2026_06_04_pass7.md
     │   ├── camera_troubleshooting.md
     │   ├── dual_class_default_state.md
     │   ├── gui_and_intent.md
@@ -29,41 +29,31 @@ hermes-skills/
     │   ├── smoothing_and_aspect.md
     │   └── stream_cut_fallback.md
     └── scripts/
-        ├── audit_app.py            # host-dependent live audit; 77 assertions
+        ├── audit_app.py
         ├── create_desktop_shortcut.ps1
-        ├── multistream_bench.py     # OpenCV micro-benchmark utility
-        └── synthetic_stereo_test.py # synthetic 3D reconstruction test
+        ├── multistream_bench.py
+        └── synthetic_stereo_test.py
 ```
 
-## Using the material
+## Reference notes
 
-### Historical references
+The audit-pass documents are historical snapshots, not current specifications or proof that a capability works. Performance, platform-support, privacy, architecture, and validation claims should be checked against the exact current source and its associated test results.
 
-`SKILL.md` indexes the reference files. The audit-pass documents record findings and attempted corrections from particular points in the project's history. Read them as supporting context, not as current specifications or proof that a capability is working.
+## Optional utilities
 
-Do not copy historical performance, platform-support, privacy, test-count, or architecture claims into public documentation without checking them against the current tree and an exact-head validation run.
+The scripts are contributor tools rather than application entry points. Some are host-dependent and may access cameras, a graphical desktop, or platform-specific APIs. Review their source before running them.
 
-### Optional maintenance utilities
-
-The scripts are contributor tools rather than application entry points. Some are host-dependent and may access cameras, GUI facilities, or platform-specific APIs. Review a script before running it and do not treat a successful helper run as a substitute for repository-wide tests.
-
-Until [Issue #2](https://github.com/Capslockb/tony-stark-hand-control/issues/2) corrects the audit helper's default locator, pass the application path explicitly from the repository root:
+Until the audit helper's default locator is corrected, pass the application path explicitly from the repository root:
 
 ```bash
 python hermes-skills/tony-stark-hand-control/scripts/audit_app.py ./tony_stark_hud_control.py
 ```
 
-For the repository-wide deterministic test entry point, use:
+For repository-wide test discovery, use:
 
 ```bash
 python -m unittest discover tests -v
 ```
-
-Useful reusable references include:
-
-- `stream_cut_fallback.md` — chunked changes for large files
-- `dual_class_default_state.md` — class-construction-order pitfalls
-- `adaptive_pacing_and_gpu.md` — adaptive loop-pacing notes
 
 ## License
 
