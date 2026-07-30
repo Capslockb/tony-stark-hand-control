@@ -121,7 +121,7 @@ Two-phase calibration. Saves to `calibration.npz`.
 - Run `cv2.calibrateCamera` on each camera independently to get `K`, `dist`, and per-frame `rvec`, `tvec`
 
 **Phase B (shared extrinsics)**:
-- For each pair of cameras, run `cv2.stereoCalibrate` with the corresponding image points
+- For each camera after camera 0, run `cv2.stereoCalibrate` against camera 0 using the corresponding image points
 - The intended shared frame places camera 0 at the origin (`R=I`, `t=0`)
 - Other cameras' stored `R, t` follow OpenCV's world-to-camera convention: `X_cam = R @ X_world + t`
 
@@ -226,4 +226,4 @@ Record the exact source revision, operating system, Python version, camera confi
 - [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — stereo convention and validation blocker
 - [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7) — per-camera inference ownership blocker
 - [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16) — main-loop rescheduling blocker
-- [Historical contributor notes](https://github.com/Capslockb/tony-stark-hand-control/tree/main/hermes-skills) — dated audit context that is not current validation evidence
+- [Historical contributor notes](../hermes-skills/README.md) — dated audit context that is not current validation evidence
