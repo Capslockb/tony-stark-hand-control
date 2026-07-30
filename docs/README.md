@@ -2,6 +2,8 @@
 
 User-facing documentation for Tony Stark Hand Control.
 
+> **Current validation boundary:** live processing on `main` is blocked by the loop-rescheduling regression tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16), and the repository CI matrix is failing as tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3). Use the status of those issues and exact-commit Actions results instead of historical test totals or performance snapshots when assessing the current branch.
+
 ## Table of contents
 
 | File | What it covers |
@@ -10,11 +12,11 @@ User-facing documentation for Tony Stark Hand Control.
 | [calibration.md](calibration.md) | Checkerboard requirements, printing and measurement, calibration workflow, and result interpretation |
 | [gestures.md](gestures.md) | Full gesture reference with diagrams — engage, click, swipe |
 | [3d_room_mapping.md](3d_room_mapping.md) | Manual room anchors and JSON persistence; experimental live stereo coordinates remain unvalidated pending Issue #6 |
-| [performance.md](performance.md) | User-facing performance controls, internal pacing values, and their trade-offs |
-| [troubleshooting.md](troubleshooting.md) | Common issues + fixes |
-| [architecture.md](architecture.md) | How the code is organized, data flow, performance characteristics |
+| [performance.md](performance.md) | User-facing controls, internal pacing values, and trade-offs; not a current runtime benchmark while Issue #16 is open |
+| [troubleshooting.md](troubleshooting.md) | Common problems and corrective steps |
+| [architecture.md](architecture.md) | Code organization, data flow, and known runtime boundaries |
 | [ollama_integration.md](ollama_integration.md) | Optional snapshot classification through Ollama-compatible endpoints; results are limited to the built-in `GESTURE_KEYS` vocabulary |
-| [test_results.md](test_results.md) | Historical test results captured for the v1.0.0 release |
+| [test_results.md](test_results.md) | Historical, environment-specific v1.0.0 results; not current-branch validation |
 
 ## Diagrams
 
