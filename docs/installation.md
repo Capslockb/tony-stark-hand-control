@@ -105,7 +105,7 @@ After install, run repository-wide test discovery:
 python -m unittest discover tests -v
 ```
 
-The original core audit in `tests/test_app.py` contains 77 assertions covering RoomMap, HandProcessor, CameraManager, StereoCalibrator, `triangulate_point_rays`, Ollama gesture recognition, and application construction. Repository-wide discovery includes additional regression and benchmark modules, so its total is not fixed.
+The original core audit in `tests/test_app.py` covers RoomMap, HandProcessor, CameraManager, StereoCalibrator, `triangulate_point_rays`, Ollama gesture recognition, and application construction. Repository-wide discovery includes additional regression and benchmark modules, so the number of discovered tests and assertions can change as the suite evolves.
 
 Treat the command's final summary and the GitHub Actions run for the exact commit as the source of truth. The CI matrix is currently failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); do not infer a passing installation from an old fixed test count.
 
