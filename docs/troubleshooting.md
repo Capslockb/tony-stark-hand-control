@@ -43,7 +43,7 @@ sudo dnf install python3-tkinter
 1. Check that the cameras are not in use by another application (Zoom, Skype, browser).
 2. Run `python -c "import cv2; print(cv2.getBuildInformation())"` and confirm DSHOW is listed.
 3. In the **Cameras** tab, click **Test** next to each camera. If a camera shows up as "dead" but works in another app, the index might be different. The app auto-detects indices 0-3.
-4. On Windows 10, check Settings → Privacy → Camera and confirm "Let desktop apps access your camera" is ON.
+4. Check Windows camera permissions. On Windows 11, open **Settings → Privacy & security → Camera**; on Windows 10, open **Settings → Privacy → Camera**. Ensure camera access is enabled and turn on **Let desktop apps access your camera** (called **Allow desktop apps to access your camera** on Windows 10).
 
 ### "Auto-detected camera 0 (backend=700) @ 480x360 30fps" but feed is still black
 
