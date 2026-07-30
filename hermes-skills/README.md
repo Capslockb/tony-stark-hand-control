@@ -1,14 +1,16 @@
-# Associated Hermes Skills
+# Contributor Audit Materials
 
-This directory contains the Hermes Agent skills that produced and audit-tested the Tony Stark Hand Control codebase. They're included so future maintainers (or curious readers) can see the full history of design decisions, pitfalls discovered during audits, and reusable patterns.
+This directory preserves historical audit notes and optional maintenance utilities used while developing and reviewing Tony Stark Hand Control. It is not required to install or run the application.
+
+Treat the current source, tests, and user documentation as authoritative. The reference notes are historical snapshots and may describe behavior, assumptions, or fixes that have since changed.
 
 ## What's in here
 
 ```
 hermes-skills/
 └── tony-stark-hand-control/
-    ├── SKILL.md                  # main skill entry point
-    ├── references/               # 17 deep-dive reference docs
+    ├── SKILL.md                  # legacy reference index
+    ├── references/               # historical design and audit notes
     │   ├── 3d_reconstruction.md
     │   ├── accessibility_overlay.md
     │   ├── adaptive_pacing_and_gpu.md
@@ -29,24 +31,23 @@ hermes-skills/
     └── scripts/
         ├── audit_app.py            # host-dependent live audit; 77 assertions
         ├── create_desktop_shortcut.ps1
-        ├── multistream_bench.py     # cv2 micro-benchmark utility
+        ├── multistream_bench.py     # OpenCV micro-benchmark utility
         └── synthetic_stereo_test.py # synthetic 3D reconstruction test
 ```
 
-## How to use this
+## Using the material
 
-### As a reference (read-only)
+### Historical references
 
-The `SKILL.md` is the entry point. It has a "Reference map" section that lists every reference doc with a one-line description. The 7 audit passes (`audit_2026_06_04_pass2.md` through `audit_2026_06_04_pass7.md`) document the bugs found, the fixes applied, and the lessons learned — read them in order if you want to understand how the current code came to be.
+`SKILL.md` indexes the reference files. The audit-pass documents record findings and attempted corrections from particular points in the project's history. Read them as supporting context, not as current specifications or proof that a capability is working.
 
-### As a skill for Hermes Agent (re-runnable)
+Do not copy historical performance, platform-support, privacy, test-count, or architecture claims into public documentation without checking them against the current tree and an exact-head validation run.
 
-If you have Hermes Agent installed, the `SKILL.md` is a real skill that the agent can use to:
-- Run `scripts/audit_app.py` as a host-dependent live audit of `tony_stark_hud_control.py`. The harness contains 77 assertions, but it is not the repository-wide deterministic CI suite.
-- Run `scripts/multistream_bench.py` to benchmark the multi-cam hot path
-- Apply the audit fixes in pass2-pass7 if they regress
+### Optional maintenance utilities
 
-Until [Issue #2](https://github.com/Capslockb/tony-stark-hand-control/issues/2) corrects the helper's default locator, pass the application path explicitly from the repository root:
+The scripts are contributor tools rather than application entry points. Some are host-dependent and may access cameras, GUI facilities, or platform-specific APIs. Review a script before running it and do not treat a successful helper run as a substitute for repository-wide tests.
+
+Until [Issue #2](https://github.com/Capslockb/tony-stark-hand-control/issues/2) corrects the audit helper's default locator, pass the application path explicitly from the repository root:
 
 ```bash
 python hermes-skills/tony-stark-hand-control/scripts/audit_app.py ./tony_stark_hud_control.py
@@ -58,26 +59,11 @@ For the repository-wide deterministic test entry point, use:
 python -m unittest discover tests -v
 ```
 
-To install the skill:
+Useful reusable references include:
 
-```bash
-# From a Hermes-enabled shell
-mkdir -p ~/AppData/Local/hermes/skills
-cp -r hermes-skills/tony-stark-hand-control ~/AppData/Local/hermes/skills/
-```
-
-Then in any Hermes session: `hermes skill view tony-stark-hand-control`.
-
-### As documentation for re-applying the patterns
-
-Many of the patterns here are general-purpose and apply to other GUI apps:
-
-- `stream_cut_fallback.md` — chunked-patch pattern for large files
-- `gui-app-startup` umbrella skill is referenced (and lives elsewhere in the Hermes skill tree)
-- `dual_class_default_state.md` — class-construction-order pitfall
-- `adaptive_pacing_and_gpu.md` — adaptive loop pacing
-
-If you're building a similar Python GUI app, these references are the most reusable parts.
+- `stream_cut_fallback.md` — chunked changes for large files
+- `dual_class_default_state.md` — class-construction-order pitfalls
+- `adaptive_pacing_and_gpu.md` — adaptive loop-pacing notes
 
 ## License
 
