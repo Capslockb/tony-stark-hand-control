@@ -27,7 +27,7 @@ Plus:
 - `start_windows.bat` — Windows launcher
 - `tests/test_app.py` — core regression audit; repository-wide discovery includes additional modules
 - `docs/` — user documentation
-- `hermes-skills/` — associated Hermes Agent skills
+- `hermes-skills/` — archived contributor notes and optional maintenance utilities
 - `.github/workflows/` — CI + release automation
 
 ## Subsystem details
@@ -205,21 +205,17 @@ cameras (1-4)
 
 ## Performance characteristics
 
-On an RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480x360 / 30 fps:
+Runtime cost depends on the camera backends, number and resolution of active streams, MediaPipe model and skip settings, CPU/GPU drivers, Tk rendering load, and optional 3D or Ollama work. Historical measurements from one development machine are not current acceptance criteria or cross-platform guarantees.
 
-| Stage | Cost | Notes |
-|---|---|---|
-| CameraManager.read_all | ~10 ms | 4 × cv2.VideoCapture.read with small buffer |
-| HandProcessor.detect | <1 ms (returns cached) | Real MediaPipe cost is ~30 ms on the worker |
-| is_palm_open | <0.1 ms | 12 wrist-relative distance evaluations (`math.hypot`) |
-| Gesture detection (when engaged) | ~0.5 ms | 4 × math.hypot + 4 × ring buffer ops |
-| HUD overlay per cam | 0.2 ms | Static base cached, np.maximum blit |
-| 3D reconstruction (5 tips × N cams) | ~5 ms | Timing only; live-coordinate correctness remains unvalidated under Issue #6 |
-| Canvas redraw request | `after(15, ...)` with one pending callback per canvas | A 15 ms scheduling delay is not a measured redraw cost or delivered frame rate |
-| 3D view redraw | user actions: 33 ms coalescing; live reconstruction: 200 ms scheduling | Nominal request ceilings are ~30 Hz and ~5 Hz respectively; delivered rate has not been benchmarked |
-| Selection overlay refresh | <1 ms at 10 Hz | `GetGUIThreadInfo` + `GetWindowRect` + Tk geometry update |
+The current design has these performance boundaries:
 
-On the cited development machine, reported main-loop work was **28-35 ms**, corresponding to a **28-35 fps compute-capacity estimate before the scheduled Tk wait**. Process CPU telemetry reported **3-5% of one logical CPU** with 4 cameras. These measurements are not cross-platform guarantees, do not establish the delivered 3D-view frame rate, and are not current runtime validation while Issue #16 blocks loop rescheduling.
+- `CameraManager.read_all()` performs blocking camera reads, so slow devices and drivers can dominate an iteration.
+- `HandProcessor.detect()` normally returns the latest cached result while inference continues on its worker thread; the worker's actual latency depends on the host and model configuration.
+- HUD, gesture, selection-overlay, and 3D work add per-frame or scheduled GUI costs that vary with enabled features.
+- `root.after(...)` values describe requested scheduling intervals, not delivered frame rates or measured rendering costs.
+- Live multi-camera timing cannot be validated on the current `main` branch while Issue #16 prevents continued loop rescheduling.
+
+Record the exact source revision, operating system, Python version, camera configuration, enabled features, input resolution, sample count, and measurement method when reporting performance. Use [Performance tuning](performance.md) for configuration guidance, and require a green exact-head run plus controlled hardware testing before publishing numerical claims.
 
 ## See also
 
@@ -230,4 +226,4 @@ On the cited development machine, reported main-loop work was **28-35 ms**, corr
 - [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — stereo convention and validation blocker
 - [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7) — per-camera inference ownership blocker
 - [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16) — main-loop rescheduling blocker
-- The 7 audit passes in `hermes-skills/tony-stark-hand-control/references/`
+- [Historical contributor notes](../hermes-skills/README.md) — dated audit context that is not current validation evidence
