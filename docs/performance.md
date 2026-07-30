@@ -42,7 +42,7 @@ The Tracking tab also exposes the One-Euro and cursor-EMA values individually. C
 
 Fast Mode rescales frames whose height exceeds 240 pixels down to a 240-pixel height, preserving aspect ratio, before MediaPipe submission. It is intended to reduce inference work at the cost of detail for small or distant hands.
 
-The source comments refer to an approximately 30% inference improvement on the development setup. That figure is not a cross-platform guarantee; measure the effect on the actual camera resolution and host.
+The effect depends on the original frame size, host, MediaPipe build, delegate, and camera mix. Measure the exact build and workload rather than relying on a fixed percentage improvement.
 
 ## One-Euro filter parameters (Tracking tab)
 
