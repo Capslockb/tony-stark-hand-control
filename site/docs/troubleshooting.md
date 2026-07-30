@@ -99,7 +99,7 @@ Inference latency and throughput vary with the host, MediaPipe build, delegate, 
 ### App uses 100% CPU
 
 1. Check the **Performance** readout in the Main tab. A `loop` value consistently above 50 ms means the measured work exceeds a 20 fps budget, but it does not identify MediaPipe as the sole cause. Profile camera capture, vision work, rendering, and optional integrations before attributing the load.
-2. Enable **Fast Mode** in the Tracking tab. The 240p pre-downscale may reduce MediaPipe work; the approximately 30% improvement cited in source comments is specific to the development setup, not a guarantee.
+2. Enable **Fast Mode** in the Tracking tab. It downscales frames taller than 240 pixels before MediaPipe submission and may reduce inference work. Measure the exact build and camera workload; no fixed improvement is guaranteed.
 3. Disable unused cameras in the Main tab to reduce capture, rendering, and shared-worker contention.
 4. `mediapipe_skip` is an internal value and has no Tracking-tab control. Changing it requires a reviewed code change and does not correct the per-camera result-ownership problem tracked in [Issue #7](https://github.com/Capslockb/tony-stark-hand-control/issues/7).
 5. The **Responsiveness** preset tunes smoothing and prediction behavior; it is not a supported CPU-limit control and does not create independent per-camera inference workers.
