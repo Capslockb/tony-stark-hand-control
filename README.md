@@ -140,16 +140,11 @@ All configuration lives in the GUI tabs:
 
 ## Performance
 
-On an RTX 5060 (Blackwell, sm_120) + Ryzen 7 5700X with 4 cameras at 480×360 / 30 fps:
+Performance depends on the camera backend and driver, camera count and resolution, host CPU/GPU, MediaPipe build and delegate, display environment, and selected tracking settings. The current `main` loop regression tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16) prevents a valid recurring end-to-end FPS measurement.
 
-| Stage | Cost | Notes |
-|---|---|---|
-| MediaPipe per inference | ~30 ms | CPU (XNNPACK); GPU delegate unavailable on this Windows build |
-| One-Euro filter + predictor | 0.1 ms per tip | Cached buffer, 6-frame history |
-| HUD overlay (4 cams) | 24 ms/sec = 2.4% of one core | Static base cached, only animated parts redrawn |
-| Main-loop work estimate | 28–35 ms before the scheduled Tk wait | Development-host compute timing only; it is not delivered FPS, and current `main` is blocked by Issue #16 |
+After recurring scheduling is restored, benchmark the exact commit and record the operating system, Python version or packaged build, camera models/backends, resolutions, camera-reported FPS, delivered loop cadence including scheduled waits, inference latency, CPU and memory use, and the tracking settings used. Development-host snapshots must be identified as such rather than presented as general performance guarantees.
 
-See `docs/performance.md` for the full benchmark.
+See [`docs/performance.md`](docs/performance.md) for the readout definitions, tuning controls, measurement boundaries, and current validation caveats.
 
 ## Tests
 
@@ -157,7 +152,7 @@ See `docs/performance.md` for the full benchmark.
 python -m unittest discover tests -v
 ```
 
-The suite covers RoomMap, HandProcessor, CameraManager, StereoCalibrator, `triangulate_point_rays`, Ollama gesture recognition, application construction, and focused regression and benchmark modules. The original core audit contains 77 assertions, but repository-wide discovery includes additional modules and its total can change.
+The suite covers RoomMap, HandProcessor, CameraManager, StereoCalibrator, `triangulate_point_rays`, Ollama gesture recognition, application construction, and focused regression and benchmark modules. Repository-wide discovery can change as tests are added or reorganized.
 
 Treat the command's final summary and the GitHub Actions run for the exact commit as the source of truth. The current CI matrix is failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); a fixed passing count should not be claimed until an exact-head run is green.
 
