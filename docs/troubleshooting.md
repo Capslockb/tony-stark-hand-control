@@ -84,7 +84,7 @@ Inference latency and throughput vary with the host, MediaPipe build, delegate, 
 
 ### Hand detection is jittery
 
-1. Check the **One-Euro filter** parameters in the Tracking tab. Default `min_cutoff=2.5, beta=0.05` is good for most users. Lower `min_cutoff` to 1.0 for more smoothing.
+1. Check the **One-Euro filter** parameters in the Tracking tab. Responsiveness preset 3 initializes `min_cutoff=2.5` and `beta=0.05`; these are tuning defaults, not a validated recommendation for every camera or user. Lowering `min_cutoff` increases smoothing and can add lag, so change one setting at a time and compare it under the same camera and lighting conditions.
 2. Improve lighting. MediaPipe's accuracy degrades in low light.
 3. Make sure the background is uniform. A cluttered background (bookshelf, plants) can confuse the model.
 
