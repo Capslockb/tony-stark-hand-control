@@ -162,11 +162,11 @@ Treat the command's final summary and the GitHub Actions run for the exact commi
 
 A real roadmap of public features is in [`ROADMAP.md`](ROADMAP.md). Highlights:
 
-- **v1.1.0 (Q3 2026)** — two-hand tracking, Linux & macOS focus-overlay parity, bundled-model installer, per-gesture hooks, CLI flags
-- **v1.2.0 (Q4 2026)** — experimental monocular relative-depth or pose view, phone-as-second-camera companion app, room-map gesture zoning
-- **v2.0.0 (Q1 2027)** — "OK Jarvis" wake word, sign-language dictionary, third-party plugin SDK
+- **v1.1.0 planning target (Q3 2026)** — two-hand tracking work, Linux and macOS focus-overlay parity, self-contained model packaging, reviewed gesture hooks, and command-line launch options
+- **v1.2.0 planning target (Q4 2026)** — experimental monocular relative-depth or pose work, a reviewed phone-as-second-camera workflow, and room-map-driven gesture-zone research
+- **v2.0.0 planning target (Q1 2027)** — wake-word and voice-intent exploration, a narrow sign-language vocabulary, and a permissioned plugin interface
 
-These are planned milestones rather than shipping guarantees. The roadmap records current intent and should be revised when scope, timing, validation, or priorities change.
+These are planned milestones rather than shipping guarantees. None of the listed capabilities should be treated as implemented until its code, validation, platform, privacy, licensing, permission, and security boundaries have been reviewed. The roadmap records current intent and should be revised when scope, timing, validation, or priorities change.
 
 ---
 
