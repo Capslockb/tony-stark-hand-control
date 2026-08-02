@@ -10,9 +10,9 @@ User-facing documentation for Tony Stark Hand Control.
 |---|---|
 | [installation.md](installation.md) | Platform status and setup: Windows primary, with experimental Linux/macOS source-install guidance |
 | [calibration.md](calibration.md) | Checkerboard requirements, printing and measurement, calibration workflow, and result interpretation |
-| [gestures.md](gestures.md) | Full gesture reference with diagrams — engage, click, swipe |
-| [3d_room_mapping.md](3d_room_mapping.md) | Manual room anchors and JSON persistence; experimental live stereo coordinates remain unvalidated pending Issue #6 |
-| [performance.md](performance.md) | User-facing controls, internal pacing values, and trade-offs; not a current runtime benchmark while Issue #16 is open |
+| [gestures.md](gestures.md) | Full gesture reference with diagrams — engagement, fingertip contacts, and swipes, including the current repeat/overlap limitation tracked in [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13) |
+| [3d_room_mapping.md](3d_room_mapping.md) | Manual room anchors and JSON persistence; experimental live stereo coordinates remain unvalidated pending [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) |
+| [performance.md](performance.md) | User-facing controls, internal pacing values, and trade-offs; not a current runtime benchmark while [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16) is open |
 | [troubleshooting.md](troubleshooting.md) | Common problems and corrective steps |
 | [architecture.md](architecture.md) | Code organization, data flow, and known runtime boundaries |
 | [ollama_integration.md](ollama_integration.md) | Optional snapshot classification through Ollama-compatible endpoints; results are limited to the built-in `GESTURE_KEYS` vocabulary |
