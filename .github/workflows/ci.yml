@@ -10,6 +10,7 @@ jobs:
   test:
     name: Test on ${{ matrix.os }} / Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -25,12 +26,28 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
+      - name: Install Linux runtime dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libgles2 xauth xvfb
+
+      - name: Verify selected Python includes Tk
+        run: |
+          python -c "import sys, tkinter; print(f'{sys.executable}: Tk {tkinter.TkVersion}')"
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Run unit tests
+      - name: Run unit tests (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          xvfb-run -a python -m unittest discover tests -v
+
+      - name: Run unit tests (Windows)
+        if: runner.os == 'Windows'
         run: |
           python -m unittest discover tests -v
 
