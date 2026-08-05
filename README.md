@@ -148,13 +148,11 @@ See [`docs/performance.md`](docs/performance.md) for the readout definitions, tu
 
 ## Tests
 
-```bash
-python -m unittest discover tests -v
-```
+The files under `tests/` mix pytest-style functions, executable assertion or benchmark scripts, and a manual camera/Tk integration audit. Do not run blanket import-based discovery on hosted or headless systems.
 
-The suite covers RoomMap, HandProcessor, CameraManager, StereoCalibrator, `triangulate_point_rays`, Ollama gesture recognition, application construction, and focused regression and benchmark modules. Repository-wide discovery can change as tests are added or reorganized.
+Run the deterministic checks explicitly as documented in [`tests/README.md`](tests/README.md). Run `python tests/test_app.py` separately only on a suitable GUI host with camera access.
 
-Treat the command's final summary and the GitHub Actions run for the exact commit as the source of truth. The current CI matrix is failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); a fixed passing count should not be claimed until an exact-head run is green.
+A bounded repository-wide runner is proposed in draft [PR #22](https://github.com/Capslockb/tony-stark-hand-control/pull/22). Until that workflow and runner are manually reviewed and integrated, use the explicit per-file commands and the GitHub Actions result for the exact commit as the validation source of truth. Current `main` CI is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3).
 
 ---
 
