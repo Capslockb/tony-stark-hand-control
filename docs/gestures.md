@@ -33,7 +33,7 @@ When engaged, the following thumb-to-fingertip gestures fire actions. Detection 
 | Gesture | Action | Trigger |
 |---|---|---|
 | Thumb to **index** | `Enter` (activates focused element) | Distance below the configured threshold |
-| Thumb to **middle** | Right-click / Apps key (context menu) | Distance below the configured threshold |
+| Thumb to **middle** | `Apps` key (opens the context menu) | Distance below the configured threshold |
 | Thumb to **ring** | `↑` (arrow up) | Distance below the configured threshold |
 | Thumb to **pinky** | `↓` (arrow down) | Distance below the configured threshold |
 
