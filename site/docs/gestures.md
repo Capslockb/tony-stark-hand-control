@@ -29,7 +29,7 @@ When engaged, the following thumb-to-fingertip gestures fire actions. The detect
 | Gesture | Action | Threshold (normalized) |
 |---|---|---|
 | Thumb to **index** | `Enter` (activates focused element) | < 0.05 |
-| Thumb to **middle** | Right-click / Apps key (context menu) | < 0.05 |
+| Thumb to **middle** | Windows `Apps` key (opens the context menu) | < 0.05 |
 | Thumb to **ring** | `↑` (arrow up) | < 0.05 |
 | Thumb to **pinky** | `↓` (arrow down) | < 0.05 |
 
