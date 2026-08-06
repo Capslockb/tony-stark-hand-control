@@ -2,6 +2,8 @@
 
 The 3D / Room tab lets you build a map of your physical environment for the live hand tracker. The map is a list of **anchors** (3D points with a type and a label) stored in `room_map.json`. The 3D viewport shows your cameras, your live hand position, and your anchors.
 
+> **Current validation status:** Anchor editing, manual coordinates, and JSON persistence are available, but live stereo coordinates must be treated as experimental. The calibration path stores OpenCV world-to-camera `R, t`, while the current reconstruction path treats `t` as a camera center; the synthetic fixtures validate that second convention rather than values emitted by `cv2.stereoCalibrate`. This mismatch is tracked in [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6). Do not use live 3D output for measurements, automation, or safety decisions until the convention is corrected and validated end to end.
+
 ![3d room](https://raw.githubusercontent.com/Capslockb/tony-stark-hand-control/main/docs/images/3d_room.svg)
 
 ## Why would I want this?
@@ -9,16 +11,16 @@ The 3D / Room tab lets you build a map of your physical environment for the live
 The room map serves two purposes:
 
 1. **Visualization** — see where your cameras are, where your hand is, and how they relate in 3D space.
-2. **Spatial context** — the live hand position is displayed in the room frame, so you can tell if you're reaching toward a specific piece of furniture, a wall, a hot zone, etc.
+2. **Spatial context** — after the stereo-convention fix in Issue #6 is validated, the live hand position can be displayed in the room frame so you can tell if you're reaching toward a specific piece of furniture, a wall, a hot zone, etc.
 
-Future versions of the app may use the map for gesture zoning (e.g. "gesture 'open the kitchen lights' only fires when the hand is in the kitchen zone"). For now, the map is mostly a visualization tool.
+Future versions of the app may use the map for gesture zoning (e.g. "gesture 'open the kitchen lights' only fires when the hand is in the kitchen zone"). For now, the map is mostly a visualization tool, and live coordinates remain unvalidated.
 
 ## How to use
 
-1. **Calibrate first.** The 3D view shows your camera positions, which only work if you've calibrated. See [calibration.md](calibration.md).
+1. **Calibrate first** before evaluating the experimental live 3D view. See [calibration.md](calibration.md).
 2. Go to the **3D / Room** tab.
 3. **Click in the 3D viewport** to drop an anchor. The click ray is intersected with a horizontal plane at the z-height you specify (default 1.0 m).
-4. **Or click "Drop anchor at hand"** to mark the current 3D position of your hand.
+4. **Or click "Drop anchor at hand"** to copy the current experimental live 3D position. Do not treat it as measured ground truth while Issue #6 is open.
 5. **Or use the manual entry** to type x, y, z.
 6. The new anchor appears in the right-side list. Click "Save room map" to persist it to disk.
 
@@ -67,21 +69,21 @@ The room map is saved as a single JSON file:
 
 The file is auto-saved when the app closes. You can also save and load manually with the Save/Load buttons.
 
-## How the math works
+## Intended coordinate convention
 
-For each camera, the calibration gives us:
+For each camera, calibration gives us:
 - `K` (intrinsics): 3x3 matrix mapping 3D camera coordinates to 2D image coordinates
 - `dist` (lens distortion): 5 coefficients
 - `R`, `t` (extrinsics): rotation and translation that map world coordinates to camera coordinates
 
-Given a 2D landmark `(x, y)` in camera `i`:
+Given a 2D pixel landmark `(x, y)` in camera `i`, the intended OpenCV-convention pipeline is:
 
-1. **Undistort**: `(x', y') = cv2.undistortPoints((x, y), K_i, dist_i)`
-2. **Normalize**: `(xn, yn) = K_i^-1 @ (x', y', 1)` — this is a 3D unit ray in the camera's coordinate system
-3. **World ray**: `ray_world = R_i^T @ (xn, yn, 1)` — same ray expressed in the world frame
-4. **Camera origin in world**: `O_i = -R_i^T @ t_i` — where the camera is in 3D space
+1. **Undistort and normalize**: `cv2.undistortPoints((x, y), K_i, dist_i, P=None)` returns `(xn, yn)` in the normalized camera plane.
+2. **Camera ray**: `ray_camera = (xn, yn, 1)`.
+3. **World ray**: `ray_world = R_i^T @ ray_camera`.
+4. **Camera origin in world**: `O_i = -R_i^T @ t_i`.
 
-Then, given rays from N cameras with origins `O_i` and directions `ray_i`, we triangulate the 3D point that is closest to all rays:
+Then, given rays from N cameras with origins `O_i` and directions `ray_i`, triangulate the 3D point closest to all rays:
 
 ```
 [ray_1]_x * X = [ray_1]_x * O_1
@@ -91,15 +93,18 @@ Then, given rays from N cameras with origins `O_i` and directions `ray_i`, we tr
 
 This is an over-determined linear system solved via `np.linalg.lstsq`. The solution `X` is the 3D point.
 
-The reprojection error is then: for each camera, project `X` back to 2D and measure the distance to the original landmark. The mean of these distances (in pixels) is the reprojection error.
+The current runtime does not yet apply this stored-extrinsic convention consistently; Issue #6 tracks the implementation and regression-test correction. The existing synthetic fixture must be rewritten to use the same world-to-camera convention as `cv2.stereoCalibrate()` before it can serve as end-to-end evidence.
+
+The reprojection error is: for each camera, project a known world point back to 2D and measure the distance to the observed landmark. Calibration reprojection error alone does not validate the separate runtime triangulation convention.
 
 ## Coordinate system
 
-The world frame is defined by the calibration: **camera 0's optical center is the origin**, and camera 0's local X/Y/Z axes are the world X/Y/Z axes. This is a standard OpenCV convention.
+The intended world frame is defined by calibration: **camera 0's optical center is the origin**, and camera 0's local X/Y/Z axes are the world X/Y/Z axes. This is the standard convention targeted by the correction in Issue #6.
 
-If you want a different origin, you can transform the anchors in `room_map.json` after the fact (apply a 4x4 rigid transform to all `(x, y, z)` triplets).
+If you want a different origin after reconstruction is validated, you can transform the anchors in `room_map.json` after the fact (apply a 4x4 rigid transform to all `(x, y, z)` triplets).
 
 ## See also
 
 - [Calibration](calibration.md) — how to calibrate
 - [Architecture: StereoCalibrator](architecture.md#stereocalibrator) — the math in more detail
+- [Issue #6](https://github.com/Capslockb/tony-stark-hand-control/issues/6) — stereo extrinsic convention and validation blocker
