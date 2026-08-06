@@ -1,10 +1,13 @@
 # Runtime dependencies for Tony Stark Hand Control
-# Pinned to known-working versions on Windows 10/11 + Python 3.11-3.14.
+# Pinned to supported version ranges for Windows 10/11 + Python 3.11-3.14.
 
 # Computer vision + ML
 opencv-python>=4.10,<5.0          # VideoCapture, CAP_PROP_OPEN_TIMEOUT_MSEC, find_cameras
 mediapipe>=0.10.14,<0.11          # HandLandmarker (VIDEO mode, XNNPACK CPU)
 numpy>=1.26,<3.0                  # HandProcessor, triangulate, RoomMap
+
+# HTTP client
+requests>=2.32,<3.0               # Ollama and other outbound HTTP requests
 
 # GUI (stdlib)
 # tkinter ships with Python -- no install needed.
@@ -15,4 +18,4 @@ matplotlib>=3.9,<4.0
 Pillow>=10.0                      # PhotoImage for canvas redraw
 pyautogui>=0.9.54                 # screen cursor (only if enable_screen_cursor=True)
 pywin32>=306; sys_platform == "win32"   # desktop shortcut, GetGUIThreadInfo, win32gui
-winshell>=1.12; sys_platform == "win32"  # desktop path for shortcut
+winshell>=0.6,<0.7; sys_platform == "win32"  # desktop path for shortcut
