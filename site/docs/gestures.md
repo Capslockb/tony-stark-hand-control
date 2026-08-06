@@ -2,7 +2,7 @@
 
 The full gesture reference.
 
-![gestures](images/gestures.svg)
+![gestures](https://raw.githubusercontent.com/Capslockb/tony-stark-hand-control/main/docs/images/gestures.svg)
 
 ## Engage / disengage
 
