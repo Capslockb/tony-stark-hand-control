@@ -106,7 +106,7 @@ This is a source-install path, not a claim of feature parity with Windows. WSL i
    - **Swipe up** → `↑`
    - **Swipe down** → `↓`
    - **Thumb to index** → `Enter` (activate focused element)
-   - **Thumb to middle** → right-click / context menu
+   - **Thumb to middle** → Windows `Apps` key (opens the context menu)
    - **Thumb to ring** → `↑`
    - **Thumb to pinky** → `↓`
    - **Current limitation:** use brief, isolated fingertip taps. Holding a contact can repeat its key action, and multiple qualifying fingertips can fire more than one action during the same processed frame; see [Issue #13](https://github.com/Capslockb/tony-stark-hand-control/issues/13).
