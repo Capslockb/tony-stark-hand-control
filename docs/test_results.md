@@ -39,7 +39,7 @@ The original core audit harness lives in `tests/test_app.py` and exercises:
 - `OllamaGestureRecognizer` circuit breaker (3 failures → 30s cooldown)
 - Full `HandControlApp` construction with all 6 tabs, all state vars, `_apply_responsiveness`, `_set_attr`, anchor add, `on_close` cleanup
 
-Repository-wide discovery now includes additional regression and benchmark modules, so the current total is not expected to remain 77.
+Repository-wide coverage now includes additional regression and benchmark modules, so the current total is not expected to remain 77. The historical command above is retained only as part of the recorded v1.0.0 result; it is not the recommended current validation command.
 
 ## Hot-path micro-benchmarks
 
@@ -83,7 +83,7 @@ In this recorded run, the started application held:
 3. **MSMF returned black frames for the first few reads on the tested cameras** while the sensors warmed up. The auto-detect probe handled this run by reading 5 frames and accepting the last live frame.
 4. **No GPU acceleration was observed for OpenCV operations in this run.** Other installed acceleration runtimes were not exercised by this benchmark.
 
-## Reproducing on the current branch
+## Reproducing checks on the current branch
 
 ```bash
 # Clone
@@ -93,12 +93,24 @@ cd tony-stark-hand-control
 # Install
 python install_wizard.py
 
-# Run repository-wide discovery
-python -m unittest discover tests -v
+# Run the pytest-style regression explicitly
+python -m pytest -q tests/test_v100_hotfix.py
 
-# Or with pytest
-pip install -r requirements-dev.txt
-pytest -q
+# Run deterministic assertion, smoke, demonstration, and benchmark scripts
+python tests/test_predict_smoke.py
+python tests/test_palm.py
+python tests/test_palm_bug_demo.py
+python tests/test_single_instance.py
+python tests/test_perf_benchmark.py
+python tests/test_multistream_bench.py
 ```
 
-Use the command's final summary and the GitHub Actions run for the exact commit as the source of truth. The current CI matrix is failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); the historical 77/77 result above must not be treated as current validation.
+Run the live integration audit only on a machine with a graphical display and suitable camera access:
+
+```bash
+python tests/test_app.py
+```
+
+Do not use `python -m unittest discover tests -v` or an unfiltered `pytest` command for hosted or headless validation. Collection imports mixed-format modules, including scripts that perform work during import. See [`tests/README.md`](../tests/README.md) for the current execution boundary.
+
+Use each command's final result and the GitHub Actions run for the exact commit as the source of truth. The current CI matrix is failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); the historical 77/77 result above must not be treated as current validation.
