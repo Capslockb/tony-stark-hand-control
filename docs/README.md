@@ -2,7 +2,7 @@
 
 User-facing documentation for Tony Stark Hand Control.
 
-> **Current validation boundary:** live processing on `main` is blocked by the loop-rescheduling regression tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16), and the repository CI matrix is failing as tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3). Use the status of those issues and exact-commit Actions results instead of historical test totals or performance snapshots when assessing the current branch.
+> **Current validation boundary:** live processing on `main` is blocked by the loop-rescheduling regression tracked in [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16), and the current `main` CI matrix remains failing as tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3). Use the status of those issues and exact-commit Actions results instead of historical test totals or performance snapshots when assessing the current branch.
 
 ## Table of contents
 
@@ -17,6 +17,7 @@ User-facing documentation for Tony Stark Hand Control.
 | [architecture.md](architecture.md) | Code organization, data flow, and known runtime boundaries |
 | [ollama_integration.md](ollama_integration.md) | Optional snapshot classification through Ollama-compatible endpoints; results are limited to the built-in `GESTURE_KEYS` vocabulary |
 | [test_results.md](test_results.md) | Historical, environment-specific v1.0.0 results; not current-branch validation |
+| [../tests/README.md](../tests/README.md) | Exact commands and boundaries for deterministic checks, script-style tests, benchmarks, and the manual camera/Tk audit |
 
 ## Diagrams
 
