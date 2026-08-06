@@ -2,7 +2,7 @@
 
 The 3D / Room tab lets you build a map of your physical environment for the live hand tracker. The map is a list of **anchors** (3D points with a type and a label) stored in `room_map.json`. The 3D viewport shows your cameras, your live hand position, and your anchors.
 
-![3d room](images/3d_room.svg)
+![3d room](https://raw.githubusercontent.com/Capslockb/tony-stark-hand-control/main/docs/images/3d_room.svg)
 
 ## Why would I want this?
 
