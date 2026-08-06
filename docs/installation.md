@@ -99,15 +99,24 @@ python tony_stark_hud_control.py
 
 ## Verifying the install
 
-After install, run repository-wide test discovery:
+The files under `tests/` mix pytest-style functions, executable assertion and benchmark scripts, and a manual camera/Tk integration audit. Run the deterministic checks explicitly from the repository root as documented in [`tests/README.md`](../tests/README.md).
+
+Examples:
 
 ```bash
-python -m unittest discover tests -v
+python -m pytest -q tests/test_v100_hotfix.py
+python tests/test_predict_smoke.py
+python tests/test_palm.py
+python tests/test_single_instance.py
 ```
 
-The original core audit in `tests/test_app.py` covers RoomMap, HandProcessor, CameraManager, StereoCalibrator, `triangulate_point_rays`, Ollama gesture recognition, and application construction. Repository-wide discovery includes additional regression and benchmark modules, so the number of discovered tests and assertions can change as the suite evolves.
+Run the live integration audit separately only on a machine with a graphical display and suitable camera access:
 
-Treat the command's final summary and the GitHub Actions run for the exact commit as the source of truth. The CI matrix is currently failing and is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); do not infer a passing installation from an old fixed test count.
+```bash
+python tests/test_app.py
+```
+
+Do not use `python -m unittest discover tests -v` or an unfiltered `pytest` command as a general hosted or headless verification step. Collection can import modules that perform work immediately, including the live camera/Tk audit. Treat the explicit commands in `tests/README.md` and the GitHub Actions run for the exact commit as the validation sources of truth. Current `main` CI remains tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3).
 
 ## Next steps
 
