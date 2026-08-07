@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tony Stark Hand Control — local-first hand tracking for PC control</title>
-  <meta name="description" content="Multi-camera, accessibility-first hand tracking that drives your PC with swipes and thumb-finger taps. Local-only, no cloud, no telemetry. Open source MIT.">
+  <meta name="description" content="Multi-camera, accessibility-first hand tracking for PC control. Local-first core with optional Ollama-compatible snapshot inference. Open source MIT.">
   <meta name="theme-color" content="#0b0d10">
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="canonical" href="https://capslockb.github.io/tony-stark-hand-control/">
   <meta property="og:title" content="Tony Stark Hand Control">
-  <meta property="og:description" content="Multi-camera hand tracking + 3D room mapping for PC control. Local-only. Open source.">
+  <meta property="og:description" content="Multi-camera hand tracking with experimental 3D room mapping for PC control. Local-first. Open source.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/social-card.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Tony Stark Hand Control">
-  <meta name="twitter:description" content="Multi-camera hand tracking + 3D room mapping for PC control. Local-only. Open source.">
+  <meta name="twitter:description" content="Multi-camera hand tracking with experimental 3D room mapping for PC control. Local-first. Open source.">
   <link rel="preload" as="image" href="assets/grain.png">
   <style>
     :root {
@@ -460,12 +460,12 @@
 <section class="hero">
   <div class="hero-bg" aria-hidden="true"></div>
   <div class="wrap reveal" data-reveal>
-    <span class="eyebrow load-fade load-fade-1">v1.0.3 · MIT licensed · 100% local</span>
+    <span class="eyebrow load-fade load-fade-1">v1.0.3 · MIT licensed · local-first</span>
     <h1 class="load-glow">Control your PC with a <span class="glow">hand wave</span>.</h1>
     <p class="lede load-fade load-fade-2">
-      Multi-camera hand tracking + 3D room mapping for PC control. Swipes drive keyboard navigation.
-      Thumb-to-finger taps become clicks. Your hand is reconstructed in 3D, live. No cloud, no telemetry,
-      no API keys — just a webcam and a browser.
+      Multi-camera hand tracking with experimental 3D room mapping for PC control. Swipes drive keyboard navigation,
+      while fingertip contacts trigger configured actions. The desktop core processes camera frames on-device; optional
+      Ollama-compatible snapshot inference is off by default and can target a local or remote endpoint.
     </p>
     <div class="cta load-fade load-fade-3">
       <a class="btn btn-primary" href="#try">▶ Try it now</a>
@@ -474,9 +474,9 @@
     </div>
     <div class="badges load-fade load-fade-4">
       <span class="badge icon-pop icon-pop-1">Python 3.10+</span>
-      <span class="badge icon-pop icon-pop-2">Windows / Linux / macOS</span>
+      <span class="badge icon-pop icon-pop-2">Windows primary · Linux/macOS experimental</span>
       <span class="badge icon-pop icon-pop-3">OpenCV + MediaPipe + Tk</span>
-      <span class="badge green load-fade load-fade-5">● No telemetry, ever</span>
+      <span class="badge green load-fade load-fade-5">● Local-first core</span>
     </div>
   </div>
 </section>
@@ -486,9 +486,9 @@
   <div class="wrap reveal" data-reveal>
     <h2><span class="reveal-title">Try it — right here, in your browser</span></h2>
     <p class="muted" style="max-width: 720px;">
-      The full hand-tracking pipeline running on this page. Same MediaPipe model the desktop app uses.
-      <strong>No frames leave your device.</strong> Grant camera access, then click "Go Fullscreen" to
-      control your computer with hand gestures from your browser.
+      This optional browser demo processes the camera feed in-page after you grant access. The page loads MediaPipe
+      dependencies from a CDN, and the local WebSocket bridge is a separate control path. Treat the demo as a preview,
+      not as validation of the desktop runtime or its current gesture behavior.
     </p>
 
     <div class="preview-shell">
@@ -519,7 +519,7 @@
         </div>
         <div class="preview-card" style="border-color: rgba(46,204,113,0.25); background: rgba(46,204,113,0.04);">
           <h4 style="color:var(--green);">🔒 Privacy</h4>
-          <p style="font-size:13px; color:var(--muted);">All video processing happens in-browser. Nothing is uploaded, recorded, or sent anywhere. The camera feed never leaves this page.</p>
+          <p style="font-size:13px; color:var(--muted);">Camera frames are processed in the page by the demo code. The page itself loads third-party MediaPipe assets from jsDelivr, so do not interpret this preview as an offline or zero-network environment.</p>
         </div>
       </div>
     </div>
@@ -530,7 +530,7 @@
 <section style="background: linear-gradient(180deg, rgba(255,90,31,0.02), transparent);">
   <div class="wrap" style="text-align: center; padding: 8px 0 0;">
     <a href="#install" class="btn btn-primary" style="display: inline-flex;">⬇ Loved it? Install on your PC</a>
-    <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">Free · MIT licensed · 100% local · Windows / macOS / Linux</p>
+    <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">Free · MIT licensed · local-first core · Windows primary</p>
   </div>
 </section>
 
@@ -544,12 +544,12 @@
       the same keyboard-navigation paradigm every OS already has, driven by your hand.
     </p>
     <div class="grid-3">
-      <div class="card"><div class="feature-icon">✋</div><h3>1:1 hand tracking</h3><p>Async MediaPipe worker + One-Euro filter + velocity predictor. Sub-frame latency, no GUI stutter.</p></div>
-      <div class="card"><div class="feature-icon">⌨</div><h3>Accessibility-first input</h3><p>Swipes send Tab / Shift+Tab / arrow keys. Thumb-to-index fires Enter. No mouse required.</p></div>
-      <div class="card"><div class="feature-icon">🟢</div><h3>Persistent focus overlay</h3><p>Green border tracks the focused UI element at 10 Hz. You always know what your next gesture activates.</p></div>
-      <div class="card"><div class="feature-icon">📷</div><h3>Up to 4 cameras</h3><p>Auto-detects DSHOW / MSMF. Each runs MediaPipe in parallel. Per-cam enable/disable.</p></div>
-      <div class="card"><div class="feature-icon">🧊</div><h3>3D room mapping</h3><p>Click-to-place anchors (walls, zones, hotspots). Triangulated live hand position. Save/load room_map.json.</p></div>
-      <div class="card"><div class="feature-icon">🔒</div><h3>Local-only by default</h3><p>No telemetry. No analytics. Everything runs in-process, on your CPU, on your disk.</p></div>
+      <div class="card"><div class="feature-icon">✋</div><h3>Hand tracking pipeline</h3><p>Async MediaPipe worker + One-Euro filter + velocity predictor. Current desktop-loop delivery is blocked by Issue #16, so historical latency claims are not current validation.</p></div>
+      <div class="card"><div class="feature-icon">⌨</div><h3>Accessibility-first input</h3><p>Swipes send Tab / Shift+Tab / arrow keys. Thumb-to-index fires Enter; fingertip actions currently repeat while held.</p></div>
+      <div class="card"><div class="feature-icon">🟢</div><h3>Persistent focus overlay</h3><p>The primary Windows path can draw a green border around the focused UI element. Linux/macOS parity remains planned work.</p></div>
+      <div class="card"><div class="feature-icon">📷</div><h3>Up to 4 cameras</h3><p>Auto-detects supported camera backends. A shared async MediaPipe worker currently serializes inference, and per-camera result ownership is tracked in Issue #7.</p></div>
+      <div class="card"><div class="feature-icon">🧊</div><h3>Experimental 3D room mapping</h3><p>Manual anchors and room-map persistence are available. Live stereo hand coordinates remain unvalidated while Issue #6 is open.</p></div>
+      <div class="card"><div class="feature-icon">🔒</div><h3>Local-first core</h3><p>Core camera-frame processing stays on-device. MediaPipe may report utilization metrics, and optional Ollama-compatible snapshot inference can use a remote endpoint.</p></div>
     </div>
   </div>
 </section>
@@ -557,10 +557,11 @@
 <!-- INSTALL -->
 <section id="install" style="background: linear-gradient(180deg, transparent, rgba(255,90,31,0.02));">
   <div class="wrap reveal" data-reveal>
-    <h2><span class="reveal-title">Up and running in 60 seconds</span></h2>
+    <h2><span class="reveal-title">Installation</span></h2>
     <p class="muted" style="max-width: 720px;">
-      Clone, run the install wizard, launch. The wizard handles Python, pip, and the MediaPipe model.
-      No admin rights required. Prebuilt binaries for Windows (.exe) and Linux x86_64 (.tar.gz).
+      Windows 10/11 is the primary tested and documented path. Linux and macOS have experimental source-install guidance,
+      but feature parity is not established. Installation can complete even though current <code>main</code> live processing
+      is blocked by the loop-rescheduling regression in Issue #16; use the installation guide and exact-commit CI for current evidence.
     </p>
     <div class="install-tabs">
       <button class="active" data-os="src">Source</button>
@@ -574,12 +575,12 @@ python install_wizard.py
 start_windows.bat
 # Linux / macOS:
 python3 tony_stark_hud_control.py</pre>
-    <p class="muted" style="margin-top: 14px;">First launch ~30s (model download). After that: cold start under 2s.</p>
+    <p class="muted" style="margin-top: 14px;">Timing, memory use, camera throughput, and model-download size vary by platform, hardware, camera count, and dependency versions; fixed performance figures are intentionally not advertised here.</p>
     <div class="stats">
-      <div class="stat"><div class="v">~30s</div><div class="l">First install</div></div>
-      <div class="stat"><div class="v">&lt;2s</div><div class="l">Subsequent launches</div></div>
-      <div class="stat"><div class="v">~200 MB</div><div class="l">Working RAM</div></div>
-      <div class="stat"><div class="v">28-35</div><div class="l">fps with 4 cams</div></div>
+      <div class="stat"><div class="v">3.10+</div><div class="l">Python</div></div>
+      <div class="stat"><div class="v">Windows</div><div class="l">Primary path</div></div>
+      <div class="stat"><div class="v">Experimental</div><div class="l">Linux / macOS</div></div>
+      <div class="stat"><div class="v">CI #3</div><div class="l">Current status tracked</div></div>
     </div>
   </div>
 </section>
@@ -590,15 +591,15 @@ python3 tony_stark_hud_control.py</pre>
     <h2><span class="reveal-title">Documentation</span></h2>
     <p class="muted">Full guides for setup, calibration, gestures, architecture, and troubleshooting.</p>
     <div class="grid-3 stagger-group" style="margin-top:20px;">
-      <a href="docs/?file=installation" class="card stagger" style="text-decoration:none; display:block;"><h3>📦 Installation</h3><p>Step-by-step install for Windows, Linux, macOS.</p><span class="doc-link">Read →</span></a>
-      <a href="docs/?file=architecture" class="card stagger" style="text-decoration:none; display:block;"><h3>🏗️ Architecture</h3><p>How the four layers of the app work.</p><span class="doc-link">Read →</span></a>
-      <a href="docs/?file=calibration" class="card stagger" style="text-decoration:none; display:block;"><h3>📐 Calibration</h3><p>Stereo camera calibration with checkerboard.</p><span class="doc-link">Read →</span></a>
-      <a href="docs/?file=gestures" class="card stagger" style="text-decoration:none; display:block;"><h3>✋ Gestures</h3><p>All gestures and keyboard mappings.</p><span class="doc-link">Read →</span></a>
-      <a href="docs/?file=3d_room_mapping" class="card stagger" style="text-decoration:none; display:block;"><h3>🗺️ 3D Room Mapping</h3><p>Triangulation and room mapping.</p><span class="doc-link">Read →</span></a>
-      <a href="docs/?file=performance" class="card stagger" style="text-decoration:none; display:block;"><h3>⚡ Performance</h3><p>Benchmarks, FPS targets, optimization.</p><span class="doc-link">Read →</span></a>
-      <a href="docs/?file=ollama_integration" class="card stagger" style="text-decoration:none; display:block;"><h3>🤖 Ollama Integration</h3><p>AI gesture recognition via local LLMs.</p><span class="doc-link">Read →</span></a>
-      <a href="docs/?file=troubleshooting" class="card stagger" style="text-decoration:none; display:block;"><h3>🔧 Troubleshooting</h3><p>Common issues and solutions.</p><span class="doc-link">Read →</span></a>
-      <a href="docs/?file=test_results" class="card stagger" style="text-decoration:none; display:block;"><h3>📊 Test Results</h3><p>Validation across different hardware.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=installation" class="card stagger" style="text-decoration:none; display:block;"><h3>📦 Installation</h3><p>Windows-primary setup plus experimental Linux/macOS source guidance.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=architecture" class="card stagger" style="text-decoration:none; display:block;"><h3>🏗️ Architecture</h3><p>Current component boundaries and known limitations.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=calibration" class="card stagger" style="text-decoration:none; display:block;"><h3>📐 Calibration</h3><p>Stereo camera calibration with a measured checkerboard.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=gestures" class="card stagger" style="text-decoration:none; display:block;"><h3>✋ Gestures</h3><p>Current mappings, thresholds, and known repeat behavior.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=3d_room_mapping" class="card stagger" style="text-decoration:none; display:block;"><h3>🗺️ 3D Room Mapping</h3><p>Experimental triangulation and room-map behavior.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=performance" class="card stagger" style="text-decoration:none; display:block;"><h3>⚡ Performance</h3><p>User controls, pacing behavior, and current validation limits.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=ollama_integration" class="card stagger" style="text-decoration:none; display:block;"><h3>🤖 Ollama Integration</h3><p>Optional snapshot inference and endpoint boundaries.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=troubleshooting" class="card stagger" style="text-decoration:none; display:block;"><h3>🔧 Troubleshooting</h3><p>Current failure modes and bounded guidance.</p><span class="doc-link">Read →</span></a>
+      <a href="docs/?file=test_results" class="card stagger" style="text-decoration:none; display:block;"><h3>📊 Test Results</h3><p>Historical snapshots and current reproduction guidance.</p><span class="doc-link">Read →</span></a>
     </div>
   </div>
 </section>
@@ -608,24 +609,21 @@ python3 tony_stark_hud_control.py</pre>
   <div class="wrap reveal" data-reveal>
     <div class="grid-2">
       <div>
-        <h2><span class="reveal-title">Privacy isn't a feature, it's the default.</span></h2>
-        <p>The hand-tracking pipeline never touches the network. Camera frames live in process memory. No usage data, no error reports, no "phone home" check on launch.</p>
-        <p>The only optional network path is the Ollama tab — <strong>off by default</strong>. It only sends frames <em>after</em> you explicitly enable it.</p>
+        <h2><span class="reveal-title">Local-first, with explicit network boundaries.</span></h2>
+        <p>Core camera-frame processing stays on-device. MediaPipe's Tasks APIs may send performance and utilization metrics, so this project does not promise zero telemetry from every dependency.</p>
+        <p>Optional Ollama-compatible snapshot inference is <strong>off by default</strong>. If enabled, it sends snapshots and prompts to the endpoint you configure, which may be local or remote.</p>
         <p><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/SECURITY.md">Read the full security & disclosure policy →</a></p>
       </div>
       <div class="demo">
-        <span class="com"># What this app does NOT do</span><br>
-        ✗ Phone home on launch<br>
-        ✗ Check for updates<br>
-        ✗ Report errors to a remote service<br>
-        ✗ Upload camera frames<br>
-        ✗ Track user identifiers<br>
-        ✗ Include ads, trackers, or third-party SDKs<br><br>
-        <span class="com"># What it DOES do</span><br>
-        <span class="ok">✓</span> Run hand-tracking on your CPU<br>
+        <span class="com"># Default core path</span><br>
+        <span class="ok">✓</span> Process camera frames on-device<br>
         <span class="ok">✓</span> Save calibration to <span class="prompt">calibration.npz</span><br>
-        <span class="ok">✓</span> Save room map to <span class="prompt">room_map.json</span><br>
-        <span class="ok">✓</span> Optionally talk to <span class="prompt">127.0.0.1:8080</span> or <span class="prompt">ollama.com</span> (off by default)
+        <span class="ok">✓</span> Save room map to <span class="prompt">room_map.json</span><br><br>
+        <span class="com"># Network boundaries to understand</span><br>
+        • MediaPipe Tasks may report performance/utilization metrics<br>
+        • The install path can download dependencies and the model<br>
+        • Optional Ollama-compatible inference can contact the configured endpoint<br>
+        • This browser page loads MediaPipe assets from a CDN
       </div>
     </div>
   </div>
@@ -634,8 +632,8 @@ python3 tony_stark_hud_control.py</pre>
 <!-- ROADMAP -->
 <section id="roadmap" style="background: linear-gradient(180deg, transparent, rgba(255,176,0,0.03));">
   <div class="wrap reveal" data-reveal>
-    <h2><span class="reveal-title">A real roadmap, not bullet points</span></h2>
-    <p class="muted" style="max-width: 720px;">We commit publicly to where this project is going. Each release has a target quarter, scoped features, and a definition of done.</p>
+    <h2><span class="reveal-title">Roadmap</span></h2>
+    <p class="muted" style="max-width: 720px;">These are planning targets, not shipped capability claims. Implementation, validation, privacy, licensing, permission, and platform constraints remain subject to review in <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">ROADMAP.md</a>.</p>
     <div class="roadmap">
       <div class="rm-card"><div class="ver">v1.1.0 · Q3 2026</div><h3>UX polish & platform parity</h3><ul><li>Two-hand tracking with primary-hand arbitration</li><li>Linux & macOS parity for focus overlay</li><li>Bundled-model installer (no first-run network)</li><li>Per-gesture hooks (shell, HTTP, Python callbacks)</li></ul></div>
       <div class="rm-card"><div class="ver">v1.2.0 · Q4 2026</div><h3>Smart depth</h3><ul><li>Monocular depth from MediaPipe z (no calibration rig)</li><li>Phone-as-second-camera companion app over LAN</li><li>Room-map gesture zoning</li></ul></div>
@@ -649,27 +647,27 @@ python3 tony_stark_hud_control.py</pre>
 <section id="changelog" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.02));">
   <div class="wrap reveal" data-reveal>
     <h2><span class="reveal-title">Release notes</span></h2>
-    <p class="muted" style="max-width: 720px;">Every shipped version, with the exact bugs fixed and features added. <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a></p>
+    <p class="muted" style="max-width: 720px;">Historical release notes and test snapshots. Counts below describe the stated release-time evidence, not current validation; use exact-commit CI and open issues for current status. <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a></p>
     <div class="changelog-list">
       <article class="cl-card cl-current">
         <header class="cl-head"><span class="cl-version">v1.0.3</span><span class="cl-date">2026-06-07</span><span class="cl-tag cl-tag-fix">release-readiness</span></header>
-        <p class="cl-blurb">Cross-platform install + test fixes. The app and installer now actually work on Linux, macOS, and headless systems.</p>
+        <p class="cl-blurb">Historical release note for cross-platform install and test fixes. Current Linux/macOS feature parity and headless behavior are not established by this snapshot.</p>
         <h4>Fixed</h4>
         <ul class="cl-list"><li><code>pyautogui</code> import crashed on headless systems. Now lazy-loaded with a no-op stub shim.</li><li>Single-instance lock was a silent no-op on Linux/macOS. Now uses <code>fcntl.flock</code> on POSIX.</li><li>Selection overlay crashed on Linux Tk. Windows-only attr now guarded.</li><li>Test suite had hardcoded paths — now portable via <code>__file__</code>.</li></ul>
         <h4>Added</h4>
-        <ul class="cl-list"><li>This promo site (desktop + mobile) with the social card baked in.</li><li><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">ROADMAP.md</a> with dated feature promises.</li></ul>
-        <p class="cl-test">Test status: <strong>70/71</strong> pass on Linux under <code>xvfb</code> (1 fail is the real-webcam test).</p>
+        <ul class="cl-list"><li>This promo site (desktop + mobile) with the social card baked in.</li><li><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">ROADMAP.md</a> with release planning targets.</li></ul>
+        <p class="cl-test">Historical test snapshot: <strong>70/71</strong> reported passing on Linux under <code>xvfb</code> (1 failure was the real-webcam test).</p>
       </article>
       <article class="cl-card">
         <header class="cl-head"><span class="cl-version">v1.0.1</span><span class="cl-date">2026-06-04</span><span class="cl-tag cl-tag-fix">hotfix</span></header>
         <p class="cl-blurb">Two crash bugs caught right after v1.0.0 shipped.</p>
         <ul class="cl-list"><li><code>RoomMap.add()</code> crashed on numpy 0-d arrays. Coerced via <code>np.asarray(x).item()</code>.</li><li><code>flash_overlay()</code> crashed with <code>TclError: unknown color name "00FF00"</code>. Now auto-prepends <code>#</code>.</li></ul>
-        <p class="cl-test"><strong>81/81</strong> pass (77 main + 4 regression tests).</p>
+        <p class="cl-test">Historical test snapshot: <strong>81/81</strong> reported passing (77 main + 4 regression tests).</p>
       </article>
       <article class="cl-card">
         <header class="cl-head"><span class="cl-version">v1.0.0</span><span class="cl-date">2026-06-04</span><span class="cl-tag cl-tag-new">initial release</span></header>
-        <p class="cl-blurb">The first public version. Multi-camera hand-tracking, accessibility navigation, 3D room mapping, all in one ~3,400-line Tkinter app.</p>
-        <ul class="cl-list"><li>Multi-camera (1-4) hand-tracking with async MediaPipe worker</li><li>One-Euro filter + velocity predictor for 1:1 tracking</li><li>Accessibility navigation: swipes → <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd>, thumb-touches → <kbd>Enter</kbd> / right-click</li><li>Persistent green focus overlay (Win32 <code>GetGUIThreadInfo</code> at 10 Hz)</li><li>3D triangulation + interactive matplotlib room map</li><li>Engage gesture: open palm held ~0.6 s</li><li>5-tab Tkinter GUI + live performance HUD</li><li>77-test suite, <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md">full docs</a></li></ul>
+        <p class="cl-blurb">The first public version. Multi-camera hand-tracking, accessibility navigation, and experimental 3D room mapping were included in one ~3,400-line Tkinter app.</p>
+        <ul class="cl-list"><li>Multi-camera (1-4) hand-tracking with async MediaPipe worker</li><li>One-Euro filter + velocity predictor for hand tracking</li><li>Accessibility navigation: swipes → <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd>, thumb-touches → keyboard actions</li><li>Persistent green focus overlay on the Windows path</li><li>Experimental 3D triangulation + interactive matplotlib room map</li><li>Engage gesture: open palm held ~0.6 s</li><li>5-tab Tkinter GUI + performance HUD</li><li>Historical 77-test suite snapshot, <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md">full docs</a></li></ul>
       </article>
     </div>
     <p style="margin-top: 24px; text-align: center;"><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md" class="btn btn-ghost" style="display: inline-flex;">View full changelog on GitHub →</a></p>
@@ -680,7 +678,7 @@ python3 tony_stark_hud_control.py</pre>
 <section id="press" style="background: linear-gradient(180deg, transparent, rgba(46,204,113,0.03));">
   <div class="wrap reveal" data-reveal>
     <h2><span class="reveal-title">Press kit &amp; share images</span></h2>
-    <p class="muted" style="max-width: 720px;">Sharing Tony Stark Hand Control? These assets are sized for GitHub, Discord, Slack, X/Twitter, and LinkedIn.</p>
+    <p class="muted" style="max-width: 720px;">Sharing Tony Stark Hand Control? These assets are sized for GitHub, Discord, Slack, X/Twitter, and LinkedIn. The generated social card may contain older claims; review its source before reuse.</p>
     <div class="press-grid">
       <figure class="press-card">
         <a href="assets/social-card.jpg" target="_blank" rel="noopener" class="press-frame"><img src="assets/social-card.jpg" alt="Social card 1200×630" width="600" height="315" loading="lazy"></a>
@@ -695,7 +693,7 @@ python3 tony_stark_hud_control.py</pre>
         <figcaption><div class="press-meta"><strong>Source SVG</strong><span class="press-dim">Remix this — change colors, text, layout</span></div><div class="press-actions"><a class="press-btn" href="assets/social-card.svg" download>⬇ Download</a><button class="press-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.svg">🔗 Copy URL</button></div></figcaption>
       </figure>
     </div>
-    <p class="muted" style="margin-top: 24px; font-size: 15px;">Suggested caption: <em>"Hand-track your PC with a webcam. Local-only, no telemetry, MIT licensed."</em></p>
+    <p class="muted" style="margin-top: 24px; font-size: 15px;">Suggested caption: <em>"Hand-track your PC with a webcam. Local-first, Windows-primary, MIT licensed."</em></p>
   </div>
 </section>
 
@@ -708,7 +706,7 @@ python3 tony_stark_hud_control.py</pre>
       <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/ROADMAP.md">Roadmap</a> ·
       <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md">Changelog</a>
     </div>
-    <div>Built with MediaPipe, OpenCV, Tkinter · No analytics · No tracking</div>
+    <div>Built with MediaPipe, OpenCV, Tkinter · local-first core</div>
   </div>
 </footer>
 </div>
