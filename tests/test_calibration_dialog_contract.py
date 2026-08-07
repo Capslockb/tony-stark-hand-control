@@ -39,8 +39,10 @@ class CalibrationDialogContractTests(unittest.TestCase):
         text = _start_calibration_text().lower()
         if "9x6" not in text:
             self.fail("Calibration dialog must preserve the 9x6 pattern requirement")
-        if re.search(r"\b25(?:\s*-\s*30)?\s*mm\b", text) is None:
-            self.fail("Calibration dialog must preserve explicit millimetre square-size guidance")
+        if re.search(r"\b25\s*mm\b", text) is None:
+            self.fail("Calibration dialog must require the calibrator's fixed 25 mm square size")
+        if re.search(r"\b25\s*-\s*30\s*mm\b", text) is not None:
+            self.fail("Calibration dialog must not advertise a 25-30 mm range while calibration is fixed to 25 mm")
 
 
 if __name__ == "__main__":
