@@ -40,6 +40,8 @@ Wraps `cv2.VideoCapture` for one or more cameras. On construction:
 2. For each (index, backend), opens the camera, sets resolution and FPS, reads 3 frames, and keeps it if at least one of those frames passes the live-feed check.
 3. Returns the list of opened cameras. Each is a `cv2.VideoCapture` instance.
 
+Camera discovery is **not currently guaranteed to be time-bounded**. The probe constructs `cv2.VideoCapture(idx, backend)` before requesting `CAP_PROP_OPEN_TIMEOUT_MSEC` or `CAP_PROP_READ_TIMEOUT_MSEC`, so a backend or driver can block before those properties are applied. OpenCV documents those timeout properties as open-only and for FFmpeg/GStreamer, while this probe uses DSHOW, MSMF, and ANY. The normal **Start** path constructs `CameraManager` on a worker thread, but **Start calibration** can construct it synchronously on the Tk thread when cameras are closed. [Issue #19](https://github.com/Capslockb/tony-stark-hand-control/issues/19) tracks a real discovery deadline, cleanup, and a non-blocking calibration path.
+
 `is_feed_live()` checks std-dev and mean brightness of a BGR frame. The main loop refreshes the cached result every 10th iteration, so the effective check rate follows the loop rate rather than a fixed 10 Hz timer.
 
 `release()` is idempotent — safe to call multiple times. Closes all camera handles and clears the list.
