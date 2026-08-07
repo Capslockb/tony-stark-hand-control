@@ -22,9 +22,9 @@ You do **not** need to recalibrate merely because you:
 
 - A printed checkerboard with 9 × 6 internal corners (10 × 7 squares), printed so each square measures 25 mm
 - A flat backing such as cardboard, a book, or a clipboard
-- At least two active cameras able to see the full checkerboard at the same time
+- At least two cameras opened by the calibration path and able to see the full checkerboard at the same time
 
-For rigs with more than two active cameras, every camera must detect the same checkerboard view before that sample is accepted.
+Calibration currently uses every camera in `CameraManager`. The Main-tab per-camera **Enable** checkboxes do not remove a camera from the calibration set. With more than two opened cameras, every one of them must detect the same checkerboard view before that sample is accepted.
 
 ## Printing the checkerboard
 
@@ -39,13 +39,13 @@ For rigs with more than two active cameras, every camera must detect the same ch
 
 1. **Open the app** and go to the **Main** tab.
 2. Click **Calibrate**.
-3. Hold the checkerboard where **all active cameras** can see the complete pattern simultaneously.
+3. Hold the checkerboard where **every camera opened for calibration** can see the complete pattern simultaneously.
 4. Move it through varied positions and orientations:
    - near and farther from the cameras;
    - left, right, high, and low in the shared field of view;
    - tilted around multiple axes;
    - rotated in the image plane.
-5. The default target is 15 accepted views. The progress callback reports `Captured N/15 views`; a view is accepted only when every active camera detects the full board.
+5. The default target is 15 accepted views. The progress callback reports `Captured N/15 views`; a view is accepted only when every opened camera detects the full board.
 6. Calibration can finish with fewer than 15 views if the capture-attempt budget expires, but the default path fails when fewer than 7 valid views were captured. More varied, high-quality views are preferable to repeated nearly identical views.
 7. On success, the status reports the number of calibrated cameras, the camera-0-to-camera-1 baseline, and the mean reprojection error.
 8. The calibration is saved to `calibration.npz` next to the application script and loaded on later runs.
@@ -83,10 +83,10 @@ Each camera's intrinsic matrix `K` is:
 ### “Could not find checkerboard” or no progress
 
 - Confirm the pattern has 9 × 6 **internal corners**, not 9 × 6 squares.
-- Keep the board flat and fully inside every active camera frame.
+- Keep the board flat and fully inside every camera frame used by calibration.
 - Improve lighting and reduce glare or motion blur.
 - Move the board more slowly.
-- Disable or reposition a camera that cannot share a usable view with the rest of the rig.
+- Reposition a camera that cannot share a usable view with the rest of the rig, or restart with that camera not opened/connected. The Main-tab **Enable** checkbox currently does not exclude it from calibration.
 
 ### Reprojection error is unexpectedly high
 
@@ -98,7 +98,7 @@ Each camera's intrinsic matrix `K` is:
 
 ### Cameras do not share the checkerboard view
 
-A sample is accepted only when every active camera detects the full pattern in the same capture iteration. Reposition the board or cameras so their fields of view overlap, or calibrate a smaller active set.
+A sample is accepted only when every camera opened for calibration detects the full pattern in the same capture iteration. Reposition the board or cameras so their fields of view overlap, or restart calibration with a smaller connected/opened camera set. The current GUI Enable checkboxes do not select the calibration subset.
 
 ### Calibration succeeds but live 3D is wrong
 
