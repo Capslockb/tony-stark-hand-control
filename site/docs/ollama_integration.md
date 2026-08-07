@@ -30,7 +30,7 @@ Don't use Ollama if:
    What hand gesture is being shown? Choose from: left_click, right_click, scroll_up, scroll_down, swipe_left, swipe_right, swipe_up, swipe_down, move_cursor, engage, disengage, none. Respond with only the gesture name.
    ```
 2. The response is normalized to one of the built-in `GESTURE_KEYS`; any other response becomes `none`.
-3. The local gesture handler fires the corresponding action.
+3. In the current Ollama path, `engage` and `disengage` update engagement state and the four `swipe_*` labels drive accessibility navigation while engaged. The `left_click`, `right_click`, `scroll_up`, `scroll_down`, and `move_cursor` labels are normalized and displayed but are not currently wired to actions by the Ollama result handler.
 4. A circuit breaker trips after 3 consecutive failures to avoid burning the queue.
 
 ## Cloud endpoint (ollama.com)
@@ -138,7 +138,7 @@ The default prompt is:
 What hand gesture is being shown? Choose from: left_click, right_click, scroll_up, scroll_down, swipe_left, swipe_right, swipe_up, swipe_down, move_cursor, engage, disengage, none. Respond with only the gesture name.
 ```
 
-You can edit this in the Ollama tab, but the runtime still filters the response through the fixed `GESTURE_KEYS` list. A response that does not contain one of those labels becomes `none`. Supporting a genuinely new gesture name therefore requires a reviewed source change to the vocabulary and its action mapping; changing the prompt alone is not enough.
+You can edit this in the Ollama tab, but the runtime still filters the response through the fixed `GESTURE_KEYS` list. A response that does not contain one of those labels becomes `none`. The current Ollama result handler only acts on `engage`, `disengage`, and the four `swipe_*` labels; the other built-in labels require reviewed runtime wiring before Ollama classification can trigger their corresponding actions. Supporting a genuinely new gesture name therefore requires a reviewed source change to the vocabulary and its action mapping; changing the prompt alone is not enough.
 
 ## Performance
 
@@ -150,7 +150,7 @@ You can edit this in the Ollama tab, but the runtime still filters the response 
 
 To turn off Ollama completely:
 1. Open the **Ollama** tab
-2. **Uncheck** "Enable Ollama gesture recognition"
+2. **Uncheck** "Enable Ollama"
 3. Click Save
 
 The Ollama worker thread will exit cleanly and the local MediaPipe detector remains selected. On current `main`, recurring local processing remains blocked by [Issue #16](https://github.com/Capslockb/tony-stark-hand-control/issues/16).
