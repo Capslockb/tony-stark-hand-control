@@ -1,5 +1,6 @@
 import ast
 from pathlib import Path
+import re
 import unittest
 
 
@@ -38,8 +39,8 @@ class CalibrationDialogContractTests(unittest.TestCase):
         text = _start_calibration_text().lower()
         if "9x6" not in text:
             self.fail("Calibration dialog must preserve the 9x6 pattern requirement")
-        if "25" not in text:
-            self.fail("Calibration dialog must preserve measured square-size guidance")
+        if re.search(r"\b25(?:\s*-\s*30)?\s*mm\b", text) is None:
+            self.fail("Calibration dialog must preserve explicit millimetre square-size guidance")
 
 
 if __name__ == "__main__":
