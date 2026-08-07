@@ -26,9 +26,8 @@ class OllamaSecurityContractTests(unittest.TestCase):
             flags=re.DOTALL,
         )
         self.assertIsNotNone(match, "Ollama API-key field definition not found")
-        self.assertEqual(
-            match.group("value"),
-            "",
+        self.assertFalse(
+            bool(match.group("value")),
             "The public application must not ship with a credential-like API-key default.",
         )
 
