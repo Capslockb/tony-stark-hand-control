@@ -24,29 +24,22 @@ def _start_calibration_text() -> str:
 class CalibrationDialogContractTests(unittest.TestCase):
     def test_dialog_does_not_promise_a_bundled_desktop_pdf(self) -> None:
         text = _start_calibration_text().lower()
-        self.assertNotIn(
-            "a4 pdf",
-            text,
-            "Calibration dialog still promises a bundled A4 PDF",
-        )
-        self.assertNotIn(
-            "desktop",
-            text,
-            "Calibration dialog still promises a Desktop-created file",
-        )
+        if "a4 pdf" in text:
+            self.fail("Calibration dialog still promises a bundled A4 PDF")
+        if "desktop" in text:
+            self.fail("Calibration dialog still promises a Desktop-created file")
 
     def test_dialog_points_to_canonical_calibration_guidance(self) -> None:
         text = _start_calibration_text().lower()
-        self.assertIn(
-            "docs/calibration.md",
-            text,
-            "Calibration dialog must point users to docs/calibration.md",
-        )
+        if "docs/calibration.md" not in text:
+            self.fail("Calibration dialog must point users to docs/calibration.md")
 
     def test_dialog_preserves_checkerboard_requirements(self) -> None:
         text = _start_calibration_text().lower()
-        self.assertIn("9x6", text, "Calibration dialog must preserve the 9x6 pattern requirement")
-        self.assertIn("25", text, "Calibration dialog must preserve measured square-size guidance")
+        if "9x6" not in text:
+            self.fail("Calibration dialog must preserve the 9x6 pattern requirement")
+        if "25" not in text:
+            self.fail("Calibration dialog must preserve measured square-size guidance")
 
 
 if __name__ == "__main__":
