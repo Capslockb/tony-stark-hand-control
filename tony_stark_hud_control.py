@@ -1441,8 +1441,7 @@ class HandControlApp:
         self.ollama_key_frame = ttk.Frame(self.tab_ollama)
         self.ollama_key_frame.pack(fill="x")
         self.ollama_key_show = tk.BooleanVar(value=False)
-        self.ollama_key_var = tk.StringVar(
-            value="46abe6b190774fd7ae6d712b19f3fb2e.bQx3vVVgpOr8rHdv-kRt50I9")
+        self.ollama_key_var = tk.StringVar(value="")
         self.ollama_key_entry = ttk.Entry(self.ollama_key_frame, textvariable=self.ollama_key_var,
                                           show="*")
         self.ollama_key_entry.pack(side="left", fill="x", expand=True)

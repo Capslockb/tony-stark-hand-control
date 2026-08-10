@@ -39,7 +39,7 @@ ollama_api_key = "your-api-key-here"                 # provided by user
 
 ### Notes on the Provided Credentials
 During this session, the user provided:
-- API key: `46abe6b190774fd7ae6d712b19f3fb2e.bQx3vVVgpOr8rHdv-kRt50I9`
+- API key: <REDACTED — revoked; obtain a fresh key from the Ollama dashboard>
 - Suggested model: `gemma4:31b-cloud`
 - Inferred endpoint: `https://ollama.com/api/generate` (verified reachable)
 
