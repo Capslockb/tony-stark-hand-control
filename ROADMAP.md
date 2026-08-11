@@ -1,88 +1,97 @@
 # Roadmap
 
-This is a public commitment to where Tony Stark Hand Control is going. Items are scoped, dated, and tied to a real milestone. If priorities change, this document updates and the commit trail shows the diff.
+This roadmap records current product direction, not a shipping guarantee. Milestones and target quarters are planning aids; scope and timing may change as implementation, validation, dependencies, privacy, licensing, security, and platform constraints become clearer. Material changes should remain visible in the commit history.
 
 > **Status legend:** 🔒 in progress · 🎯 next · 💭 considering
 
 ---
 
-## v1.1.0 — UX polish & platform parity
+## v1.1.0 — UX polish and platform parity
 
-**Target: Q3 2026**
+**Planning target: Q3 2026**
 
 ### 🎯 Two-hand tracking
-Right now the app supports one hand. MediaPipe can return up to two. The work is plumbing: two parallel smoothing pipelines, two gesture channels, and a "primary hand" arbitration rule (rightmost by default, configurable).
 
-### 🎯 Linux & macOS parity
-The Windows path is the one that's been beaten on. Linux needs an equivalent of the `GetGUIThreadInfo`-based selection overlay, using X11 focus discovery and a transparent overlay rather than Windows-only window styles. macOS needs an `AXUIElement` bridge for focus tracking. Prototype work exists outside this repository, but it must be imported, reviewed, tested, and documented here before either platform is considered first-class.
+The current application path is designed around one tracked hand. A reviewed two-hand implementation would need independent tracking and smoothing state, deterministic primary-hand arbitration, gesture-conflict handling, disengage/reset behavior, and tests covering crossed or occluded hands. MediaPipe configuration alone is not sufficient to establish reliable two-hand behavior.
+
+### 🎯 Linux and macOS parity
+
+Windows is the primary tested path. Linux and macOS need platform-specific focus discovery, overlay behavior, packaging, permissions, and accessibility validation before either platform can be described as feature-equivalent. Any prototype work outside this repository must be imported, reviewed, tested, and documented here before it counts as project support.
 
 ### 🎯 Bundled-model installer
-The `hand_landmarker.task` (~7 MB) is downloaded on first run. For users who want a single `.exe` with no network at all, the install wizard should embed the model. PyInstaller `--add-data` already covers the mechanics.
+
+The installer currently obtains the hand-landmark model at install or first-run time. A self-contained package requires a reviewed model source and version, licensing and redistribution confirmation, reproducible packaging, update behavior, integrity checks, and validation for every supported build target. Do not treat bundling as complete merely because the packaging tool can include data files.
 
 ### 🎯 Per-gesture hook system
-Users want to fire shell commands, HTTP requests, or Python callbacks when a specific gesture fires. The planned architecture is a validated hook table in `gesture_hooks.json` next to `room_map.json`, evaluated only after a gesture is confirmed. This requires a schema, loader, dispatch layer, failure isolation, and explicit safety controls before user-defined hooks can be enabled.
+
+A future hook system may allow reviewed actions after a gesture is confirmed. Before shell commands, network requests, or Python callbacks can be enabled, the project needs a versioned schema, explicit permissions, input validation, failure isolation, safe defaults, auditability, and clear handling of untrusted configuration. Hook execution must not be coupled to the current gesture-runtime fixes.
 
 ### 🎯 Command-line launch flags
-`--calibrate`, `--engaged-on-start`, `--no-overlay`, `--camera-index N`. Useful for power users and for headless test rigs.
+
+Potential launch options include calibration, initial engagement state, overlay control, and camera selection. Exact names and behavior remain subject to review. Parsing, invalid-input handling, platform behavior, and interaction with the single-instance lock require deterministic tests.
 
 ---
 
-## v1.2.0 — Smart depth
+## v1.2.0 — Experimental depth and spatial interaction
 
-**Target: Q4 2026**
+**Planning target: Q4 2026**
 
-### 🎯 Monocular depth from MediaPipe z
-MediaPipe's hand-landmark `z` is already a relative depth estimate. Combine it with the known camera intrinsics and you get a usable 3D position from a **single** camera — no calibration rig required. The accuracy won't match a stereo rig, but it'll let people try the 3D Room tab with their laptop webcam.
+### 🎯 Monocular relative depth or pose
 
-### 🎯 Stereo depth from a phone-as-second-camera
-Companion app: install on a phone, point at the same scene, stream over the local network as a virtual camera index. This collapses the "I don't have four webcams" objection.
+MediaPipe exposes image landmarks whose `z` value is relative to the wrist and uses roughly the same scale as normalized image `x`. It also exposes hand-world landmarks in metres relative to the hand's geometric centre. Neither output directly provides camera-referenced, metric hand translation, and camera intrinsics alone cannot recover absolute depth from a single view.
 
-### 🎯 Room-map-driven gesture zoning
-Once you have a calibrated 3D room, gestures can be **scoped** to zones. A swipe in the kitchen zone opens the kitchen lights (via Home Assistant). A pinch in the desk zone unmutes the mic. The Room Map already supports the data model; v1.2 wires it to the action layer.
+The first safe milestone is therefore an explicitly experimental relative-depth or pose view. Any later camera-referenced 3D position requires a documented scale or pose prior, a separate depth-estimation method, or another reviewed source of metric reference, plus validation across hands, distances, cameras, and occlusion. Monocular output must not be presented as measurement-grade or used for automation or safety decisions until that validation exists.
+
+### 🎯 Phone as a second camera
+
+A companion-device workflow remains a proposal, not a shipped capability. It requires a defined and authenticated transport, explicit user consent, camera and network lifecycle handling, latency and synchronization limits, calibration behavior, mobile platform support, and privacy documentation. Website or mobile copy must not imply that a phone can already be used as a virtual camera.
+
+### 🎯 Room-map-driven gesture zones
+
+Spatial gesture zones depend on trustworthy 3D coordinates. The current live stereo path remains experimental while the calibration and reconstruction convention tracked in Issue #6 is unresolved. Zone-triggered actions require validated coordinates, deterministic boundary behavior, user-visible arming and cancellation, action permissions, and protections against accidental activation before they can be enabled.
 
 ---
 
-## v2.0.0 — Voice + vision
+## v2.0.0 — Voice and extensibility
 
-**Target: Q1 2027**
+**Planning target: Q1 2027**
 
-### 🎯 "OK Jarvis" wake word
-A lightweight on-device wake-word detector (open-source Porcupine or similar) listens while the app is engaged. On detection, the app opens a microphone channel. "Open Spotify", "next track", "lights off" — sent to a configurable local LLM (Ollama or llama.cpp) for intent extraction.
+### 🎯 Wake-word and voice intent
 
-### 🎯 Sign-language dictionary
-The MediaPipe hand-landmark pipeline is already sign-language ready. The work is gesture vocabulary: define the 50 most common ASL letters and words, train a small on-device classifier, expose them as new gestures.
+A future on-device wake-word detector requires reviewed licensing, supported-platform evidence, microphone permission handling, clear recording indicators, cancellation controls, and privacy documentation. Intent extraction must use a documented provider interface and safe action boundary; naming a third-party engine or model service does not constitute implementation support.
+
+### 🎯 Narrow sign-language vocabulary
+
+The hand-landmark pipeline is a starting point, not a ready-made sign-language recognizer. Many signs require temporal motion, two-hand coordination, handedness, and sometimes body or face context. Start with a narrowly defined, user-tested vocabulary and an on-device temporal classifier; do not describe isolated landmark poses as general ASL recognition.
 
 ### 🎯 Plugin SDK
-External Python packages can register new gesture types, new calibration procedures, and new 3D-room anchor types. Discoverable via a `tony_stark_hand_control.plugins` entry point. Third-party plugins can ship on PyPI.
+
+A plugin interface needs a stable versioned contract, capability and permission boundaries, dependency isolation, failure containment, compatibility testing, and clear trust guidance before third-party packages can extend gesture, calibration, or room-map behavior. Package discovery alone is not a safe plugin architecture.
 
 ---
 
-## Considering (not committed)
+## Considering — not committed
 
-These are real ideas, not vapor. None of them have a milestone yet because they need design work or external dependencies. Listed here so the community can vote.
+These are exploratory ideas without an assigned milestone. They require design and validation before promotion into a versioned plan.
 
-- 💭 **Native mobile remote controls** beyond the committed phone-as-second-camera workflow
-- 💭 **Webcam-only calibration** using AR markers in the scene (no printed checkerboard)
-- 💭 **Head-tracking companion mode** — use face landmarkers to drive a head-tracked mouse for accessibility
-- 💭 **Cloud calibration sync** (opt-in, end-to-end encrypted) so users with identical rigs can share `calibration.npz`
-- 💭 **Steam Deck / handheld PC support** — the GUI is too big; need a compact layout
-- 💭 **OBS / streaming integration** — overlay the HUD on a virtual camera for content creators
-- 💭 **Wayland native support** (currently the focus overlay uses X11 / Win32 APIs)
+- 💭 Native mobile remote controls beyond a reviewed phone-camera workflow
+- 💭 Webcam-only calibration using reviewed visual markers rather than a printed checkerboard
+- 💭 Head-tracking companion mode for accessibility
+- 💭 Opt-in calibration synchronization with an explicit privacy and threat model
+- 💭 Steam Deck and handheld-PC layout support
+- 💭 OBS or virtual-camera integration
+- 💭 Wayland-native focus discovery and overlay support; the current selection overlay is Windows-specific
 
 ---
 
-## How this doc is maintained
+## How this document is maintained
 
-- New features start under **Considering**
-- When committed, they move to a versioned milestone with a target quarter
-- When shipped, the entry is deleted from this file and added to `CHANGELOG.md` with a link back to the roadmap entry it came from
-- If a feature is dropped, the entry stays in the changelog with a "withdrawn" note — no silent removal
-- The roadmap is reviewed at every minor release
+- New ideas begin under **Considering**.
+- A feature moves into a versioned milestone only after its scope, dependencies, review boundary, and validation plan are documented.
+- Shipped work is recorded in `CHANGELOG.md` with links to the implementing pull request and validation evidence.
+- Withdrawn or materially changed plans remain visible in history rather than disappearing without explanation.
+- The roadmap is reviewed during minor-release planning and whenever implementation evidence invalidates a capability claim.
 
-## Want to influence the roadmap?
+## Proposing roadmap work
 
-Open a GitHub Discussion in the **Ideas** category. The most-upvoted ideas in the last 90 days get prioritized into the next milestone planning pass.
-
-## Want to build one of these?
-
-PRs against any roadmap item are welcome. Open an issue first to claim the slot so two people don't end up duplicating work.
+Open an issue describing the user need, the smallest safe scope, dependencies, validation plan, and platform or privacy constraints before starting implementation. This reduces duplicate work and keeps runtime, CI, website, mobile, security, and architecture changes in separately reviewable pull requests.
