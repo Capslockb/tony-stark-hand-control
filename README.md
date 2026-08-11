@@ -152,7 +152,7 @@ The files under `tests/` mix pytest-style functions, executable assertion or ben
 
 Run the deterministic checks explicitly as documented in [`tests/README.md`](tests/README.md). Run `python tests/test_app.py` separately only on a suitable GUI host with camera access.
 
-A bounded repository-wide runner is proposed in draft [PR #22](https://github.com/Capslockb/tony-stark-hand-control/pull/22). Until that workflow and runner are manually reviewed and integrated, use the explicit per-file commands and the GitHub Actions result for the exact commit as the validation source of truth. Current `main` CI is tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3).
+Use the explicit per-file commands and the GitHub Actions result for the exact commit as the validation source of truth. Repository-wide CI status and remediation are tracked in [Issue #3](https://github.com/Capslockb/tony-stark-hand-control/issues/3); proposed workflow, dependency, or test-runner changes must be reviewed separately before they are treated as part of `main`.
 
 ---
 
