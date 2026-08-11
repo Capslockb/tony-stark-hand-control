@@ -25,36 +25,40 @@ Pattern (from 2026-06-04 audit):
 
 Run it from the project root:
 
-    cd C:/Users/Bernardo/tony_stark_hand_control
-    python ../.hermes/skills/tony-stark-hand-control/scripts/audit_app.py
+    python hermes-skills/tony-stark-hand-control/scripts/audit_app.py
 
-OR copy it to C:/Users/Bernardo/ and run from there (it imports
-the project from the relative path next to it).
+You can override the repository-relative default explicitly:
+
+    python hermes-skills/tony-stark-hand-control/scripts/audit_app.py ./tony_stark_hud_control.py
 """
-import os
-import sys
+import importlib.util
 import json
+import os
+from pathlib import Path
+import sys
 import tempfile
 import time
-import importlib.util
+
 
 # --- Locate the main script -------------------------------------------------
-# Default to a sibling of the user's home (C:/Users/Bernardo/app_test.py
-# was the original location during the 2026-06-04 audit). The user can
-# override by passing the path as argv[1].
-if len(sys.argv) > 1:
-    APP_PATH = os.path.abspath(sys.argv[1])
-else:
-    APP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            '..', '..', '..', '..', 'tony_stark_hand_control',
-                            'tony_stark_hud_control.py')
-    APP_PATH = os.path.abspath(APP_PATH)
-if not os.path.exists(APP_PATH):
+def resolve_app_path(argv=None):
+    """Resolve an explicit target or the application at the repository root."""
+    args = sys.argv if argv is None else argv
+    if len(args) > 1:
+        return Path(args[1]).expanduser().resolve()
+
+    repo_root = Path(__file__).resolve().parents[3]
+    return repo_root / 'tony_stark_hud_control.py'
+
+
+APP_PATH = resolve_app_path()
+if not APP_PATH.is_file():
     print(f'ERROR: cannot find {APP_PATH}')
-    print('Pass the path to tony_stark_hud_control.py as argv[1]')
+    print('Run this helper from a normal repository checkout or pass the path '
+          'to tony_stark_hud_control.py as argv[1].')
     sys.exit(2)
 
-spec = importlib.util.spec_from_file_location('m', APP_PATH)
+spec = importlib.util.spec_from_file_location('m', str(APP_PATH))
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 
