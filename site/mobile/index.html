@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Tony Stark Hand Control — for your phone</title>
-  <meta name="description" content="Quick install guide for Tony Stark Hand Control, mobile-optimized. Big buttons. Clear steps. Under 2 minutes.">
+  <meta name="description" content="Mobile-friendly setup guide for Tony Stark Hand Control with current platform, privacy, and validation boundaries.">
   <meta name="theme-color" content="#0b0d10">
   <meta name="robots" content="noindex, nofollow">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="canonical" href="https://capslockb.github.io/tony-stark-hand-control/mobile/">
   <link rel="preload" as="image" href="../assets/grain.png">
   <meta property="og:title" content="Tony Stark Hand Control — Mobile Install">
-  <meta property="og:description" content="Quick install guide. Big buttons. Clear steps. Under 2 minutes.">
+  <meta property="og:description" content="Mobile-friendly setup guide with current platform, privacy, and validation boundaries.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="../assets/social-card.jpg">
   <meta name="twitter:card" content="summary_large_image">
@@ -22,7 +22,7 @@
       position: fixed; inset: 0;
       z-index: 0;
       pointer-events: none;
-      background-image: url("assets/grain.png");
+      background-image: url("../assets/grain.png");
       background-repeat: repeat;
       background-size: 120px 120px;
       opacity: 0.18;
@@ -100,7 +100,7 @@
       --green: #2ecc71;
       --red: #e74c3c;
       --border: #2a323c;
-      --tap: 56px;          /* minimum tap target */
+      --tap: 56px;
       --radius: 14px;
       --pad: 20px;
       --safe-top: env(safe-area-inset-top, 0);
@@ -121,12 +121,10 @@
     a:active { opacity: 0.7; }
     code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
-    /* -------- Layout -------- */
     .page { max-width: 680px; margin: 0 auto; padding: 0 var(--pad); }
     .pad-top { padding-top: calc(20px + var(--safe-top)); }
     .pad-bottom { padding-bottom: 24px; }
 
-    /* -------- Header -------- */
     header {
       display: flex; align-items: center; gap: 12px;
       padding: 14px var(--pad);
@@ -138,14 +136,7 @@
     .brand-mark { width: 32px; height: 32px; }
     .header-link { color: var(--muted); font-size: 14px; padding: 8px 4px; }
 
-    /* -------- Hero --------
-       Position: not flush to the top, not centered in the middle.
-       Left-aligned text, with deliberate top breathing room
-       (min 80px, scales to 12vh on tall phones). The "Wave at your
-       webcam" CTA visible above the fold. */
-    .hero {
-      padding: clamp(60px, 12vh, 120px) 0 16px;
-    }
+    .hero { padding: clamp(60px, 12vh, 120px) 0 16px; }
     .eyebrow {
       display: inline-block; padding: 6px 12px; border-radius: 999px;
       border: 1px solid var(--border); color: var(--muted);
@@ -155,8 +146,6 @@
     h1 {
       font-size: clamp(32px, 9vw, 40px); line-height: 1.1; letter-spacing: -1px;
       margin: 0 0 12px; font-weight: 800;
-      /* Ensure h1 starts at the top of the .hero, not centered in
-         the remaining vertical space. */
       align-self: flex-start;
     }
     h1 .glow {
@@ -165,7 +154,6 @@
     }
     .lede { font-size: 18px; color: var(--muted); margin: 0 0 24px; }
 
-    /* -------- Big CTAs (primary action surfaces) -------- */
     .ctas { display: flex; flex-direction: column; gap: 12px; margin: 24px 0; }
     .btn {
       display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -181,14 +169,10 @@
     }
     .btn-primary { background: var(--accent); color: #0b0d10; }
     .btn-primary:active { background: #e64a0f; }
-    .btn-ghost {
-      background: var(--bg-2); color: var(--fg);
-      border-color: var(--border);
-    }
+    .btn-ghost { background: var(--bg-2); color: var(--fg); border-color: var(--border); }
     .btn-ghost:active { background: var(--bg-3); }
     .btn .icon { font-size: 20px; }
 
-    /* -------- Step list -------- */
     .steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
     .step {
       display: flex; gap: 16px;
@@ -236,7 +220,6 @@
     .copy-btn:active { background: var(--border); }
     .copy-btn.copied { background: rgba(46, 204, 113, 0.15); border-color: var(--green); color: var(--green); }
 
-    /* -------- OS switcher (segmented control) -------- */
     .os-switcher {
       display: flex; gap: 6px;
       background: var(--bg-2);
@@ -256,27 +239,14 @@
       font-size: 15px; font-weight: 600;
       cursor: pointer;
     }
-    .os-btn[aria-selected="true"] {
-      background: var(--accent);
-      color: #0b0d10;
-    }
+    .os-btn[aria-selected="true"] { background: var(--accent); color: #0b0d10; }
     .os-btn:active { opacity: 0.8; }
 
-    /* -------- Section headings -------- */
-    h2 {
-      font-size: 24px; line-height: 1.2; letter-spacing: -0.3px;
-      margin: 32px 0 12px; font-weight: 700;
-    }
+    h2 { font-size: 24px; line-height: 1.2; letter-spacing: -0.3px; margin: 32px 0 12px; font-weight: 700; }
     h3 { font-size: 17px; margin: 20px 0 8px; font-weight: 600; }
     p { margin: 0 0 12px; }
 
-    /* -------- Direction card (gesture cheat sheet) -------- */
-    .dir-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin: 16px 0;
-    }
+    .dir-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0; }
     .dir {
       background: var(--bg-2);
       border: 1px solid var(--border);
@@ -288,7 +258,6 @@
     .dir .label { font-size: 13px; color: var(--muted); }
     .dir .action { font-size: 14px; font-weight: 600; color: var(--fg); margin-top: 2px; }
 
-    /* -------- FAQ -------- */
     details {
       background: var(--bg-2);
       border: 1px solid var(--border);
@@ -312,7 +281,6 @@
     summary:active { background: var(--bg-3); border-radius: 12px; }
     .faq-body { padding: 0 18px; color: var(--muted); font-size: 15px; }
 
-    /* -------- Bottom action bar (always-visible primary CTA) -------- */
     .bottom-bar {
       position: fixed;
       left: 0; right: 0; bottom: 0;
@@ -322,7 +290,6 @@
     }
     .bottom-bar .btn { box-shadow: 0 10px 30px rgba(255, 90, 31, 0.25); }
 
-    /* -------- Share / press kit (mobile) -------- */
     .share-card {
       margin: 16px 0;
       background: var(--bg-2);
@@ -331,15 +298,8 @@
       overflow: hidden;
     }
     .share-card a { display: block; aspect-ratio: 1200 / 630; background: #0b0d10; }
-    .share-card img {
-      display: block;
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
-    .share-card figcaption {
-      padding: 14px 16px 16px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
+    .share-card img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .share-card figcaption { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
     .share-dim { font-size: 12px; color: var(--muted); }
     .share-actions { display: flex; gap: 8px; }
     .share-btn {
@@ -359,45 +319,22 @@
     .share-btn:active { background: var(--border); }
     .share-btn.copied { background: rgba(46, 204, 113, 0.15); border-color: var(--green); color: var(--green); }
 
-    /* -------- Release notes (mobile) -------- */
-    .cl-card {
-      background: var(--bg-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 18px;
-    }
-    .cl-card.cl-current {
-      border-color: rgba(255, 90, 31, 0.4);
-      box-shadow: 0 0 0 1px rgba(255, 90, 31, 0.15);
-    }
+    .cl-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+    .cl-card.cl-current { border-color: rgba(255, 90, 31, 0.4); box-shadow: 0 0 0 1px rgba(255, 90, 31, 0.15); }
     .cl-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-    .cl-version {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 15px; font-weight: 700; color: var(--accent);
-    }
+    .cl-version { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 15px; font-weight: 700; color: var(--accent); }
     .cl-date { font-size: 12px; color: var(--muted); }
-    .cl-tag {
-      font-size: 10px; padding: 2px 7px; border-radius: 999px;
-      letter-spacing: 0.4px; text-transform: uppercase; font-weight: 600;
-    }
+    .cl-tag { font-size: 10px; padding: 2px 7px; border-radius: 999px; letter-spacing: 0.4px; text-transform: uppercase; font-weight: 600; }
     .cl-tag-fix { background: rgba(255, 90, 31, 0.12); color: var(--accent); }
     .cl-tag-new { background: rgba(46, 204, 113, 0.12); color: var(--green); }
     .cl-blurb { color: var(--muted); margin: 4px 0 10px; font-size: 14px; }
     .cl-list { margin: 0 0 0 16px; padding: 0; color: var(--fg); font-size: 14px; }
     .cl-list li { margin: 4px 0; }
     .cl-list code { font-size: 12px; background: var(--bg-3); padding: 1px 4px; border-radius: 4px; }
-    .cl-test {
-      margin: 10px 0 0; padding: 8px 10px;
-      background: var(--bg-3); border-radius: 8px;
-      font-size: 12px; color: var(--muted);
-    }
+    .cl-test { margin: 10px 0 0; padding: 8px 10px; background: var(--bg-3); border-radius: 8px; font-size: 12px; color: var(--muted); }
     .cl-test strong { color: var(--green); }
 
-    /* -------- Trust strip -------- */
-    .trust {
-      display: flex; flex-wrap: wrap; gap: 6px;
-      margin: 16px 0 8px;
-    }
+    .trust { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 8px; }
     .trust-badge {
       font-size: 12px;
       padding: 6px 10px;
@@ -406,9 +343,8 @@
       color: var(--muted);
       border: 1px solid var(--border);
     }
-    .trust-badge.green { color: var(--green); border-color: rgba(46, 204, 113, 0.3); }
+    .trust-badge.green { color: var(--green); border-color: rgba(46,204,113,0.3); }
 
-    /* -------- Privacy / no-leak note -------- */
     .note {
       background: var(--bg-2);
       border-left: 3px solid var(--green);
@@ -420,22 +356,10 @@
     }
     .note strong { color: var(--fg); }
 
-    /* -------- Footer -------- */
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      padding: 32px var(--pad);
-    }
+    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 32px var(--pad); }
     footer a { color: var(--muted); }
-
-    /* -------- Hide-on-desktop nudges (since this is the mobile page) -------- */
     .desktop-only { display: none; }
-
-    @media (min-width: 820px) {
-      /* On wider screens, expand tap targets slightly and constrain width */
-      .page { max-width: 720px; }
-    }
+    @media (min-width: 820px) { .page { max-width: 720px; } }
   </style>
 </head>
 <body>
@@ -454,221 +378,87 @@
 </header>
 
 <main class="page pad-top">
-
-  <!-- HERO -->
   <section class="hero reveal" data-reveal>
     <span class="eyebrow load-fade load-fade-1">Mobile install</span>
-    <h1 class="load-glow">Get the <span class="glow">installer</span> on your computer.</h1>
-    <p class="lede load-fade load-fade-2">
-      This page is built for phones. Big buttons, clear steps, no fiddly hover menus.
-      You'll be running the app in under 2&nbsp;minutes.
-    </p>
+    <h1 class="load-glow">Get the <span class="glow">setup files</span> on your computer.</h1>
+    <p class="lede load-fade load-fade-2">This page is built for phones. Use the Windows-primary setup path below, or the experimental source-install guidance for Linux and macOS.</p>
     <div class="trust load-fade load-fade-3">
-      <span class="trust-badge green icon-pop icon-pop-1">● No telemetry</span>
+      <span class="trust-badge green icon-pop icon-pop-1">● Local-first core</span>
       <span class="trust-badge icon-pop icon-pop-2">MIT licensed</span>
-      <span class="trust-badge icon-pop icon-pop-3">Win / Mac / Linux</span>
+      <span class="trust-badge icon-pop icon-pop-3">Windows primary</span>
     </div>
   </section>
 
-  <!-- PRIMARY CTA -->
   <section class="reveal" data-reveal>
     <div class="ctas">
-      <a class="btn btn-primary" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest">
-        <span class="icon">⬇</span>
-        Download the installer
-      </a>
-      <a class="btn btn-ghost" href="https://github.com/Capslockb/tony-stark-hand-control">
-        <span class="icon">★</span>
-        Star on GitHub
-      </a>
+      <a class="btn btn-primary" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest"><span class="icon">⬇</span>Open downloads</a>
+      <a class="btn btn-ghost" href="https://github.com/Capslockb/tony-stark-hand-control"><span class="icon">★</span>Star on GitHub</a>
     </div>
   </section>
 
-  <!-- 3-STEP INSTALL -->
   <section class="reveal" data-reveal>
-    <h2><span class="reveal-title">Three steps. Under 2 minutes.</span></h2>
-
+    <h2><span class="reveal-title">Three setup steps</span></h2>
     <div class="os-switcher" role="tablist" aria-label="Choose your operating system">
       <button class="os-btn" data-os="win" role="tab" aria-selected="true">Windows</button>
       <button class="os-btn" data-os="mac" role="tab" aria-selected="false">macOS</button>
       <button class="os-btn" data-os="lin" role="tab" aria-selected="false">Linux</button>
     </div>
-
     <ol class="steps">
-      <li class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <h3 class="step-title">Download</h3>
-          <p class="step-desc" id="step1-desc">Tap the orange button above. GitHub will give you a single file.</p>
-          <div class="copy-row">
-            <a class="copy-btn" id="step1-btn" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest">
-              Open GitHub releases
-            </a>
-          </div>
-        </div>
-      </li>
-      <li class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <h3 class="step-title">Run the installer</h3>
-          <p class="step-desc" id="step2-desc">
-            <strong>Windows:</strong> double-click the <code>.exe</code>. SmartScreen may warn you — click "More info" → "Run anyway".
-          </p>
-        </div>
-      </li>
-      <li class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <h3 class="step-title">Wave at your webcam</h3>
-          <p class="step-desc">
-            Hold an open palm toward the camera for half a second. The app shows <strong>Engaged</strong> in green. Then swipe to navigate.
-          </p>
-        </div>
-      </li>
+      <li class="step"><div class="step-num">1</div><div class="step-body"><h3 class="step-title">Download</h3><p class="step-desc" id="step1-desc">Open GitHub releases for the Windows package, or use the repository source-install path.</p><div class="copy-row"><a class="copy-btn" id="step1-btn" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest">Open GitHub releases</a></div></div></li>
+      <li class="step"><div class="step-num">2</div><div class="step-body"><h3 class="step-title">Run the setup</h3><p class="step-desc" id="step2-desc"><strong>Windows:</strong> use the published Windows package or follow the repository source-install instructions. Windows is the primary tested path.</p></div></li>
+      <li class="step"><div class="step-num">3</div><div class="step-body"><h3 class="step-title">Start hand tracking</h3><p class="step-desc">On a healthy build, hold an open palm until the engagement hold completes (0.6 seconds by default), then use swipes and brief fingertip taps. Current <code>main</code> has a live-loop regression tracked in <a href="https://github.com/Capslockb/tony-stark-hand-control/issues/16">Issue #16</a>, so do not treat live behavior as currently validated.</p></div></li>
     </ol>
-
-    <div class="note">
-      <strong>Privacy:</strong> The app runs entirely on your computer. No frames leave the device. No account, no signup, no analytics.
-    </div>
+    <div class="note"><strong>Privacy:</strong> Camera-frame processing stays on-device in the core path. MediaPipe may send API performance and utilization metrics under its current privacy notice, and the optional Ollama-compatible classifier can send snapshots and prompts to a remote endpoint if you configure one. The repository does not add its own application analytics.</div>
   </section>
 
-  <!-- GESTURE CHEAT SHEET -->
   <section class="reveal" data-reveal>
     <h2><span class="reveal-title">What each gesture does</span></h2>
-    <p style="color: var(--muted);">Hold an open palm first to "engage" — about 0.6 seconds. Then try these:</p>
+    <p style="color: var(--muted);">Hold an open palm first to engage — 0.6 seconds by default after the rolling open-palm threshold is met. Fingertip actions currently repeat while held, so use brief, isolated taps.</p>
     <div class="dir-grid">
-      <div class="dir">
-        <div class="arrow">→</div>
-        <div class="action">Next</div>
-        <div class="label">swipe right</div>
-      </div>
-      <div class="dir">
-        <div class="arrow">←</div>
-        <div class="action">Previous</div>
-        <div class="label">swipe left</div>
-      </div>
-      <div class="dir">
-        <div class="arrow">↑</div>
-        <div class="action">Up</div>
-        <div class="label">swipe up</div>
-      </div>
-      <div class="dir">
-        <div class="arrow">↓</div>
-        <div class="action">Down</div>
-        <div class="label">swipe down</div>
-      </div>
-      <div class="dir">
-        <div class="arrow">👌</div>
-        <div class="action">Activate</div>
-        <div class="label">thumb to index</div>
-      </div>
-      <div class="dir">
-        <div class="arrow">🤞</div>
-        <div class="action">Right-click</div>
-        <div class="label">thumb to middle</div>
-      </div>
+      <div class="dir"><div class="arrow">→</div><div class="action">Next</div><div class="label">swipe right</div></div>
+      <div class="dir"><div class="arrow">←</div><div class="action">Previous</div><div class="label">swipe left</div></div>
+      <div class="dir"><div class="arrow">↑</div><div class="action">Up</div><div class="label">swipe up</div></div>
+      <div class="dir"><div class="arrow">↓</div><div class="action">Down</div><div class="label">swipe down</div></div>
+      <div class="dir"><div class="arrow">👌</div><div class="action">Activate</div><div class="label">thumb to index</div></div>
+      <div class="dir"><div class="arrow">🤞</div><div class="action">Context menu</div><div class="label">thumb to middle</div></div>
     </div>
   </section>
 
-  <!-- FAQ -->
   <section class="reveal" data-reveal>
     <h2><span class="reveal-title">Quick answers</span></h2>
-    <details>
-      <summary>Does it cost anything?</summary>
-      <div class="faq-body">No. MIT-licensed open source. Free forever, no trial, no upsell.</div>
-    </details>
-    <details>
-      <summary>Does it work without internet?</summary>
-      <div class="faq-body">Yes. The hand-tracking pipeline is 100% local. The first launch downloads a 7&nbsp;MB model file; after that no network is used (unless you explicitly enable the optional Ollama gestures).</div>
-    </details>
-    <details>
-      <summary>What cameras work?</summary>
-      <div class="faq-body">Any UVC webcam — built-in laptop cam, USB webcam, or virtual camera. For 3D room mapping, two or more cameras spaced 10–30&nbsp;cm apart.</div>
-    </details>
-    <details>
-      <summary>Does it drain my battery?</summary>
-      <div class="faq-body">At idle (no hands in frame), it uses ~3% of one CPU core and ~200&nbsp;MB RAM. On a laptop this is roughly the same as a browser tab.</div>
-    </details>
-    <details>
-      <summary>Can I uninstall it?</summary>
-      <div class="faq-body">Yes. Delete the folder. The installer keeps everything self-contained — no system files touched, no registry entries on Windows, no daemons on Linux/macOS.</div>
-    </details>
+    <details><summary>Does it cost anything?</summary><div class="faq-body">The repository is MIT-licensed open source. Check any third-party service you configure separately for its own terms or costs.</div></details>
+    <details><summary>Does it work without internet?</summary><div class="faq-body">The core hand-tracking path is local after required model files are present. The installer may download the MediaPipe model, MediaPipe may send performance and utilization metrics, and optional Ollama-compatible snapshot inference can use a remote endpoint if you configure one.</div></details>
+    <details><summary>What cameras work?</summary><div class="faq-body">The application probes common OpenCV camera backends and can use multiple cameras, but device and driver behavior varies. Windows is the primary tested path. Live stereo coordinates remain experimental and are not measurement-grade while <a href="https://github.com/Capslockb/tony-stark-hand-control/issues/6">Issue #6</a> is open.</div></details>
+    <details><summary>Does it drain my battery?</summary><div class="faq-body">CPU, memory, and battery use depend on your cameras, drivers, resolution, camera count, platform, MediaPipe build, and tracking settings. Current <code>main</code> cannot provide a valid recurring end-to-end benchmark while <a href="https://github.com/Capslockb/tony-stark-hand-control/issues/16">Issue #16</a> is open.</div></details>
+    <details><summary>Can I uninstall it?</summary><div class="faq-body">For a source checkout, remove the checkout and any shortcut you created. Packaged-build cleanup depends on the package you installed; consult the release notes for that exact build rather than assuming identical behavior on every platform.</div></details>
   </section>
 
-  <!-- RELEASE NOTES -->
   <section class="reveal" data-reveal>
-    <h2><span class="reveal-title">What's new</span></h2>
+    <h2><span class="reveal-title">Current validation</span></h2>
     <article class="cl-card cl-current" style="margin-top: 16px;">
-      <header class="cl-head">
-        <span class="cl-version">v1.0.3</span>
-        <span class="cl-date">2026-06-07</span>
-        <span class="cl-tag cl-tag-fix">release-readiness</span>
-      </header>
-      <p class="cl-blurb">Cross-platform install + test fixes. Now actually works on Linux, macOS, and headless systems.</p>
-      <ul class="cl-list">
-        <li>Headless import: <code>pyautogui</code> no longer crashes on systems without a display.</li>
-        <li>Single-instance lock: real <code>fcntl.flock</code> on Linux/macOS (was a silent no-op).</li>
-        <li>Selection overlay: works on Linux Tk (the <code>-disabled</code> attribute was Windows-only).</li>
-        <li>Test suite: portable paths — runs on any machine, not just the dev box.</li>
-      </ul>
-      <p class="cl-test">Test status: <strong>70/71</strong> pass on Linux (1 environmental fail is the real-webcam test).</p>
+      <header class="cl-head"><span class="cl-version">main</span><span class="cl-tag cl-tag-fix">validation boundary</span></header>
+      <p class="cl-blurb">Windows is the primary tested path. Current live processing on <code>main</code> is blocked by the loop-rescheduling regression in Issue #16, and the repository CI matrix is tracked in Issue #3.</p>
+      <ul class="cl-list"><li>Do not use historical fixed test totals as current-branch validation.</li><li>Linux and macOS remain experimental source-install paths rather than feature-parity claims.</li><li>Live stereo reconstruction remains experimental pending the coordinate-convention correction in Issue #6.</li></ul>
+      <p class="cl-test">Validation source: use the exact-commit GitHub Actions result and the current status of Issues <a href="https://github.com/Capslockb/tony-stark-hand-control/issues/3">#3</a>, <a href="https://github.com/Capslockb/tony-stark-hand-control/issues/6">#6</a>, and <a href="https://github.com/Capslockb/tony-stark-hand-control/issues/16">#16</a>.</p>
     </article>
-    <p style="text-align: center; margin-top: 16px;">
-      <a href="../#try" class="btn btn-primary" style="max-width: 320px; margin: 0 auto;">
-        📷 Try in browser
-      </a>
-      <a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md" class="btn btn-ghost" style="max-width: 320px; margin: 8px auto 0;">
-        Full changelog on GitHub
-      </a>
-    </p>
+    <p style="text-align: center; margin-top: 16px;"><a href="../#try" class="btn btn-primary" style="max-width: 320px; margin: 0 auto;">📷 Try in browser</a><a href="https://github.com/Capslockb/tony-stark-hand-control/blob/main/CHANGELOG.md" class="btn btn-ghost" style="max-width: 320px; margin: 8px auto 0;">Full changelog on GitHub</a></p>
   </section>
 
-  <!-- SHARE / PRESS KIT -->
   <section class="reveal" data-reveal>
     <h2><span class="reveal-title">Sharing the project?</span></h2>
-    <p style="color: var(--muted); font-size: 15px;">Here's a ready-to-go image with the dimensions Discord, Slack, X, and LinkedIn all expect.</p>
-    <figure class="share-card">
-      <a href="../assets/social-card.jpg" target="_blank" rel="noopener">
-        <img src="../assets/social-card.jpg" alt="Tony Stark Hand Control social card 1200x630" width="600" height="315" loading="lazy" decoding="async">
-      </a>
-      <figcaption>
-        <span class="share-dim">1200 × 630 · JPG · 124 KB</span>
-        <div class="share-actions">
-          <a class="share-btn" href="../assets/social-card.jpg" download>⬇ Download</a>
-          <button class="share-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.jpg" type="button">🔗 Copy URL</button>
-        </div>
-      </figcaption>
-    </figure>
-    <p style="color: var(--muted); font-size: 14px; margin-top: 16px;">
-      <em>"Hand-track your PC with a webcam. Local-only, no telemetry, MIT licensed. ⬇ capslockb.github.io/tony-stark-hand-control"</em>
-    </p>
+    <p style="color: var(--muted); font-size: 15px;">The current social-card JPG is a generated publication asset. Review it against the source artwork before reuse if its claims differ from the current site copy.</p>
+    <figure class="share-card"><a href="../assets/social-card.jpg" target="_blank" rel="noopener"><img src="../assets/social-card.jpg" alt="Tony Stark Hand Control social card 1200x630" width="600" height="315" loading="lazy" decoding="async"></a><figcaption><span class="share-dim">1200 × 630 · JPG</span><div class="share-actions"><a class="share-btn" href="../assets/social-card.jpg" download>⬇ Download</a><button class="share-btn" data-copy="https://capslockb.github.io/tony-stark-hand-control/assets/social-card.jpg" type="button">🔗 Copy URL</button></div></figcaption></figure>
+    <p style="color: var(--muted); font-size: 14px; margin-top: 16px;"><em>Suggested current wording: “Hand-track your PC with a webcam. Local-first core, Windows primary, MIT licensed.”</em></p>
   </section>
 
-  <!-- DESKTOP LINK PROMPT (since this is the mobile page) -->
-  <section style="text-align: center; margin: 32px 0;">
-    <p style="color: var(--muted); margin-bottom: 12px;">Need the full feature tour?</p>
-    <a class="btn btn-ghost" href="../" style="max-width: 320px; margin: 0 auto;">
-      Open the full site →
-    </a>
-  </section>
-
+  <section style="text-align: center; margin: 32px 0;"><p style="color: var(--muted); margin-bottom: 12px;">Need the full feature tour?</p><a class="btn btn-ghost" href="../" style="max-width: 320px; margin: 0 auto;">Open the full site →</a></section>
 </main>
 
-<!-- BOTTOM-ANCHORED PRIMARY CTA (mobile pattern) -->
-<nav class="bottom-bar" aria-label="Primary actions">
-  <a class="btn btn-primary" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest">
-    <span class="icon">⬇</span>
-    Download for <span id="bottom-os">Windows</span>
-  </a>
-</nav>
+<nav class="bottom-bar" aria-label="Primary actions"><a class="btn btn-primary" href="https://github.com/Capslockb/tony-stark-hand-control/releases/latest"><span class="icon">⬇</span>Open downloads for <span id="bottom-os">Windows</span></a></nav>
 
-<footer>
-  Built with MediaPipe + OpenCV · No analytics · No tracking<br>
-  <a href="../">Desktop site</a> · <a href="mobile/">Mobile (this page)</a> · <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub</a>
-</footer>
+<footer>Built with MediaPipe + OpenCV · Local-first core · Optional remote inference<br><a href="../">Desktop site</a> · <a href="./">Mobile (this page)</a> · <a href="https://github.com/Capslockb/tony-stark-hand-control">GitHub</a></footer>
 
 <script>
-  // ---- OS switcher ----
   const step1Desc = document.getElementById('step1-desc');
   const step1Btn  = document.getElementById('step1-btn');
   const step2Desc = document.getElementById('step2-desc');
@@ -676,22 +466,22 @@
 
   const copy = {
     win: {
-      step1: 'Tap the orange button above. GitHub will give you a single file.',
-      step1btn: 'Open GitHub releases (Windows .exe)',
-      step2: '<strong>Windows:</strong> double-click the <code>.exe</code>. SmartScreen may warn you — tap "More info" → "Run anyway".',
+      step1: 'Open GitHub releases for the Windows package, or use the repository source-install path.',
+      step1btn: 'Open GitHub releases',
+      step2: '<strong>Windows:</strong> use the published Windows package or follow the repository source-install instructions. Windows is the primary tested path.',
       bottom: 'Windows',
     },
     mac: {
-      step1: 'On a Mac? Use a <code>.zip</code> for Apple Silicon, or build from source. The prebuilt is Windows-only for now.',
+      step1: 'macOS is an experimental source-install path. Open the repository for the current source instructions.',
       step1btn: 'Open GitHub releases',
-      step2: '<strong>macOS:</strong> download the <code>.zip</code> for Apple Silicon, or build from source with <code>python3 install_wizard.py</code>. The prebuilt Windows .exe does not run on macOS — use the source build instead.',
+      step2: '<strong>macOS:</strong> follow the repository source-install guidance and treat platform parity as experimental. The Windows package does not run on macOS.',
       bottom: 'macOS (source)',
     },
     lin: {
-      step1: 'On Linux? The prebuilt <code>.tar.gz</code> is x86_64 only. For ARM or other arches, build from source.',
+      step1: 'Linux is an experimental path. Check the current release assets for an x86_64 package or use the repository source-install instructions.',
       step1btn: 'Open GitHub releases',
-      step2: '<strong>Linux:</strong> extract the <code>.tar.gz</code> and run <code>./tony_stark_hud_control.sh</code>. For source: <code>python3 install_wizard.py</code>.',
-      bottom: 'Linux (source)',
+      step2: '<strong>Linux:</strong> follow the release notes for any packaged build or use <code>python3 install_wizard.py</code> from a source checkout. Feature parity with Windows is not claimed.',
+      bottom: 'Linux (experimental)',
     },
   };
 
@@ -703,19 +493,14 @@
     step1Btn.textContent = copy[os].step1btn;
     step2Desc.innerHTML = copy[os].step2;
     bottomOs.textContent = copy[os].bottom;
-    // Persist the choice so it sticks on the desktop site
     try { localStorage.setItem('preferred-os', os); } catch (e) {}
   }
-  document.querySelectorAll('.os-btn').forEach(b => {
-    b.addEventListener('click', () => setOs(b.dataset.os));
-  });
-  // Restore preference
+  document.querySelectorAll('.os-btn').forEach(b => { b.addEventListener('click', () => setOs(b.dataset.os)); });
   try {
     const saved = localStorage.getItem('preferred-os');
     if (saved && copy[saved]) setOs(saved);
   } catch (e) {}
 
-  // ---- Copy-to-clipboard (install steps + share kit) ----
   document.querySelectorAll('.copy-btn[data-copy], .share-btn[data-copy]').forEach(btn => {
     btn.addEventListener('click', async () => {
       try {
@@ -731,7 +516,6 @@
     });
   });
 
-  // ---- Scroll-driven reveal ----
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const revealTargets = document.querySelectorAll('[data-reveal], .reveal, .reveal-title');
   if ('IntersectionObserver' in window && !reduced) {
